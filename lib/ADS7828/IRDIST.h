@@ -6,9 +6,9 @@
 class IRDIST
 {
 public:
-	IRDIST();
-
+	IRDIST(unsigned char _address, int _lookup_table[][8], int measurements);
 private:
+    int lookup_table[][8];
 };
 
 #endif
