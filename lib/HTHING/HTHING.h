@@ -17,7 +17,6 @@ public:
 	 * Runs the motor with the specified vector.
 	 * 
 	 * Parameter must be a number between -255 and 255.
-	 * All other conditions will result in a motor stop.
 	 */
 	void run(int vector);
 	/**
