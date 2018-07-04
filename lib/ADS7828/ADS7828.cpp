@@ -56,7 +56,6 @@
 #include "ADS7828.h"
 #include "Wire.h"
 
-
 bool ads_vref_int_enabled = 0;  // default voltage reference is external
 
 // command address for the channels, allows 0-7 channel mapping in the correct order
