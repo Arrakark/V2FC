@@ -4,8 +4,8 @@ track::track(HTHING * _motor){
     motor = _motor;
 }
 
-void track::run(int speed){
-    motor->run(speed);
+void track::run(int vector){
+    motor->run(vector);
 }
 
 void track::stop(){

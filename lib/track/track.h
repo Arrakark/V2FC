@@ -13,7 +13,7 @@
 class track {
 public:
     track(HTHING *);
-    void run(int speed);
+    void run(int vector);
     void stop();
 private:
     HTHING * motor;

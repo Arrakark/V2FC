@@ -1,6 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include <track.h>
+#include <CMDMessenger.h>
 
 class linefollower
 {
@@ -10,6 +11,7 @@ public:
 	//member functions
 	void setup();
 	void follow_line();
+	//void follow_line(int distance_in_m);
 	void evaluate_commands();
 private:
 	track * left_track;
