@@ -69,17 +69,15 @@
 
 class ADS7828 
 {  
-
-
 public:
 	ADS7828(unsigned char _address);
+	//ADS7828();
+	//~ADS7828();
 	void init();
 	void init(boolean _vref);
 	unsigned int read(unsigned char channel, bool mode);
-
 private:
     int ads_address;
-	
 };
 
 

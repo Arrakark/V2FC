@@ -61,12 +61,20 @@ bool ads_vref_int_enabled = 0;  // default voltage reference is external
 // command address for the channels, allows 0-7 channel mapping in the correct order
 unsigned char channels[8] = {0x00, 0x40, 0x10, 0x50, 0x20, 0x60, 0x30, 0x70}; 
 
+// ADS7828::ADS7828(){
+
+// }
+
+// ADS7828::~ADS7828(){
+  
+// }
+
 ADS7828::ADS7828(unsigned char _address){
   ads_address = _address;   // Set ADC i2c address to the one passed to the function
 }
 
 void ADS7828::init(){
-  Wire.begin();   // Initialize I2C Bus
+  //Wire.begin();   // Initialize I2C Bus
 }
 
 void ADS7828::init(boolean _vref){
