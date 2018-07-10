@@ -95,7 +95,7 @@ float irsensor::inverse_weighted_mean()
     return t_sum / b_sum;
 }
 
-float IRDirsensorIST::mean()
+float irsensor::mean()
 {
     float t_sum = 0;
     for (int x = 0; x < 8; x++)
