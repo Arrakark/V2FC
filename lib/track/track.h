@@ -17,4 +17,4 @@ public:
     void stop();
 private:
     HTHING * motor;
-}
+};

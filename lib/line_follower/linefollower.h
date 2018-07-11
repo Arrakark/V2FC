@@ -1,29 +1,23 @@
 #pragma once
 #include <Arduino.h>
 #include <track.h>
-#include <CMDMessenger.h>
+#include <pid.h>
+#include <irsensor.h>
+
+#define CLIFF_DISTANCE 15
 
 class linefollower
 {
 public:
 	//consturctor
-	linefollower(track * _left_track, track * right_track);
+	linefollower(track * left_track, track * right_track, irsensor * _main_sensor);
 	//member functions
-	void setup();
 	void follow_line();
-	//void follow_line(int distance_in_m);
-	void evaluate_commands();
-private:
+	bool debug;
+	pid pid_controller;
 	track * left_track;
 	track * right_track;
-	static void setgain();
-	static void setlimit();
-	static void setsensor();
-	static void setspeed();
-	static void setdebug();
-	static void returnPID();
-	static void toggledebug();
-	static void OnUnknownCommand();
-	int trim;
-	unsigned long time;
+	irsensor * main_sensor;
+	int default_speed;
+private:
 };
