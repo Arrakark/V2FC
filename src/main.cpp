@@ -1,5 +1,6 @@
 #include <Wire.h>
 #include <irsensor.h>
+#include <dual_irsensor.h>
 
 int lookup_table[20][9] = {{1, 131, 125, 134, 120, 116, 122, 120, 148},
                            {3, 140, 134, 145, 137, 136, 139, 143, 157},
@@ -22,7 +23,9 @@ int lookup_table[20][9] = {{1, 131, 125, 134, 120, 116, 122, 120, 148},
                            {46, 1098, 810, 2283, 2211, 1908, 2051, 2202, 2187},
                            {50, 1159, 889, 2382, 2321, 2020, 2168, 2318, 2303}}; // Include ADS7828.h for TI ADS7828 functions
 
-irsensor main_sensor = irsensor(0x49, lookup_table);
+irsensor left_sensor = irsensor(0x49, lookup_table);
+irsensor right_sensor = irsensor(0x48, lookup_table);
+dual_irsensor front_sensor = dual_irsensor(&left_sensor, &right_sensor);
 
 void setup()
 {
@@ -33,21 +36,21 @@ void setup()
 
 void loop()
 {
-  main_sensor.update();
+  front_sensor.update();
   for (int i = 0; i < 8; i++)
   {
-    Serial.print(main_sensor.distance_readings[i]);
+    Serial.print(front_sensor.distance_readings[i]);
     Serial.print(",");
   }
   Serial.println();
   Serial.print("Inverse weighted mean:");
-  Serial.print(main_sensor.inverse_weighted_mean());
+  Serial.print(front_sensor.inverse_weighted_mean());
   Serial.println();
   Serial.print("Mean:");
-  Serial.print(main_sensor.mean());
+  Serial.print(front_sensor.mean());
   Serial.println();
   Serial.print("Weighted Mean:");
-  Serial.print(main_sensor.weighted_mean());
+  Serial.print(front_sensor.weighted_mean());
   Serial.println();
   delay(1000); // Wait for 1 second
 }
