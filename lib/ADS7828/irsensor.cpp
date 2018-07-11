@@ -31,10 +31,15 @@ irsensor::irsensor(unsigned char _adress, int _lookup_table[ROW][COL]) : adc(_ad
     lookup_table = _lookup_table;
 }
 
+//default const do not use
+irsensor::irsensor() : adc()
+{
+}
+
 //get new readings from the sensor
 void irsensor::update()
 {
-    for (int x = 0; x < 8; x++)
+    for (int x = 0; x < SENSOR_COUNT; x++)
     {
         adc_readings[x] = adc.read(x, SD);
     }
@@ -46,7 +51,7 @@ int irsensor::max_position()
 {
     float max_value = 0;
     int max_position = 0;
-    for (int x = 0; x < 8; x++)
+    for (int x = 0; x < SENSOR_COUNT; x++)
     {
         if (distance_readings[x] > max_value)
         {
@@ -62,7 +67,7 @@ int irsensor::min_position()
 {
     float min_value = 0;
     int min_position = 0;
-    for (int x = 0; x < 8; x++)
+    for (int x = 0; x < SENSOR_COUNT; x++)
     {
         if (distance_readings[x] < min_value)
         {
@@ -77,7 +82,7 @@ int irsensor::min_position()
 float irsensor::max_distance()
 {
     float max = 0;
-    for (int x = 0; x < 8; x++)
+    for (int x = 0; x < SENSOR_COUNT; x++)
     {
         if (distance_readings[x] > max)
         {
@@ -91,7 +96,7 @@ float irsensor::max_distance()
 float irsensor::min_distance()
 {
     float min = MAX_VALUE;
-    for (int x = 0; x < 8; x++)
+    for (int x = 0; x < SENSOR_COUNT; x++)
     {
         if (distance_readings[x] < min)
         {
@@ -106,7 +111,7 @@ float irsensor::weighted_mean()
 {
     float t_sum = 0;
     float b_sum = 0;
-    for (int x = 0; x < 8; x++)
+    for (int x = 0; x < SENSOR_COUNT; x++)
     {
         t_sum = t_sum + distance_readings[x] * (x + 1);
         b_sum = b_sum + distance_readings[x];
@@ -121,7 +126,7 @@ float irsensor::inverse_weighted_mean()
 {
     float t_sum = 0;
     float b_sum = 0;
-    for (int x = 0; x < 8; x++)
+    for (int x = 0; x < SENSOR_COUNT; x++)
     {
         t_sum = t_sum + (MAX_VALUE - distance_readings[x]) * (x + 1);
         b_sum = b_sum + (MAX_VALUE - distance_readings[x]);
@@ -134,11 +139,11 @@ float irsensor::inverse_weighted_mean()
 float irsensor::mean()
 {
     float t_sum = 0;
-    for (int x = 0; x < 8; x++)
+    for (int x = 0; x < SENSOR_COUNT; x++)
     {
         t_sum += distance_readings[x];
     }
-    return t_sum / 8;
+    return t_sum / SENSOR_COUNT;
 }
 
 //private function for calculating the distance from the raw values
@@ -150,7 +155,7 @@ void irsensor::get_distance()
     int i, j;
 
     //calculating distances measured in sensor array
-    for (i = 0; i < 8; i++)
+    for (i = 0; i < SENSOR_COUNT; i++)
     {
 
         flag = 0;

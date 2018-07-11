@@ -51,6 +51,8 @@ for x in range(0,number_of_rows,1):
         sys.stdout.write(values[x][y])
         if y != number_of_cols - 1:
             sys.stdout.write(",")
+    if x != number_of_rows- 1:
+            sys.stdout.write(",")
     print("}")
 print("}")
 
