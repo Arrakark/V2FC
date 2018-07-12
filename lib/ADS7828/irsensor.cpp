@@ -116,7 +116,11 @@ float irsensor::weighted_mean()
         t_sum = t_sum + distance_readings[x] * (x + 1);
         b_sum = b_sum + distance_readings[x];
     }
-    return t_sum / b_sum;
+    if (b_sum != 0)
+    {
+        return t_sum / b_sum;
+    }
+    return 4.5;
 }
 
 //returns the inverse weighted mean; this means it takes the difference from the max value
@@ -131,7 +135,11 @@ float irsensor::inverse_weighted_mean()
         t_sum = t_sum + (MAX_VALUE - distance_readings[x]) * (x + 1);
         b_sum = b_sum + (MAX_VALUE - distance_readings[x]);
     }
-    return t_sum / b_sum;
+    if (b_sum != 0)
+    {
+        return t_sum / b_sum;
+    }
+    return 4.5;
 }
 
 //returns the mean (average)
@@ -164,10 +172,8 @@ void irsensor::get_distance()
         //find corresponding indices in data array
         for (j = 0; j < ROW; j++)
         {
-
             if (lookup_table[j][i + 1] >= adc_readings[i])
             {
-
                 ind = j;
                 flag = 1;
                 break;
@@ -178,27 +184,29 @@ void irsensor::get_distance()
 
         if (!flag) //if sensor measured distance is greater than values in data array, let sensor distance = 100
             distance_readings[i] = MAX_VALUE;
-
         else
         {
+            if (ind > 0 && i > -1)
+            {
+                //calculating slope and y-intercpet : y = mx + b
+                int x2 = lookup_table[ind][i + 1];
 
-            //calculating slope and y-intercpet : y = mx + b
-            int x2 = lookup_table[ind][i + 1];
-            int y2 = lookup_table[ind][0];
+                int y2 = lookup_table[ind][0];
 
-            int x1 = lookup_table[ind - 1][i + 1];
-            int y1 = lookup_table[ind - 1][0];
+                int x1 = lookup_table[ind - 1][i + 1];
+                int y1 = lookup_table[ind - 1][0];
 
-            float m = ((float)(y2 - y1)) / (x2 - x1);
-            float b = y2 - m * x2;
+                float m = ((float)(y2 - y1)) / (x2 - x1);
+                float b = y2 - m * x2;
 
-            distance_readings[i] = (int)(m * adc_readings[i] + b);
+                distance_readings[i] = (int)(m * adc_readings[i] + b);
 
-            //set negative distances to zero
-            if (distance_readings[i] < MIN_VALUE)
-                distance_readings[i] = MIN_VALUE;
-            else if (distance_readings[i] > MAX_VALUE)
-                distance_readings[i] = MAX_VALUE;
+                //set negative distances to zero
+                if (distance_readings[i] < MIN_VALUE)
+                    distance_readings[i] = MIN_VALUE;
+                else if (distance_readings[i] > MAX_VALUE)
+                    distance_readings[i] = MAX_VALUE;
+            }
         }
     }
 }
