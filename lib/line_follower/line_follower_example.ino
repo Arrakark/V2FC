@@ -23,12 +23,12 @@ int line_lookup[20][9] =
      {42, 1572, 1548, 2130, 1895, 1473, 1947, 2166, 2727},
      {44, 1614, 1587, 2171, 1939, 1521, 1990, 2203, 2750},
      {46, 1658, 1630, 2223, 1992, 1579, 2045, 2245, 2775},
-     {50, 1660, 1589, 2191, 1959, 1547, 2015, 2214, 2745}};
+     {50, 1660, 1640, 2240, 1999, 1590, 2055, 2255, 2780}};
 irsensor line_sensor = irsensor(0x49, line_lookup);
 
 //create tracks
-HTHING left_motor = HTHING(PB0, PB4);
-HTHING right_motor = HTHING(PB1, PB3);
+HTHING left_motor = HTHING(PB0, PB3);
+HTHING right_motor = HTHING(PA7, PB5);
 track left_track = track(&left_motor); //track will contain functions in the future (closed loop motor control)
 track right_track = track(&right_motor);
 
