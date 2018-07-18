@@ -207,6 +207,9 @@ void irsensor::get_distance()
                 else if (distance_readings[i] > MAX_VALUE)
                     distance_readings[i] = MAX_VALUE;
             }
+            else {
+                distance_readings[i] = MIN_VALUE;
+            }
         }
     }
 }
