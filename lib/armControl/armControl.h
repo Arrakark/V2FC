@@ -21,9 +21,6 @@ class ARMCONTROL
      **/
     int getEncoderVal();
     void armPosition(int position);
-   // void armDefault();
-   // void bottom();
-    //void up();
     void stop();
     
     void grabberHug();
@@ -32,10 +29,10 @@ class ARMCONTROL
     bool outOfBounds(int encoder_val);
 
     void info();
-    //getters
-    int getDefaultPosition();
-    int getUpPosition();
-    int getSearchPosition();
+
+    void armUp();
+    void armDefault();
+    void armSearch();
 
     private:
         int arm_servo_pin;

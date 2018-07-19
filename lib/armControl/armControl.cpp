@@ -9,18 +9,18 @@ Control class for arm motion. The arm has 3 positions:
 
 #include "armControl.h"
 
-#define ARM_SERVO PB8   
+#define ARM_SERVO PB8
 #define ARM_POT PB1
 #define GRABBER_SERVO PB9
-#define GRABBER_SWITCH PB12 
+#define GRABBER_SWITCH PB12
 
-#define DEADBAND 200
+#define DEADBAND 20
 #define STOP 1473
 #define GRABBER_OPEN 160
 #define GRABBER_CLOSE 5
 #define UP_LIMIT 2030
-#define DOWN_LIMIT 90 
- 
+#define DOWN_LIMIT 90
+
 /**
  * Obtain the following values from manual potentiometer testing
  * 1474: stops servo
@@ -30,22 +30,23 @@ Control class for arm motion. The arm has 3 positions:
 #define RAISE 1000
 #define LOWER 2000
 
-
-int arm_default = 350;
-int arm_up = 1760;
-int arm_search = 150;
-
 Servo arm_servo;
 Servo grabber_servo;
 //constructor
-ARMCONTROL::ARMCONTROL(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabber_switch, int p_arm_pot_pin){
+ARMCONTROL::ARMCONTROL(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabber_switch, int p_arm_pot_pin)
+{
     arm_servo_pin = p_arm_servo_pin;
     grabber_servo_pin = p_grabber_servo_pin;
     grabber_switch = p_grabber_switch;
     arm_pot_pin = p_arm_pot_pin;
+
+    arm_default = 350;
+    arm_up = 1900;
+    arm_search = 150;
 }
 
-void ARMCONTROL::init(){
+void ARMCONTROL::init()
+{
     pinMode(grabber_switch, INPUT);
     pinMode(arm_pot_pin, INPUT);
 
@@ -53,64 +54,77 @@ void ARMCONTROL::init(){
     arm_servo.writeMicroseconds(STOP);
     grabber_servo.attach(grabber_servo_pin);
     grabber_servo.write(GRABBER_OPEN);
-
 }
-int ARMCONTROL::getEncoderVal(){
-        return analogRead(ARM_POT);
+int ARMCONTROL::getEncoderVal()
+{
+    return analogRead(ARM_POT);
 }
 /**
  * Move arm to the desired position. There are three positions: default (horizontal), searching (slightly down) and up.
  **/
-void ARMCONTROL::armPosition(int position){
-    int toTest = getEncoderVal();
-    while((toTest < position - DEADBAND ) || (toTest > position + DEADBAND)) {
-        if(toTest > position + DEADBAND) {
+void ARMCONTROL::armPosition(int position)
+{
+    int encoder_val = getEncoderVal();
+    while ((encoder_val < position - DEADBAND) || (encoder_val > position + DEADBAND))
+    {
+        if (encoder_val > position + DEADBAND)
+        {
             arm_servo.writeMicroseconds(LOWER);
-        } else if (toTest < position - DEADBAND){
-            arm_servo.writeMicroseconds(RAISE);
-        } else {
-            stop();
-            break;
         }
-        toTest = getEncoderVal();
+        else if (encoder_val < position - DEADBAND)
+        {
+            arm_servo.writeMicroseconds(RAISE);
+        }
+        encoder_val = getEncoderVal();
     }
+    stop();
 }
 
-void ARMCONTROL::stop(){
-    arm_servo.write(STOP);
+void ARMCONTROL::stop()
+{
+    arm_servo.writeMicroseconds(STOP);
 }
 
-bool ARMCONTROL::outOfBounds(int encoder_val){
-    if (encoder_val < UP_LIMIT || encoder_val > DOWN_LIMIT) return true;
-    else return false;
+bool ARMCONTROL::outOfBounds(int encoder_val)
+{
+    if (encoder_val < UP_LIMIT || encoder_val > DOWN_LIMIT)
+        return true;
+    else
+        return false;
 }
 
-void ARMCONTROL::grabberHug(){
+void ARMCONTROL::grabberHug()
+{
     grabber_servo.write(GRABBER_CLOSE);
 }
 
-void ARMCONTROL::grabberOpen(){
+void ARMCONTROL::grabberOpen()
+{
     grabber_servo.write(GRABBER_OPEN);
 }
 
-int ARMCONTROL::switchStatus(){
-   return analogRead(GRABBER_SWITCH);
+int ARMCONTROL::switchStatus()
+{
+    return digitalRead(GRABBER_SWITCH);
 }
 
-void ARMCONTROL::info(){
+void ARMCONTROL::info()
+{
     Serial.println("switch: " + String(digitalRead(GRABBER_SWITCH)));
     Serial.println("encoder: " + String(getEncoderVal()));
 }
 
-//getters
-int ARMCONTROL::getDefaultPosition(){
-    return arm_default;
+void ARMCONTROL::armUp()
+{
+   armPosition(arm_up);
 }
 
-int ARMCONTROL::getUpPosition(){
-    return arm_up;
+void ARMCONTROL::armDefault()
+{
+    armPosition(arm_default);
 }
 
-int ARMCONTROL::getSearchPosition(){
-    return arm_search;
+void ARMCONTROL::armSearch()
+{
+   armPosition(arm_search);
 }
