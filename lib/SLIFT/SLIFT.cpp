@@ -1,8 +1,8 @@
 #include "SLIFT.h"
 
-#define SERVO_DOWN 0
-#define SERVO_UP 180
-#define SERVO_STATIC 90
+#define SERVO_DOWN 1000
+#define SERVO_UP 2000
+#define SERVO_STATIC 1472
 
 #define PIN_DOWNLIMIT PB13
 #define PIN_UPLIMIT PB14
@@ -14,8 +14,15 @@ static const int limit_array[3] = {PIN_DOWNLIMIT,PIN_UPLIMIT,PIN_BASKETLIMIT};
 
 Servo slift_servo;
 
-SLIFT::SLIFT(int servo_pin){
+SLIFT::SLIFT(int _pin){
+    servo_pin = _pin;
+}
+
+void SLIFT::init (void) {
     pinMode(servo_pin,OUTPUT);
+    pinMode(PIN_DOWNLIMIT,INPUT_PULLUP);
+    pinMode(PIN_UPLIMIT,INPUT_PULLUP);
+    pinMode(PIN_BASKETLIMIT,INPUT_PULLUP);
     slift_servo.attach(servo_pin);
 }
 
@@ -40,7 +47,7 @@ int SLIFT::move (int _dir) {
         _dir = 1;
         return -1;
     } else {
-        slift_servo.write(dir_array[_dir]);
+        slift_servo.writeMicroseconds(dir_array[_dir]);
 
         if (_dir != 2) {
             while (atLimit(_dir)) {
@@ -61,9 +68,13 @@ int SLIFT::move (int _dir) {
 *
 * The funtion returns true if the limit switch is pressed
 * and false if the limit switch is not pressed.
+*
+* If an invalid value for _dir is passed, the 
+* method will return false
 */
 bool SLIFT::atLimit (int _dir) {
+    if (_dir < 0 || _dir > 2) return true;
     int limit_value = analogRead(limit_array[_dir]);
-    if (limit_value = HIGH) return true;
+    if (limit_value = LOW) return true;
     else return false;
 }
