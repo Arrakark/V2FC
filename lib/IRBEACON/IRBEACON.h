@@ -5,6 +5,10 @@
  *  if returns 0, there is no beacon in sight
  *  if returns 1, there is a 1khz beacon in sight
  *  if returns 2, there is a 10khz beacon in sight
+ * 
+ *  IR detector needs to be a black-led-like thing with a 330 pulldown on the emmiter,
+ *  emmitter connected to the bluepill, and the collector pulled high to 3.3v!!! 
+ *  5V WILL DAMAGE BLUEPILL!!!
  */
 
 #ifndef IRBEACON_H

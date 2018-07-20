@@ -1,34 +1,23 @@
 #pragma once
 #include <Arduino.h>
-#include <LiquidCrystal.h>
-#include <motor.h>
-#include <CmdMessenger.h>
+#include <track.h>
+#include <pid.h>
+#include <irsensor.h>
 
-#define TRIM_KNOB PF6
+#define CLIFF_DISTANCE 15
 
 class linefollower
 {
 public:
 	//consturctor
-	linefollower(LiquidCrystal *, motorClass *);
+	linefollower(track * left_track, track * right_track, irsensor * _main_sensor);
 	//member functions
-	void setup();
 	void follow_line();
-	void set_trim();
-	void write_to_LCD(String, String);
-	void evaluate_commands();
+	bool debug;
+	pid pid_controller;
+	track * left_track;
+	track * right_track;
+	irsensor * main_sensor;
+	int default_speed;
 private:
-	int error_limit(int, int);
-	static void setgain();
-	static void setlimit();
-	static void setsensor();
-	static void setspeed();
-	static void setdebug();
-	static void returnPID();
-	static void toggledebug();
-	static void OnUnknownCommand();
-	motorClass *motor;
-	LiquidCrystal *LCD;
-	int trim;
-	unsigned long time;
 };
