@@ -6,6 +6,7 @@
 #include <HTHING.h>
 #include <irsensor.h>
 #include <IRBEACON.h>
+#include <pid.h>
 
 #define NORMAL_SPEED 150
 #define FULL_CLIFF_DISTANCE 15
@@ -31,4 +32,5 @@ public:
   irsensor *left_sensor;
   irsensor *right_sensor;
   SLIFT *lift;
+  pid * pid_controller;
 };

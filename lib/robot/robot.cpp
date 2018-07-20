@@ -14,6 +14,7 @@ robot::robot()
     left_sensor = new irsensor(0x4A, lookup_table_3);
     right_sensor = new irsensor(0x4B, lookup_table_4);
     lift = new SLIFT(PA8);
+    
 }
 
 //Does as name implies, drives forward until a cliff is detected
