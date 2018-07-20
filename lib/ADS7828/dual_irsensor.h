@@ -4,18 +4,25 @@
 #include "Arduino.h"
 #include <irsensor.h>
 
-#define SENSOR_COUNT 16
-
 class dual_irsensor : public irsensor
 {
   public:
     dual_irsensor(irsensor * left_sensor, irsensor * right_sensor);
     void update();
-    int adc_readings[SENSOR_COUNT];
-    float distance_readings[SENSOR_COUNT];
+    float max_distance();
+    float min_distance();
+    float weighted_mean();
+    float inverse_weighted_mean();
+    float mean();
+    int max_position();
+    int min_position();
+    int adc_readings[16];
+    float distance_readings[16];
+    
   private:
     irsensor * left_sensor;
     irsensor * right_sensor;
+    int SENSOR_COUNT;
 };
 
 #endif

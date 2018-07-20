@@ -16,16 +16,17 @@ void HTHING::run(int vector)
     {
         vector = 255;
     }
-    if (vector < -255)
+    else if (vector < -255)
     {
         vector = -255;
     }
+
     if (vector > 0)
     {
         digitalWrite(direction_pin, HIGH);
         analogWrite(speed_pin, 255 - vector);
     }
-    if (vector <= 0)
+    else
     {
         digitalWrite(direction_pin, LOW);
         analogWrite(speed_pin, abs(vector));

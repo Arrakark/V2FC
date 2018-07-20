@@ -29,6 +29,7 @@ irsensor::irsensor(unsigned char _adress, int _lookup_table[ROW][COL]) : adc(_ad
 {
     //adc.init(); do not call this function; call it in setup
     lookup_table = _lookup_table;
+    SENSOR_COUNT = 8;
 }
 
 //default const do not use
@@ -39,17 +40,19 @@ irsensor::irsensor() : adc()
 //get new readings from the sensor
 void irsensor::update()
 {
+    // Serial.println("Updating ir sensor readings......");
     for (int x = 0; x < SENSOR_COUNT; x++)
     {
         adc_readings[x] = adc.read(x, SD);
     }
+    // Serial.println("Starting get distance");
     get_distance();
 }
 
 //returns the position (0-7) of the maximum value
 int irsensor::max_position()
 {
-    float max_value = 0;
+    float max_value = MIN_VALUE;
     int max_position = 0;
     for (int x = 0; x < SENSOR_COUNT; x++)
     {
@@ -65,7 +68,7 @@ int irsensor::max_position()
 //returns the position (0-7) of the minimum value
 int irsensor::min_position()
 {
-    float min_value = 0;
+    float min_value = MAX_VALUE;
     int min_position = 0;
     for (int x = 0; x < SENSOR_COUNT; x++)
     {
@@ -81,7 +84,7 @@ int irsensor::min_position()
 //returns the max distance measured (MIN_VALUE-MAX_VALUE) in cm
 float irsensor::max_distance()
 {
-    float max = 0;
+    float max = MIN_VALUE;
     for (int x = 0; x < SENSOR_COUNT; x++)
     {
         if (distance_readings[x] > max)
@@ -111,11 +114,13 @@ float irsensor::weighted_mean()
 {
     float t_sum = 0;
     float b_sum = 0;
+
     for (int x = 0; x < SENSOR_COUNT; x++)
     {
         t_sum = t_sum + distance_readings[x] * (x + 1);
         b_sum = b_sum + distance_readings[x];
     }
+
     if (b_sum != 0)
     {
         return t_sum / b_sum;
@@ -182,11 +187,15 @@ void irsensor::get_distance()
 
         //calculate distance
 
-        if (!flag) //if sensor measured distance is greater than values in data array, let sensor distance = 100
+        if (!flag)
+        {
+            //if sensor measured distance is greater than values in data array, let sensor distance = 100
             distance_readings[i] = MAX_VALUE;
+        }
+
         else
         {
-            if (ind > 0 && i > -1)
+            if (ind > 0 && i > -1 && ind < ROW && i < 8)
             {
                 //calculating slope and y-intercpet : y = mx + b
                 int x2 = lookup_table[ind][i + 1];
@@ -195,6 +204,9 @@ void irsensor::get_distance()
 
                 int x1 = lookup_table[ind - 1][i + 1];
                 int y1 = lookup_table[ind - 1][0];
+                if (x2 - x1 == 0){
+                    return;
+                }
 
                 float m = ((float)(y2 - y1)) / (x2 - x1);
                 float b = y2 - m * x2;
@@ -206,6 +218,11 @@ void irsensor::get_distance()
                     distance_readings[i] = MIN_VALUE;
                 else if (distance_readings[i] > MAX_VALUE)
                     distance_readings[i] = MAX_VALUE;
+            }
+
+            else
+            {
+                distance_readings[i] = MIN_VALUE;
             }
         }
     }
