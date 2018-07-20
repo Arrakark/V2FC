@@ -14,7 +14,6 @@ class SLIFT
         static bool atLimit(int _dir);
         static const int dir_array[3];
         static const int limit_array[3];
-  
 };
 
 #endif
