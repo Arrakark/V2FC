@@ -14,21 +14,21 @@ Control class for arm motion. The arm has 3 positions:
 #define GRABBER_SERVO PB9
 #define GRABBER_SWITCH PB12
 
-#define DEADBAND 20
+#define DEADBAND 10
 #define STOP 1473
 #define GRABBER_OPEN 160
 #define GRABBER_CLOSE 5
-#define UP_LIMIT 2030
-#define DOWN_LIMIT 90
+#define UP_LIMIT 1300
+#define DOWN_LIMIT 2950
 
 /**
  * Obtain the following values from manual potentiometer testing
  * 1474: stops servo
- * greater than 1474 (eg.2000): bring arm down
- * smaller than 1474 (eg.1000): bring arm up
+ * greater than 1473 (eg.2000): bring arm down
+ * smaller than 1473 (eg.1000): bring arm up
  */
-#define RAISE 1000
-#define LOWER 2000
+#define RAISE 2000
+#define LOWER 1000
 
 Servo arm_servo;
 Servo grabber_servo;
@@ -40,14 +40,27 @@ ARMCONTROL::ARMCONTROL(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabb
     grabber_switch = p_grabber_switch;
     arm_pot_pin = p_arm_pot_pin;
 
-    arm_default = 350;
-    arm_up = 1900;
-    arm_search = 150;
+
+    /**
+     * Calibrated values via encoder potentiometer:
+     * lower limit: 2950
+     * upper limit: 1300
+     * horizontal: 2600
+     * drop off:1320
+     * vertical: 1590
+     * search:2800
+     * down: pickup (2940)
+     */
+    arm_pickup = 2940;
+    arm_search = 2800;
+    arm_horizontal = 2600;
+    arm_vertical = 1540;
+    arm_dropoff = 1320;
 }
 
 void ARMCONTROL::init()
 {
-    pinMode(grabber_switch, INPUT);
+    pinMode(grabber_switch, INPUT_PULLUP);
     pinMode(arm_pot_pin, INPUT);
 
     arm_servo.attach(arm_servo_pin);
@@ -65,15 +78,16 @@ int ARMCONTROL::getEncoderVal()
 void ARMCONTROL::armPosition(int position)
 {
     int encoder_val = getEncoderVal();
+    //encoder value is outside range
     while ((encoder_val < position - DEADBAND) || (encoder_val > position + DEADBAND))
     {
         if (encoder_val > position + DEADBAND)
         {
-            arm_servo.writeMicroseconds(LOWER);
+            arm_servo.writeMicroseconds(RAISE);
         }
         else if (encoder_val < position - DEADBAND)
         {
-            arm_servo.writeMicroseconds(RAISE);
+            arm_servo.writeMicroseconds(LOWER);
         }
         encoder_val = getEncoderVal();
     }
@@ -114,17 +128,27 @@ void ARMCONTROL::info()
     Serial.println("encoder: " + String(getEncoderVal()));
 }
 
-void ARMCONTROL::armUp()
+void ARMCONTROL::armDropoff()
 {
-   armPosition(arm_up);
+   armPosition(arm_dropoff);
 }
 
-void ARMCONTROL::armDefault()
+void ARMCONTROL::armVertical()
 {
-    armPosition(arm_default);
+    armPosition(arm_vertical);
 }
 
 void ARMCONTROL::armSearch()
 {
    armPosition(arm_search);
+}
+
+void ARMCONTROL::armHorizontal()
+{
+    armPosition(arm_horizontal);
+}
+
+void ARMCONTROL::armPickup()
+{
+    armPosition(arm_pickup);
 }

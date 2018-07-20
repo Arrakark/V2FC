@@ -15,33 +15,27 @@ void setup(void)
   delay(1000);
 }
 
+
 void loop(void)
 {
-  ATB_arm.armDefault();
+  
+  ATB_arm.armHorizontal();
   delay(1000);
-  ATB_arm.armSearch();
+  ATB_arm.armPickup();
   delay(1000);
   ATB_arm.grabberHug();
   delay(1000);
   
-  if(ATB_arm.switchStatus() == 1){
-    ATB_arm.grabberOpen();
-    delay(1000);
-    ATB_arm.armDefault();
-  }
-  delay(1000);
-  //switch = 0: fluffy detected
   if (ATB_arm.switchStatus() == 0){
-    ATB_arm.armUp();
+    ATB_arm.armDropoff();
     delay(1000);
     ATB_arm.grabberOpen();
   }
   else{
     ATB_arm.grabberOpen();
     delay(1000);
-    ATB_arm.armDefault();
+    ATB_arm.armHorizontal();
   }
-
   delay(1000);
   
   if(ATB_arm.debug){
