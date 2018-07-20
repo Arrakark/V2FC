@@ -5,13 +5,17 @@
 #define GRABBER_SERVO PB9
 #define GRABBER_SWITCH PB12 
 
+#define SLIFT_SERVO PA8
+
 ARMCONTROL ATB_arm = ARMCONTROL(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
+SLIFT ATB_slift = SLIFT(SLIFT_SERVO);
 
 void setup(void)
 {
   Serial.begin(9600);
   ATB_arm.init();
   ATB_arm.debug = true;
+  ATB_slift.init();
   delay(1000);
 }
 

@@ -14,7 +14,11 @@ static const int limit_array[3] = {PIN_DOWNLIMIT,PIN_UPLIMIT,PIN_BASKETLIMIT};
 
 Servo slift_servo;
 
-SLIFT::SLIFT(int servo_pin){
+SLIFT::SLIFT(int _pin){
+    servo_pin = _pin;
+}
+
+void SLIFT::init (void) {
     pinMode(servo_pin,OUTPUT);
     pinMode(PIN_DOWNLIMIT,INPUT_PULLUP);
     pinMode(PIN_UPLIMIT,INPUT_PULLUP);
