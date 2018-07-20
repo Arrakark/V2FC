@@ -49,7 +49,7 @@ void loop()
 
   //tune proportional gain with the potentiometer
   int reading = analogRead(PA6);
-  int p_gain = map(reading, 0, 4096, 0, -200);
+  int p_gain = map(reading, 0, 4096, 0, -500);
   line_follower.pid_controller.p_gain = p_gain;
 
   for (int i = 0; i < 8; i++)
