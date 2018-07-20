@@ -7,6 +7,13 @@
 #include <irsensor.h>
 #include <IRBEACON.h>
 
+enum state {
+  do_nothing,
+  manual_control,
+  run_full_track,
+
+}
+
 class robot
 {
   public:
@@ -14,7 +21,7 @@ class robot
   robot();
 
 
-  int state;
+  state current_state;
   //different parts of the robot
   //initialized in robot constructor
   ARMCONTROL * arm;
