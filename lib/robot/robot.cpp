@@ -29,6 +29,18 @@ void robot::drive_until_cliff()
     right_motor.stop();
 }
 
+//Does as name implies, drives forward until a line is detected
+void robot::drive_until_black_line()
+{
+    while (bottom_sensor->min_distance() > LINE_DISTANCE)
+    {
+        left_motor->run(NORMAL_SPEED);
+        right_motor->run(NORMAL_SPEED);
+    }
+    left_motor.stop();
+    right_motor.stop();
+}
+
 /*
  *  Turns the specified number of degrees
  *  left is negative degrees, right is positive degrees
