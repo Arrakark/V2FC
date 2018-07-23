@@ -8,14 +8,16 @@ class SLIFT
 {
     public:
         SLIFT(int _pin);
-        static void init();
-        static int move(int _dir);
+        void init();
+        void moveUp();
+        void moveDown();
+        void stay();
+        Servo slift_servo;
     private:
-        static Servo slift_servo;
-        static bool atLimit(int _dir);
-        static const int dir_array[3];
-        static const int limit_array[3];
-        static int servo_pin;
+        bool atLimit(int _dir);
+        int dir_array[3];
+        int limit_array[3];
+        int servo_pin;
 };
 
 #endif
