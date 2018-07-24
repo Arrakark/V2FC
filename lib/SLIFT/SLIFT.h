@@ -12,9 +12,11 @@ class SLIFT
         void moveUp();
         void moveDown();
         void stay();
+        bool atDownLimit();
+        bool atUpLimit();
+        bool atBasketLimit();
         Servo slift_servo;
     private:
-        bool atLimit(int _dir);
         int dir_array[3];
         int limit_array[3];
         int servo_pin;

@@ -1,23 +1,23 @@
 #include <HBRIDGE.h>
 #include <armControl.h>
 
-//create tracks
-HBRIDGE left_motor = HBRIDGE(PB0, PA1);
-HBRIDGE right_motor = HBRIDGE(PA7,PA3);
 
-//The decleration of the HBRIDGE objects here has the correct pin layout
-//for each motor
+//creating robot object
+robot admiral_track_bar = robot();
+
 
 void setup()
 {
-  Serial.begin(9600); // Start Serial
-  left_motor.init();
-  right_motor.init();
+    Serial.begin(9600); // Start Serial
+    Serial.println("Sketch begin");
+    admiral_track_bar.init();
+    Wire.begin();
+    delay(5000);
+    admiral_track_bar.calibrate_meters_per_second(5);
 }
 
-void loop(void)
+void loop()
 {
-  
   ARMCONTROL::armHorizontal();
   delay(1000);
   ARMCONTROL::armPickup();
@@ -41,3 +41,4 @@ void loop(void)
     ARMCONTROL::info();
   }
 }
+

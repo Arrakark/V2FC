@@ -17,7 +17,6 @@ void setup(void)
 
 void loop(void)
 {
- // ATB_arm.armPosition(ATB_arm.getDefaultPosition());
   
   // ATB_arm.grabberHug();
   // ATB_arm.grabberOpen();

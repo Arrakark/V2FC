@@ -45,14 +45,14 @@ void SLIFT::init(void)
 */
 void SLIFT::moveUp(){
     slift_servo.writeMicroseconds(SERVO_UP);
-    while (!atLimit(PIN_UPLIMIT)) {
+    while (!atUpLimit()) {
         delay(5);
     }
     slift_servo.writeMicroseconds(SERVO_STATIC);
 }
 void SLIFT::moveDown(){
     slift_servo.writeMicroseconds(SERVO_DOWN);  
-    while (!atLimit(PIN_DOWNLIMIT)) {
+    while (!atDownLimit()) {
         delay(5);
     }
     slift_servo.writeMicroseconds(SERVO_STATIC); 
@@ -74,9 +74,25 @@ void SLIFT::stay(){
 * If an invalid value for _dir is passed, the 
 * method will return false
 */
-bool SLIFT::atLimit(int _pin)
+bool SLIFT::atDownLimit()
 {
-    int limit_value = digitalRead(_pin);
+    int limit_value = digitalRead(PIN_DOWNLIMIT);
+    if (limit_value == LOW)
+        return (true);
+    else
+        return (false);
+}
+bool SLIFT::atUpLimit()
+{
+    int limit_value = digitalRead(PIN_UPLIMIT);
+    if (limit_value == LOW)
+        return (true);
+    else
+        return (false);
+}
+bool SLIFT::atBasketLimit()
+{
+    int limit_value = digitalRead(PIN_BASKETLIMIT);
     if (limit_value == LOW)
         return (true);
     else
