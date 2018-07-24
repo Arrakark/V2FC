@@ -7,6 +7,7 @@
 #include <irsensor.h>
 #include <IRBEACON.h>
 #include <pid.h>
+#include <HBRIDGE.h>
 
 #define NORMAL_SPEED 150
 #define FULL_CLIFF_DISTANCE 15
@@ -21,16 +22,24 @@ class robot
 public:
   //methods and constructor
   robot();
+  void drive_until_cliff();
+  void drive_until_black_line();
+  void turn_degrees(float degrees);
+  void move_meters(float meters);
+  void sweep_for_ewok(float angle);
+  void move_toward_ewok();
+  void calibrate_meters_per_second(int seconds);
+  void calibrate_degrees_per_second(int seconds);
 
   //different parts of the robot
   //initialized in robot constructor
   ARMCONTROL *arm;
-  HTHING *left_motor;
-  HTHING *right_motor;
+  HBRIDGE *left_motor;
+  HBRIDGE *right_motor;
   irsensor *bottom_sensor;
   irsensor *front_sensor;
   irsensor *left_sensor;
   irsensor *right_sensor;
   SLIFT *lift;
-  pid * pid_controller;
+  pid *pid_controller;
 };
