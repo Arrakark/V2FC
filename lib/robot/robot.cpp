@@ -9,6 +9,8 @@ robot::robot()
     left_motor = new HBRIDGE(PB0, PA1);
     //left motor is motor 3
     right_motor = new HBRIDGE(PA7, PA3);
+    left_motor->init();
+    right_motor->init();
     //bottom_sensor = new irsensor(0x49, lookup_table_2);
     //front_sensor = new irsensor(0x48, lookup_table_1);
     //left_sensor = new irsensor(0x4A, lookup_table_3);
@@ -24,8 +26,8 @@ void robot::drive_until_cliff()
         left_motor->run(NORMAL_SPEED);
         right_motor->run(NORMAL_SPEED);
     }
-    left_motor.stop();
-    right_motor.stop();
+    left_motor->stop();
+    right_motor->stop();
 }
 
 //Does as name implies, drives forward until a line is detected
@@ -36,8 +38,8 @@ void robot::drive_until_black_line()
         left_motor->run(NORMAL_SPEED);
         right_motor->run(NORMAL_SPEED);
     }
-    left_motor.stop();
-    right_motor.stop();
+    left_motor->stop();
+    right_motor->stop();
 }
 
 /*
@@ -93,7 +95,7 @@ void robot::move_meters(float meters)
 void robot::sweep_for_ewok(float angle)
 {
     unsigned long start_time = millis();
-    unsigned long scan_duration = (abs(degrees) / DEGREES_PER_SECOND) * 1000;
+    unsigned long scan_duration = (abs(angle) / DEGREES_PER_SECOND) * 1000;
     //scanning paramters
     int scan_number = (int)(scan_duration / EWOK_SCANNING_INTERVAL);
     float scan_distances[scan_number] = {100};
@@ -156,8 +158,8 @@ void robot::move_toward_ewok()
         left_motor->run(NORMAL_SPEED);
         right_motor->run(NORMAL_SPEED);
     }
-    left_motor.stop();
-    right_motor.stop();
+    left_motor->stop();
+    right_motor->stop();
 }
 
 /*
@@ -171,8 +173,8 @@ void robot::calibrate_meters_per_second(int seconds)
     left_motor->run(NORMAL_SPEED);
     right_motor->run(NORMAL_SPEED);
     delay(seconds * 1000);
-    left_motor.stop();
-    right_motor.stop();
+    left_motor->stop();
+    right_motor->stop();
 }
 
 /*
@@ -186,7 +188,7 @@ void robot::calibrate_degrees_per_second(int seconds)
     left_motor->run(NORMAL_SPEED);
     right_motor->run(-NORMAL_SPEED);
     delay(seconds * 1000);
-    left_motor.stop();
-    right_motor.stop();
+    left_motor->stop();
+    right_motor->stop();
 }
 
