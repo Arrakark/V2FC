@@ -1,11 +1,5 @@
-//using the the robot class
-#include <Wire.h>
-#include <Arduino.h>
-#include <robot.h>
-#include <irsensor.h>
+#include <HBRIDGE.h>
 #include <armControl.h>
-#include <SLIFT.h>
-#include <linefollower.h>
 
 
 //creating robot object
@@ -24,5 +18,27 @@ void setup()
 
 void loop()
 {
+  ARMCONTROL::armHorizontal();
+  delay(1000);
+  ARMCONTROL::armPickup();
+  delay(1000);
+  ARMCONTROL::grabberHug();
+  delay(1000);
+  
+  if (ARMCONTROL::switchStatus() == 0){
+    ARMCONTROL::armDropoff();
+    delay(1000);
+    ARMCONTROL::grabberOpen();
+  }
+  else{
+    ARMCONTROL::grabberOpen();
+    delay(1000);
+    ARMCONTROL::armHorizontal();
+  }
+  delay(1000);
+  
+  if(ARMCONTROL::debug){
+    ARMCONTROL::info();
+  }
 }
 
