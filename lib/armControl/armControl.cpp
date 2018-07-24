@@ -21,7 +21,6 @@ Control class for arm motion. The arm has 3 positions:
 #define UP_LIMIT 1300
 #define DOWN_LIMIT 2950
 
-
 /**
  * Obtain the following values from manual potentiometer testing
  * 1474: stops servo
@@ -34,7 +33,6 @@ Control class for arm motion. The arm has 3 positions:
 Servo arm_servo;
 Servo grabber_servo;
 
-
 int ARMCONTROL::arm_pickup = 2940;
 int ARMCONTROL::arm_search = 2800;
 int ARMCONTROL::arm_horizontal = 2600;
@@ -43,12 +41,17 @@ int ARMCONTROL::arm_dropoff = 1320;
 int ARMCONTROL::position = 1320;
 bool ARMCONTROL::debug = false;
 
+int ARMCONTROL::arm_pot_pin = -1;
+int ARMCONTROL::grabber_switch = -1;
+int ARMCONTROL::grabber_servo_pin = -1;
+int ARMCONTROL::arm_servo_pin = -1;
+
 void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabber_switch, int p_arm_pot_pin)
 {
-    ARMCONTROL::arm_servo_pin = p_arm_servo_pin;
-    ARMCONTROL::grabber_servo_pin = p_grabber_servo_pin;
-    ARMCONTROL::grabber_switch = p_grabber_switch;
-    ARMCONTROL::arm_pot_pin = p_arm_pot_pin;
+    arm_servo_pin = p_arm_servo_pin;
+    grabber_servo_pin = p_grabber_servo_pin;
+    grabber_switch = p_grabber_switch;
+    arm_pot_pin = p_arm_pot_pin;
 
     /**
      * Calibrated values via encoder potentiometer:
@@ -68,6 +71,12 @@ void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabbe
 
     position = arm_horizontal;
 
+    pinMode(grabber_switch, INPUT_PULLUP);
+    pinMode(arm_pot_pin, INPUT);
+
+    arm_servo.attach(arm_servo_pin);
+    grabber_servo.attach(grabber_servo_pin);
+
     HardwareTimer timer(4);
     // Pause the timer while we're configuring it
     timer.pause();
@@ -85,14 +94,6 @@ void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabbe
 
     // Start the timer counting
     timer.resume();
-
-    pinMode(grabber_switch, INPUT_PULLUP);
-    pinMode(arm_pot_pin, INPUT);
-
-    arm_servo.attach(arm_servo_pin);
-    arm_servo.writeMicroseconds(STOP);
-    grabber_servo.attach(grabber_servo_pin);
-    grabber_servo.write(GRABBER_OPEN);
 }
 int ARMCONTROL::getEncoderVal()
 {
@@ -105,19 +106,17 @@ void ARMCONTROL::update()
 {
     int encoder_val = getEncoderVal();
     //encoder value is outside range
-    while ((encoder_val < position - DEADBAND) || (encoder_val > position + DEADBAND))
+    if (encoder_val > position + DEADBAND)
     {
-        if (encoder_val > position + DEADBAND)
-        {
-            arm_servo.writeMicroseconds(RAISE);
-        }
-        else if (encoder_val < position - DEADBAND)
-        {
-            arm_servo.writeMicroseconds(LOWER);
-        }
-        encoder_val = getEncoderVal();
+        arm_servo.writeMicroseconds(RAISE);
     }
-    stop();
+    else if (encoder_val < position - DEADBAND)
+    {
+        arm_servo.writeMicroseconds(LOWER);
+    }
+    else {
+        stop();
+    }
 }
 
 void ARMCONTROL::stop()
@@ -146,8 +145,10 @@ void ARMCONTROL::grabberOpen()
 bool ARMCONTROL::switchStatus()
 {
     int reading = digitalRead(GRABBER_SWITCH);
-    if (reading == 0) return (true);
-    else return (false);
+    if (reading == 0)
+        return (true);
+    else
+        return (false);
 }
 
 void ARMCONTROL::info()

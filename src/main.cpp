@@ -1,32 +1,18 @@
-#include <robot.h>
-#include <HBRIDGE.h>
-#include <armControl.h>
+#include "armControl.h"
 
+#define ARM_SERVO PB8   
+#define ARM_POT PB1
+#define GRABBER_SERVO PB9
+#define GRABBER_SWITCH PB12 
 
-//creating robot object
-robot admiral_track_bar = robot();
-
-
-void setup()
+void setup(void)
 {
-    Serial.begin(230400, SERIAL_8E1); // Start Serial
-    Serial.println("Sketch begin");
-    admiral_track_bar.init();
-    //admiral_track_bar.arm->init();
-    //admiral_track_bar.arm->armVertical();
-    Wire.begin();
-    delay(3000);
-    //admiral_track_bar.calibrate_degrees_per_second(15);
-    //admiral_track_bar.turn_degrees(360);
-    //delay(5000);
-    //admiral_track_bar.calibrate_meters_per_second(3);
-    admiral_track_bar.move_meters(1.75);
-    admiral_track_bar.turn_degrees(-90);
-    admiral_track_bar.move_meters(1);
-    //admiral_track_bar.drive_until_cliff();
+  Serial.begin(230400, SERIAL_8E1);
+  ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
+  ARMCONTROL::armVertical();
 }
 
-void loop()
+void loop(void)
 {
+    ARMCONTROL::info();
 }
-
