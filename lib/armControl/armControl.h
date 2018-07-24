@@ -1,11 +1,11 @@
 #pragma once
-#ifndef ARMCONTROL_H
-#define ARMCONTROL_H
+// #ifndef armControl_H
+// #define armControl_H
 
 #include "Arduino.h"
 #include "Servo.h"
 
-class ARMCONTROL
+class armControl
 {
     public:
     bool debug;
@@ -13,7 +13,7 @@ class ARMCONTROL
      * Constructor initializing the arm and attaching it to relevant servo
      * pins
     **/
-    ARMCONTROL(int arm_servo_pin, int grabber_servo_pin, int grabber_switch, int arm_pot_pin);
+    armControl(int arm_servo_pin, int grabber_servo_pin, int grabber_switch, int arm_pot_pin);
 
     void init();
     /**
@@ -52,4 +52,4 @@ class ARMCONTROL
         int grabber_close;        
 };
 
-#endif
+// #endif

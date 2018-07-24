@@ -1,11 +1,11 @@
-#include "armControl.h"
+#include <armControl.h>
 
 #define ARM_SERVO PB8   
 #define ARM_POT PB1
 #define GRABBER_SERVO PB9
 #define GRABBER_SWITCH PB12 
 
-ARMCONTROL ATB_arm = ARMCONTROL(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
+armControl ATB_arm = armControl(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
 
 void setup(void)
 {
@@ -17,7 +17,7 @@ void setup(void)
 
 void loop(void)
 {
-  ATB_arm.armPosition(ATB_arm.getDefaultPosition());
+  ATB_arm.armPosition(ATB_arm.armHorizontal());
   
   // ATB_arm.grabberHug();
   // ATB_arm.grabberOpen();

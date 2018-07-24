@@ -2,9 +2,10 @@
 #include <Wire.h>
 #include <Arduino.h>
 #include <robot.h>
-// #include <irsensor.h>
-// #include <armControl.h>
-// #include <SLIFT.h>
+#include <irsensor.h>
+#include <armControl.h>
+#include <SLIFT.h>
+#include <linefollower.h>
 
 //initializing sensor calibration tables
 
@@ -121,7 +122,7 @@ void setup()
 void loop()
 {
     //first set arm in default horizontal  (useful for going up the ramp safely as well as edge detection)
-    admiral_track_bar.arm.armHorizontal());
+    admiral_track_bar.arm.armHorizontal();
     //open grabber arm
     admiral_track_bar.arm.grabberOpen();
 

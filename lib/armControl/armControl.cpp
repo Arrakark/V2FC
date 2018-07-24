@@ -33,7 +33,7 @@ Control class for arm motion. The arm has 3 positions:
 Servo arm_servo;
 Servo grabber_servo;
 //constructor
-ARMCONTROL::ARMCONTROL(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabber_switch, int p_arm_pot_pin)
+armControl::armControl(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabber_switch, int p_arm_pot_pin)
 {
     arm_servo_pin = p_arm_servo_pin;
     grabber_servo_pin = p_grabber_servo_pin;
@@ -58,7 +58,7 @@ ARMCONTROL::ARMCONTROL(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabb
     arm_dropoff = 1320;
 }
 
-void ARMCONTROL::init()
+void armControl::init()
 {
     pinMode(grabber_switch, INPUT_PULLUP);
     pinMode(arm_pot_pin, INPUT);
@@ -68,14 +68,14 @@ void ARMCONTROL::init()
     grabber_servo.attach(grabber_servo_pin);
     grabber_servo.write(GRABBER_OPEN);
 }
-int ARMCONTROL::getEncoderVal()
+int armControl::getEncoderVal()
 {
     return analogRead(ARM_POT);
 }
 /**
  * Move arm to the desired position. There are three positions: default (horizontal), searching (slightly down) and up.
  **/
-void ARMCONTROL::armPosition(int position)
+void armControl::armPosition(int position)
 {
     int encoder_val = getEncoderVal();
     //encoder value is outside range
@@ -94,12 +94,12 @@ void ARMCONTROL::armPosition(int position)
     stop();
 }
 
-void ARMCONTROL::stop()
+void armControl::stop()
 {
     arm_servo.writeMicroseconds(STOP);
 }
 
-bool ARMCONTROL::outOfBounds(int encoder_val)
+bool armControl::outOfBounds(int encoder_val)
 {
     if (encoder_val < UP_LIMIT || encoder_val > DOWN_LIMIT)
         return true;
@@ -107,48 +107,48 @@ bool ARMCONTROL::outOfBounds(int encoder_val)
         return false;
 }
 
-void ARMCONTROL::grabberHug()
+void armControl::grabberHug()
 {
     grabber_servo.write(GRABBER_CLOSE);
 }
 
-void ARMCONTROL::grabberOpen()
+void armControl::grabberOpen()
 {
     grabber_servo.write(GRABBER_OPEN);
 }
 
-int ARMCONTROL::switchStatus()
+int armControl::switchStatus()
 {
     return digitalRead(GRABBER_SWITCH);
 }
 
-void ARMCONTROL::info()
+void armControl::info()
 {
     Serial.println("switch: " + String(digitalRead(GRABBER_SWITCH)));
     Serial.println("encoder: " + String(getEncoderVal()));
 }
 
-void ARMCONTROL::armDropoff()
+void armControl::armDropoff()
 {
    armPosition(arm_dropoff);
 }
 
-void ARMCONTROL::armVertical()
+void armControl::armVertical()
 {
     armPosition(arm_vertical);
 }
 
-void ARMCONTROL::armSearch()
+void armControl::armSearch()
 {
    armPosition(arm_search);
 }
 
-void ARMCONTROL::armHorizontal()
+void armControl::armHorizontal()
 {
     armPosition(arm_horizontal);
 }
 
-void ARMCONTROL::armPickup()
+void armControl::armPickup()
 {
     armPosition(arm_pickup);
 }

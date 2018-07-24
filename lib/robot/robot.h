@@ -23,22 +23,22 @@ public:
   robot();
   void drive_until_cliff();
   void drive_until_black_line();
-  void turn_degrees(float degrees)
+  void turn_degrees(float degrees);
   void move_meters(float meters);
   void sweep_for_ewok(float angle);
   void move_toward_ewok();
   void calibrate_meters_per_second(int seconds);
-  void calibrate_degrees_per_second(int seconds)
+  void calibrate_degrees_per_second(int seconds);
   
   //different parts of the robot
   //initialized in robot constructor
-  ARMCONTROL *arm;
-  HTHING *left_motor;
-  HTHING *right_motor;
-  irsensor *bottom_sensor;
-  irsensor *front_sensor;
-  irsensor *left_sensor;
-  irsensor *right_sensor;
-  SLIFT *lift;
-  pid * pid_controller;
+  armControl arm;
+  HTHING left_motor;
+  HTHING right_motor;
+  irsensor bottom_sensor;
+  irsensor front_sensor;
+  irsensor left_sensor;
+  irsensor right_sensor;
+  SLIFT lift;
+  pid pid_controller;
 };
