@@ -14,20 +14,29 @@ void setup()
   right_motor.init();
 }
 
-void loop()
+void loop(void)
 {
-  int pos = 0;
-  for (pos = -255; pos <= 255; pos += 1)
-  { // goes from 0 degrees to 180 degrees
-    // in steps of 1 degree
-    left_motor.run(pos);
-    right_motor.run(pos); // tell servo to go to position in variable 'pos'
-    delay(15);          // waits 15ms for the servo to reach the position
+  
+  ATB_arm.armHorizontal();
+  delay(1000);
+  ATB_arm.armPickup();
+  delay(1000);
+  ATB_arm.grabberHug();
+  delay(1000);
+  
+  if (ATB_arm.switchStatus() == 0){
+    ATB_arm.armDropoff();
+    delay(1000);
+    ATB_arm.grabberOpen();
   }
-  for (pos = 255; -255 >= 0; pos -= 1)
-  {                     // goes from 180 degrees to 0 degrees
-    left_motor.run(pos);
-    right_motor.run(pos); // tell servo to go to position in variable 'pos'
-    delay(15);          // waits 15ms for the servo to reach the position
+  else{
+    ATB_arm.grabberOpen();
+    delay(1000);
+    ATB_arm.armHorizontal();
+  }
+  delay(1000);
+  
+  if(ATB_arm.debug){
+    ATB_arm.info();
   }
 }

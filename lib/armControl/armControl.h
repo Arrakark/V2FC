@@ -21,9 +21,6 @@ class ARMCONTROL
      **/
     int getEncoderVal();
     void armPosition(int position);
-   // void armDefault();
-   // void bottom();
-    //void up();
     void stop();
     
     void grabberHug();
@@ -32,10 +29,12 @@ class ARMCONTROL
     bool outOfBounds(int encoder_val);
 
     void info();
-    //getters
-    int getDefaultPosition();
-    int getUpPosition();
-    int getSearchPosition();
+
+    void armDropoff();
+    void armVertical();
+    void armSearch();
+    void armHorizontal();
+    void armPickup();
 
     private:
         int arm_servo_pin;
@@ -43,11 +42,11 @@ class ARMCONTROL
         int grabber_switch;
         int arm_pot_pin;
 
-        int arm_default;
-        int arm_up;
+        int arm_dropoff;
+        int arm_vertical;
         int arm_search;
-        int arm_open;
-        int arm_close;
+        int arm_horizontal;
+        int arm_pickup;
 
         int grabber_open;
         int grabber_close;        
