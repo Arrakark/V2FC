@@ -100,10 +100,6 @@ int lookup_table_4[20][9] = {{1, 137, 126, 124, 120, 126, 124, 136, 136},
 //creating robot object
 robot admiral_track_bar = robot();
 
-//creating line following object
-linefollower line_follower = linefollower(
-    &admiral_track_bar.left_motor, &admiral_track_bar.right_motor,
-    &admiral_track_bar.bottom_sensor);
 
 //a variable to keep track of the time ran by the robot
 unsigned long time_passed = millis();
@@ -116,18 +112,18 @@ void setup()
     Serial.begin(9600); // Start Serial
     Serial.println("Sketch begin");
     Wire.begin();
-    admiral_track_bar.arm.init();
+    admiral_track_bar.arm->init();
 }
 
 void loop()
 {
     //first set arm in default horizontal  (useful for going up the ramp safely as well as edge detection)
-    admiral_track_bar.arm.armHorizontal();
+    admiral_track_bar.arm->armHorizontal();
     //open grabber arm
-    admiral_track_bar.arm.grabberOpen();
+    admiral_track_bar.arm->grabberOpen();
 
     //clearing the first stage
-    first_stage();
+    //first_stage();
 }
 
 void first_stage_2() //let robot start at the left edge of the incline ramp
@@ -139,13 +135,13 @@ void first_stage_2() //let robot start at the left edge of the incline ramp
     admiral_track_bar.sweep_for_ewok(90);
 
     //grabs ewok
-    grab_ewok(admiral_track_bar); //***
+    //grab_ewok(admiral_track_bar); //***
 
     //turns 180 degrees to left
     admiral_track_bar.turn_degrees(-180);
 
     //continue line following and cross the first gap
-    line_follow(line_follower);
+    //line_follow(line_follower);
 }
 
 /*
@@ -160,28 +156,28 @@ void first_stage_2() //let robot start at the left edge of the incline ramp
 void first_stage()
 {
     //start with robot line following for 30 seconds for now ***
-    while (time_passed * 1000 < 30) // ***
-        line_follow(line_follower);
+    //while (time_passed * 1000 < 30) // ***
+    //    line_follow(line_follower);
 
     //stop the robot first before looking for ewoks @@
     admiral_track_bar.left_motor->stop();
     admiral_track_bar.right_motor->stop();
 
     //let arm go into search position
-    admiral_track_bar.arm.armSearch());
+    admiral_track_bar.arm->armSearch();
 
     //sweeping for ewok detection (might include sweeping for ewok and move towards ewok in grab_ewok in future)
     admiral_track_bar.sweep_for_ewok(45); //45 degrees for now ***
     //go to ewok
     admiral_track_bar.move_toward_ewok();
     //grab ewok
-    grab_ewok(admiral_track_bar); //***
+    //grab_ewok(admiral_track_bar); //***
 
     //turn robot back into the black line path (turn 90 degrees to left)
     admiral_track_bar.turn_degrees(-90); //***
 
     //continue line following and cross the first gap
-    line_follow(line_follower);
+    //line_follow(line_follower);
 
 }
 
@@ -203,30 +199,30 @@ void line_follow(linefollower line_follower)
     // Serial.println();
 }
 
-grab_ewok(robot admiral_track_bar) //***assume arm is open and in search position in the beginning
+void grab_ewok() //***assume arm is open and in search position in the beginning
 {
     //zero when limit switch is pressed
 
     //repeat motion of grab_ewok until grabber switch is ON **for now ***
-    while (admiral_track_bar.arm.switchStatus()) // ***
+    while (admiral_track_bar.arm->switchStatus()) // ***
     {
         //arm going down first
-        admiral_track_bar.arm.armPickup();
+        admiral_track_bar.arm->armPickup();
 
         //close the grabber to get the ewok
-        admiral_track_bar.arm.grabberHug();
+        admiral_track_bar.arm->grabberHug();
 
         //count number of ewoks grabbed or check if the switch is pressed
-        if(!admiral_track_bar.arm.switchStatus()) //***
+        if(!admiral_track_bar.arm->switchStatus()) //***
             ewok_grabbed ++;
 
         //bring arm up towards the robot's basket 
-        admiral_track_bar.arm.armDropoff();
+        admiral_track_bar.arm->armDropoff();
 
         //open grabber
-        admiral_track_bar.arm.grabberOpen();
+        admiral_track_bar.arm->grabberOpen();
 
         //set arm back to default horizontal position
-        admiral_track_bar.arm.armHorizontal());
+        admiral_track_bar.arm->armHorizontal();
     }
 }

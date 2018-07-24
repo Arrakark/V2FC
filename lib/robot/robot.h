@@ -15,6 +15,7 @@
 #define METERS_PER_SECOND 1.0
 #define DEGREES_PER_SECOND 180.0
 #define CLOSEST_DISTANCE_TO_EWOK 3.0
+#define LINE_DISTANCE 3.0
 #define EWOK_SCANNING_INTERVAL 100 //interval in ms to scan for the ewok
 
 class robot
