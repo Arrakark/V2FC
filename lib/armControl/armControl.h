@@ -4,52 +4,57 @@
 
 #include "Arduino.h"
 #include "Servo.h"
+#include "Time.h"
+#include <HardwareTimer.h>
 
 class ARMCONTROL
 {
-    public:
-    bool debug;
+  public:
+    static bool debug;
     /**
      * Constructor initializing the arm and attaching it to relevant servo
      * pins
     **/
-    ARMCONTROL(int arm_servo_pin, int grabber_servo_pin, int grabber_switch, int arm_pot_pin);
+    //ARMCONTROL(int arm_servo_pin, int grabber_servo_pin, int grabber_switch, int arm_pot_pin);
 
-    void init();
+    static void init(int, int, int, int);
     /**
      * Base servo moves until potentiometer reads specified value
      **/
-    int getEncoderVal();
-    void armPosition(int position);
-    void stop();
-    
-    void grabberHug();
-    void grabberOpen();
-    bool switchStatus();
-    bool outOfBounds(int encoder_val);
+    static int getEncoderVal();
+    static void update();
+    static void stop();
 
-    void info();
+    static void grabberHug();
+    static void grabberOpen();
+    static int switchStatus();
+    static bool outOfBounds(int encoder_val);
 
-    void armDropoff();
-    void armVertical();
-    void armSearch();
-    void armHorizontal();
-    void armPickup();
+    static void info();
 
-    private:
-        int arm_servo_pin;
-        int grabber_servo_pin;
-        int grabber_switch;
-        int arm_pot_pin;
+    static void armDropoff();
+    static void armVertical();
+    static void armSearch();
+    static void armHorizontal();
+    static void armPickup();
 
-        int arm_dropoff;
-        int arm_vertical;
-        int arm_search;
-        int arm_horizontal;
-        int arm_pickup;
+  private:
+    ARMCONTROL() {}
+    static int position;
 
-        int grabber_open;
-        int grabber_close;        
+    static int arm_servo_pin;
+    static int grabber_servo_pin;
+    static int grabber_switch;
+    static int arm_pot_pin;
+
+    static int arm_dropoff;
+    static int arm_vertical;
+    static int arm_search;
+    static int arm_horizontal;
+    static int arm_pickup;
+
+    static int grabber_open;
+    static int grabber_close;
 };
 
 #endif
