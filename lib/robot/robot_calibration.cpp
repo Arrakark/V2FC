@@ -17,11 +17,9 @@ void setup()
     Serial.begin(9600); // Start Serial
     Serial.println("Sketch begin");
     Wire.begin();
-    delay(5000);
-    admiral_track_bar.calibrate_meters_per_second(5000);
-    delay(60000);
-    admiral_track_bar.calibrate_degrees_per_second(15000);
-    delay(60000);
+    delay(15000);
+    admiral_track_bar.calibrate_degrees_per_second(15);
+    delay(30000);
 }
 
 void loop()

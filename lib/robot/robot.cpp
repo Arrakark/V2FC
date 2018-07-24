@@ -5,17 +5,18 @@ robot::robot()
     //elbow servo is servo 1, grabber servo is servo 2
     //limit switch is the first limit switch
     arm = new ARMCONTROL(PB8, PB9, PB12, PB1);
-    //left motor is motor 2
-    left_motor = new HBRIDGE(PB0, PA1);
-    //left motor is motor 3
-    right_motor = new HBRIDGE(PA7, PA3);
-    left_motor->init();
-    right_motor->init();
+    left_motor = new HBRIDGE(PA1, PB0);
+    right_motor = new HBRIDGE(PA3, PA7);
     //bottom_sensor = new irsensor(0x49, lookup_table_2);
     //front_sensor = new irsensor(0x48, lookup_table_1);
     //left_sensor = new irsensor(0x4A, lookup_table_3);
     //right_sensor = new irsensor(0x4B, lookup_table_4);
     lift = new SLIFT(PA8);
+}
+
+void robot::init(){
+    left_motor->init();
+    right_motor->init();
 }
 
 //Does as name implies, drives forward until a cliff is detected
@@ -191,4 +192,3 @@ void robot::calibrate_degrees_per_second(int seconds)
     left_motor->stop();
     right_motor->stop();
 }
-

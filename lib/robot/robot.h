@@ -9,7 +9,7 @@
 #include <pid.h>
 #include <HBRIDGE.h>
 
-#define NORMAL_SPEED 150
+#define NORMAL_SPEED 255
 #define FULL_CLIFF_DISTANCE 15
 #define GAP_CLIFF_DISTANCE 10
 #define METERS_PER_SECOND 1.0
@@ -23,6 +23,7 @@ class robot
 public:
   //methods and constructor
   robot();
+  void init();
   void drive_until_cliff();
   void drive_until_black_line();
   void turn_degrees(float degrees);
