@@ -1,4 +1,5 @@
 #include <HBRIDGE.h>
+#include <armControl.h>
 
 //create tracks
 HBRIDGE left_motor = HBRIDGE(PB0, PA1);
@@ -17,26 +18,26 @@ void setup()
 void loop(void)
 {
   
-  ATB_arm.armHorizontal();
+  ARMCONTROL::armHorizontal();
   delay(1000);
-  ATB_arm.armPickup();
+  ARMCONTROL::armPickup();
   delay(1000);
-  ATB_arm.grabberHug();
+  ARMCONTROL::grabberHug();
   delay(1000);
   
-  if (ATB_arm.switchStatus() == 0){
-    ATB_arm.armDropoff();
+  if (ARMCONTROL::switchStatus() == 0){
+    ARMCONTROL::armDropoff();
     delay(1000);
-    ATB_arm.grabberOpen();
+    ARMCONTROL::grabberOpen();
   }
   else{
-    ATB_arm.grabberOpen();
+    ARMCONTROL::grabberOpen();
     delay(1000);
-    ATB_arm.armHorizontal();
+    ARMCONTROL::armHorizontal();
   }
   delay(1000);
   
-  if(ATB_arm.debug){
-    ATB_arm.info();
+  if(ARMCONTROL::debug){
+    ARMCONTROL::info();
   }
 }

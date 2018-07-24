@@ -32,14 +32,22 @@ Control class for arm motion. The arm has 3 positions:
 
 Servo arm_servo;
 Servo grabber_servo;
-//constructor
-ARMCONTROL::ARMCONTROL(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabber_switch, int p_arm_pot_pin)
-{
-    arm_servo_pin = p_arm_servo_pin;
-    grabber_servo_pin = p_grabber_servo_pin;
-    grabber_switch = p_grabber_switch;
-    arm_pot_pin = p_arm_pot_pin;
 
+
+int ARMCONTROL::arm_pickup = 2940;
+int ARMCONTROL::arm_search = 2800;
+int ARMCONTROL::arm_horizontal = 2600;
+int ARMCONTROL::arm_vertical = 1540;
+int ARMCONTROL::arm_dropoff = 1320;
+int ARMCONTROL::position = 1320;
+bool ARMCONTROL::debug = false;
+
+void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabber_switch, int p_arm_pot_pin)
+{
+    ARMCONTROL::arm_servo_pin = p_arm_servo_pin;
+    ARMCONTROL::grabber_servo_pin = p_grabber_servo_pin;
+    ARMCONTROL::grabber_switch = p_grabber_switch;
+    ARMCONTROL::arm_pot_pin = p_arm_pot_pin;
 
     /**
      * Calibrated values via encoder potentiometer:
@@ -51,15 +59,32 @@ ARMCONTROL::ARMCONTROL(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabb
      * search:2800
      * down: pickup (2940)
      */
-    arm_pickup = 2940;
-    arm_search = 2800;
-    arm_horizontal = 2600;
-    arm_vertical = 1540;
-    arm_dropoff = 1320;
-}
+    // ARMCONTROL::arm_pickup = 2940;
+    // ARMCONTROL::arm_search = 2800;
+    // ARMCONTROL::arm_horizontal = 2600;
+    // ARMCONTROL::arm_vertical = 1540;
+    // ARMCONTROL::arm_dropoff = 1320;
 
-void ARMCONTROL::init()
-{
+    position = arm_horizontal;
+
+    HardwareTimer timer(4);
+    // Pause the timer while we're configuring it
+    timer.pause();
+
+    // Set up period
+    timer.setPeriod(100); // in microseconds
+
+    // Set up an interrupt on channel 1
+    timer.setChannel1Mode(TIMER_OUTPUT_COMPARE);
+    timer.setCompare(TIMER_CH1, 1); // Interrupt 1 count after each update
+    timer.attachCompare1Interrupt(ARMCONTROL::update);
+
+    // Refresh the timer's count, prescale, and overflow
+    timer.refresh();
+
+    // Start the timer counting
+    timer.resume();
+
     pinMode(grabber_switch, INPUT_PULLUP);
     pinMode(arm_pot_pin, INPUT);
 
@@ -75,7 +100,7 @@ int ARMCONTROL::getEncoderVal()
 /**
  * Move arm to the desired position. There are three positions: default (horizontal), searching (slightly down) and up.
  **/
-void ARMCONTROL::armPosition(int position)
+void ARMCONTROL::update()
 {
     int encoder_val = getEncoderVal();
     //encoder value is outside range
@@ -130,25 +155,25 @@ void ARMCONTROL::info()
 
 void ARMCONTROL::armDropoff()
 {
-   armPosition(arm_dropoff);
+    position = arm_dropoff;
 }
 
 void ARMCONTROL::armVertical()
 {
-    armPosition(arm_vertical);
+    position = arm_vertical;
 }
 
 void ARMCONTROL::armSearch()
 {
-   armPosition(arm_search);
+    position = arm_search;
 }
 
 void ARMCONTROL::armHorizontal()
 {
-    armPosition(arm_horizontal);
+    position = arm_horizontal;
 }
 
 void ARMCONTROL::armPickup()
 {
-    armPosition(arm_pickup);
+    position = arm_pickup;
 }
