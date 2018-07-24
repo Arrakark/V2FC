@@ -16,10 +16,17 @@ void setup()
 {
     Serial.begin(9600); // Start Serial
     Serial.println("Sketch begin");
+    admiral_track_bar.init();
+    //admiral_track_bar.arm->init();
+    //admiral_track_bar.arm->armVertical();
     Wire.begin();
-    delay(15000);
-    admiral_track_bar.calibrate_degrees_per_second(15);
-    delay(30000);
+    delay(3000);
+    //admiral_track_bar.calibrate_degrees_per_second(15);
+    //admiral_track_bar.turn_degrees(360);
+    //delay(5000);
+    //admiral_track_bar.calibrate_meters_per_second(3);
+    //admiral_track_bar.move_meters(2.14);
+    admiral_track_bar.drive_until_cliff();
 }
 
 void loop()

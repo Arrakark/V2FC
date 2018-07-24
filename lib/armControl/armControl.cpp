@@ -21,6 +21,7 @@ Control class for arm motion. The arm has 3 positions:
 #define UP_LIMIT 1300
 #define DOWN_LIMIT 2950
 
+
 /**
  * Obtain the following values from manual potentiometer testing
  * 1474: stops servo

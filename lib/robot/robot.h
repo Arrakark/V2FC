@@ -9,13 +9,14 @@
 #include <pid.h>
 #include <HBRIDGE.h>
 
-#define NORMAL_SPEED 255
-#define FULL_CLIFF_DISTANCE 15
+#define NORMAL_SPEED 230
+#define TURN_SPEED 255
+#define FULL_CLIFF_DISTANCE 20
 #define GAP_CLIFF_DISTANCE 10
-#define METERS_PER_SECOND 1.0
-#define DEGREES_PER_SECOND 180.0
-#define CLOSEST_DISTANCE_TO_EWOK 3.0
-#define LINE_DISTANCE 3.0
+#define METERS_PER_SECOND 0.656
+#define DEGREES_PER_SECOND 140.0
+#define CLOSEST_DISTANCE_TO_EWOK 4.0
+#define LINE_DISTANCE 5.0
 #define EWOK_SCANNING_INTERVAL 100 //interval in ms to scan for the ewok
 
 class robot
