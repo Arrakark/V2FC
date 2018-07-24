@@ -117,9 +117,11 @@ void ARMCONTROL::grabberOpen()
     grabber_servo.write(GRABBER_OPEN);
 }
 
-int ARMCONTROL::switchStatus()
+bool ARMCONTROL::switchStatus()
 {
-    return digitalRead(GRABBER_SWITCH);
+    int reading = digitalRead(GRABBER_SWITCH);
+    if (reading == 0) return (true);
+    else return (false);
 }
 
 void ARMCONTROL::info()

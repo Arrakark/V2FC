@@ -25,7 +25,7 @@ class ARMCONTROL
     
     void grabberHug();
     void grabberOpen();
-    int switchStatus();
+    bool switchStatus();
     bool outOfBounds(int encoder_val);
 
     void info();
