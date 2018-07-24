@@ -65,5 +65,9 @@ void loop (void) {
     atb_arm.armPickup();
     delay(1000);
     atb_arm.grabberOpen();
+    while (!atb_arm.switchStatus()) {
+        delay(10);
+    }
+    
 
 }
