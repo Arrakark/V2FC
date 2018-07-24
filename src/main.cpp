@@ -1,46 +1,33 @@
-//#include "armControl.h"
-#include <SLIFT.h>
+#include <HBRIDGE.h>
 
-// #define ARM_SERVO PB8   
-// #define ARM_POT PB1
-// #define GRABBER_SERVO PB9
-// #define GRABBER_SWITCH PB12 
+//create tracks
+HBRIDGE left_motor = HBRIDGE(PB0, PA1);
+HBRIDGE right_motor = HBRIDGE(PA7,PA3);
 
-#define SLIFT_SERVO PA8
+//The decleration of the HBRIDGE objects here has the correct pin layout
+//for each motor
 
-//ARMCONTROL ATB_arm = ARMCONTROL(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
-SLIFT ATB_slift = SLIFT(SLIFT_SERVO);
-
-void setup(void)
+void setup()
 {
-  Serial.begin(9600);
-  //ATB_arm.init();
-  //ATB_arm.debug = true;
-  delay(6000);
-  Serial.println("Going to init");
-  ATB_slift.init();
-  Serial.println("Initialized");
-  delay(100);
-  Serial.println("Goin Up");
-  ATB_slift.moveUp();
-  Serial.println("wut");
-  ATB_slift.moveDown();
-  //ATB_slift.slift_servo.writeMicroseconds(1405);
+  Serial.begin(9600); // Start Serial
+  left_motor.init();
+  right_motor.init();
 }
 
-void loop(void)
+void loop()
 {
-//   ATB_arm.armPosition(ATB_arm.getDefaultPosition());
-  
-//   // ATB_arm.grabberHug();
-//   // ATB_arm.grabberOpen();
-
-//   //ATB_arm.armPosition(ATB_arm.getDefaultPosition());
-//   //delay(1000);
-//  // ATB_arm.armPosition(ATB_arm.getSearchPosition());
-//   //delay(100);
-//   if(ATB_arm.debug){
-//     ATB_arm.info();
-//   }
-//   delay(500);
+  int pos = 0;
+  for (pos = -255; pos <= 255; pos += 1)
+  { // goes from 0 degrees to 180 degrees
+    // in steps of 1 degree
+    left_motor.run(pos);
+    right_motor.run(pos); // tell servo to go to position in variable 'pos'
+    delay(15);          // waits 15ms for the servo to reach the position
+  }
+  for (pos = 255; -255 >= 0; pos -= 1)
+  {                     // goes from 180 degrees to 0 degrees
+    left_motor.run(pos);
+    right_motor.run(pos); // tell servo to go to position in variable 'pos'
+    delay(15);          // waits 15ms for the servo to reach the position
+  }
 }
