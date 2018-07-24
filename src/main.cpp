@@ -1,3 +1,4 @@
+#include <robot.h>
 #include <HBRIDGE.h>
 #include <armControl.h>
 
@@ -27,27 +28,5 @@ void setup()
 
 void loop()
 {
-  ARMCONTROL::armHorizontal();
-  delay(1000);
-  ARMCONTROL::armPickup();
-  delay(1000);
-  ARMCONTROL::grabberHug();
-  delay(1000);
-  
-  if (ARMCONTROL::switchStatus() == 0){
-    ARMCONTROL::armDropoff();
-    delay(1000);
-    ARMCONTROL::grabberOpen();
-  }
-  else{
-    ARMCONTROL::grabberOpen();
-    delay(1000);
-    ARMCONTROL::armHorizontal();
-  }
-  delay(1000);
-  
-  if(ARMCONTROL::debug){
-    ARMCONTROL::info();
-  }
 }
 

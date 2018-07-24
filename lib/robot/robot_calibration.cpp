@@ -5,7 +5,6 @@
 #include <irsensor.h>
 #include <armControl.h>
 #include <SLIFT.h>
-#include <linefollower.h>
 
 
 //creating robot object

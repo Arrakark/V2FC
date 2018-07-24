@@ -92,7 +92,7 @@ robot::robot()
 {
     //elbow servo is servo 1, grabber servo is servo 2
     //limit switch is the first limit switch
-    arm = new ARMCONTROL(PB8, PB9, PB12, PB1);
+    //arm = new ARMCONTROL(PB8, PB9, PB12, PB1);
     left_motor = new HBRIDGE(PA1, PB0);
     right_motor = new HBRIDGE(PA3, PA7);
     bottom_sensor = new irsensor(0x49, lookup_table_2);

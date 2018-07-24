@@ -5,7 +5,7 @@
 #include <irsensor.h>
 #include <armControl.h>
 #include <SLIFT.h>
-#include <linefollower.h>
+//#include <linefollower.h>
 
 //initializing sensor calibration tables
 
@@ -112,7 +112,7 @@ void setup()
     Serial.begin(9600); // Start Serial
     Serial.println("Sketch begin");
     Wire.begin();
-    admiral_track_bar.arm->init();
+    //ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
 }
 
 void loop()
@@ -124,105 +124,4 @@ void loop()
 
     //clearing the first stage
     //first_stage();
-}
-
-void first_stage_2() //let robot start at the left edge of the incline ramp
-{
-    //go straight to the edge of a cliff first
-    admiral_track_bar.drive_until_cliff();
-
-    //make robot turn 90 degrees to the right
-    admiral_track_bar.sweep_for_ewok(90);
-
-    //grabs ewok
-    //grab_ewok(admiral_track_bar); //***
-
-    //turns 180 degrees to left
-    admiral_track_bar.turn_degrees(-180);
-
-    //continue line following and cross the first gap
-    //line_follow(line_follower);
-}
-
-/*
-    robot follows line until reaching the finishing the top part of the ramp
-    then begins to sense for ewoks during that time
-    picks up the first ewok
-    follows back the black line
-    crosses the first gap
-*/
-
-// *** = tricky parts
-void first_stage()
-{
-    //start with robot line following for 30 seconds for now ***
-    //while (time_passed * 1000 < 30) // ***
-    //    line_follow(line_follower);
-
-    //stop the robot first before looking for ewoks @@
-    admiral_track_bar.left_motor->stop();
-    admiral_track_bar.right_motor->stop();
-
-    //let arm go into search position
-    admiral_track_bar.arm->armSearch();
-
-    //sweeping for ewok detection (might include sweeping for ewok and move towards ewok in grab_ewok in future)
-    admiral_track_bar.sweep_for_ewok(45); //45 degrees for now ***
-    //go to ewok
-    admiral_track_bar.move_toward_ewok();
-    //grab ewok
-    //grab_ewok(admiral_track_bar); //***
-
-    //turn robot back into the black line path (turn 90 degrees to left)
-    admiral_track_bar.turn_degrees(-90); //***
-
-    //continue line following and cross the first gap
-    //line_follow(line_follower);
-
-}
-
-void line_follow(linefollower line_follower)
-{
-    //follow the damn line
-    line_follower.follow_line();
-
-    //tune proportional gain with the potentiometer
-    int reading = analogRead(PA6); //potentiometer pin
-    int p_gain = map(reading, 0, 4096, 0, -200);
-    line_follower.pid_controller.p_gain = p_gain;
-
-    // for (int i = 0; i < 8; i++)
-    // {
-    //   Serial.print(line_follower.main_sensor->distance_readings[i]);
-    //   Serial.print(",");
-    // }
-    // Serial.println();
-}
-
-void grab_ewok() //***assume arm is open and in search position in the beginning
-{
-    //zero when limit switch is pressed
-
-    //repeat motion of grab_ewok until grabber switch is ON **for now ***
-    while (admiral_track_bar.arm->switchStatus()) // ***
-    {
-        //arm going down first
-        admiral_track_bar.arm->armPickup();
-
-        //close the grabber to get the ewok
-        admiral_track_bar.arm->grabberHug();
-
-        //count number of ewoks grabbed or check if the switch is pressed
-        if(!admiral_track_bar.arm->switchStatus()) //***
-            ewok_grabbed ++;
-
-        //bring arm up towards the robot's basket 
-        admiral_track_bar.arm->armDropoff();
-
-        //open grabber
-        admiral_track_bar.arm->grabberOpen();
-
-        //set arm back to default horizontal position
-        admiral_track_bar.arm->armHorizontal();
-    }
 }
