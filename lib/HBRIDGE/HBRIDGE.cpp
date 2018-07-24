@@ -24,7 +24,7 @@ void HBRIDGE::run(int _vector){
         analogWrite(forward_pin,_vector);
     } else {
         analogWrite(forward_pin,0);
-        analogWrite(reverse_pin,_vector);
+        analogWrite(reverse_pin,abs(_vector));
     }
 }
 
