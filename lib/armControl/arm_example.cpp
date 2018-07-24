@@ -17,7 +17,7 @@ void setup(void)
 
 void loop(void)
 {
-  ATB_arm.armPosition(ATB_arm.getDefaultPosition());
+  //ATB_arm.armPosition(ATB_arm.());
   
   // ATB_arm.grabberHug();
   // ATB_arm.grabberOpen();
@@ -26,8 +26,8 @@ void loop(void)
   //delay(1000);
  // ATB_arm.armPosition(ATB_arm.getSearchPosition());
   //delay(100);
-  if(ATB_arm.debug){
-    ATB_arm.info();
-  }
-  delay(500);
+  // if(ATB_arm.debug){
+  //   ATB_arm.info();
+  // }
+  // delay(500);
 }

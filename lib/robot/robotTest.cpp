@@ -12,7 +12,7 @@ SLIFT atb_slift = SLIFT(PA8);
 //Create arm
 ARMCONTROL atb_arm = ARMCONTROL(PB8,PB9,PB12,PB1);
 
-void main (void) {
+void setup() {
     Serial.begin(9600);
 
     //Initialize the tracks, scissor lift, and arm

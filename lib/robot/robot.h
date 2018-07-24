@@ -7,6 +7,7 @@
 #include <irsensor.h>
 #include <IRBEACON.h>
 #include <pid.h>
+#include <HBRIDGE.h>
 
 #define NORMAL_SPEED 150
 #define FULL_CLIFF_DISTANCE 15
@@ -33,8 +34,8 @@ public:
   //different parts of the robot
   //initialized in robot constructor
   ARMCONTROL *arm;
-  HTHING *left_motor;
-  HTHING *right_motor;
+  HBRIDGE *left_motor;
+  HBRIDGE *right_motor;
   irsensor *bottom_sensor;
   irsensor *front_sensor;
   irsensor *left_sensor;
