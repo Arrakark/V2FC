@@ -33,7 +33,7 @@ values = []
 
 #take the input in (simply copy and paste the data without headers and press enter)
 for x in range(0,number_of_rows,1):
-    string.append(raw_input())
+    string.append(input())
 
 #split values and move to int array
 for x in range(0,number_of_rows,1):
