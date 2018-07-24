@@ -45,14 +45,14 @@ void SLIFT::init(void)
 */
 void SLIFT::moveUp(){
     slift_servo.writeMicroseconds(SERVO_UP);
-    while (!atLimit(PIN_UPLIMIT)) {
+    while (!atUpLimit()) {
         delay(5);
     }
     slift_servo.writeMicroseconds(SERVO_STATIC);
 }
 void SLIFT::moveDown(){
     slift_servo.writeMicroseconds(SERVO_DOWN);  
-    while (!atLimit(PIN_DOWNLIMIT)) {
+    while (!atDownLimit()) {
         delay(5);
     }
     slift_servo.writeMicroseconds(SERVO_STATIC); 
