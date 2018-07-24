@@ -74,9 +74,25 @@ void SLIFT::stay(){
 * If an invalid value for _dir is passed, the 
 * method will return false
 */
-bool SLIFT::atLimit(int _pin)
+bool SLIFT::atDownLimit()
 {
-    int limit_value = digitalRead(_pin);
+    int limit_value = digitalRead(PIN_DOWNLIMIT);
+    if (limit_value == LOW)
+        return (true);
+    else
+        return (false);
+}
+bool SLIFT::atUpLimit()
+{
+    int limit_value = digitalRead(PIN_UPLIMIT);
+    if (limit_value == LOW)
+        return (true);
+    else
+        return (false);
+}
+bool SLIFT::atBasketLimit()
+{
+    int limit_value = digitalRead(PIN_BASKETLIMIT);
     if (limit_value == LOW)
         return (true);
     else
