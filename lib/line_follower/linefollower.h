@@ -10,13 +10,13 @@ class linefollower
 {
 public:
 	//consturctor
-	linefollower(track * left_track, track * right_track, irsensor * _main_sensor);
+	linefollower(HTHING * left_track, HTHING * right_track, irsensor * _main_sensor);
 	//member functions
 	void follow_line();
 	bool debug;
 	pid pid_controller;
-	track * left_track;
-	track * right_track;
+	HTHING * left_track;
+	HTHING * right_track;
 	irsensor * main_sensor;
 	int default_speed;
 private:

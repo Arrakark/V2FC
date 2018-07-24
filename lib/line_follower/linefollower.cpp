@@ -1,6 +1,6 @@
 #include "linefollower.h"
 
-linefollower::linefollower(track *_left_track, track *_right_track, irsensor *_main_sensor)
+linefollower::linefollower(HTHING *_left_track, HTHING *_right_track, irsensor *_main_sensor)
 {
 	left_track = _left_track;
 	right_track = _right_track;
@@ -14,6 +14,7 @@ linefollower::linefollower(track *_left_track, track *_right_track, irsensor *_m
 
 void linefollower::follow_line()
 {
+	// Serial.println("8Start line following......");
 	//get and calculate the control error
 	main_sensor->update();
 	//float error = main_sensor->max_position() - 4.5;
@@ -27,8 +28,9 @@ void linefollower::follow_line()
 	{
 		//control the tracks normally (on solid ground)
 		
-		left_track->run(left_speed);
-		right_track->run(right_speed);
+		// Serial.println("No CLIFF!!!");
+		left_track->run((int)left_speed);
+		right_track->run((int)right_speed);
 	}
 	else {
 		//driving off a cliff, continue to go forward

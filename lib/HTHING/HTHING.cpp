@@ -16,10 +16,11 @@ void HTHING::run(int vector)
     {
         vector = 255;
     }
-    if (vector < -255)
+    else if (vector < -255)
     {
         vector = -255;
     }
+
     if (vector > 0)
     {
         digitalWrite(direction_pin, HIGH);
