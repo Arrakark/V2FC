@@ -1,7 +1,7 @@
 //This file is intended for testing the scissor lift mechanism
 //The scissor lift class will be in different files
 #include <Arduino.h>
-#include<Servo.h>
+#include <Servo.h>
 
 #define DEBUG true
 #define SERVOPIN PA8

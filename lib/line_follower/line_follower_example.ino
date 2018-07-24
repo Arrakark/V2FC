@@ -33,7 +33,7 @@ track left_track = track(&left_motor); //track will contain functions in the fut
 track right_track = track(&right_motor);
 
 //create line follower
-linefollower line_follower = linefollower(&left_track, &right_track, &line_sensor);
+linefollower line_follower = linefollower(&left_motor, &right_motor, &line_sensor);
 
 void setup()
 {

@@ -8,7 +8,6 @@
 #define COL 9
 #define MAX_VALUE 30
 #define MIN_VALUE 0
-#define SENSOR_COUNT 8
 
 class irsensor
 {
@@ -16,19 +15,21 @@ class irsensor
     irsensor();
     irsensor(unsigned char, int lookup_table[ROW][COL]);
     void update();
-    float max_distance();
-    float min_distance();
-    float weighted_mean();
-    float inverse_weighted_mean();
-    float mean();
-    int max_position();
-    int min_position();
-    int adc_readings[SENSOR_COUNT];
-    float distance_readings[SENSOR_COUNT];
+    virtual float max_distance();
+    virtual float min_distance();
+    virtual float weighted_mean();
+    virtual float inverse_weighted_mean();
+    virtual float mean();
+    virtual int max_position();
+    virtual int min_position();
+    int adc_readings[8];
+    float distance_readings[8];
+    
   private:
     ADS7828 adc;
     void get_distance();
     int (*lookup_table)[COL];
+    int SENSOR_COUNT;
 };
 
 #endif

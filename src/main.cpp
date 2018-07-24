@@ -1,20 +1,18 @@
-#include "armControl.h"
+#include <HBRIDGE.h>
 
-#define ARM_SERVO PB8   
-#define ARM_POT PB1
-#define GRABBER_SERVO PB9
-#define GRABBER_SWITCH PB12 
+//create tracks
+HBRIDGE left_motor = HBRIDGE(PB0, PA1);
+HBRIDGE right_motor = HBRIDGE(PA7,PA3);
 
-ARMCONTROL ATB_arm = ARMCONTROL(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
+//The decleration of the HBRIDGE objects here has the correct pin layout
+//for each motor
 
-void setup(void)
+void setup()
 {
-  Serial.begin(9600);
-  ATB_arm.init();
-  ATB_arm.debug = true;
-  delay(1000);
+  Serial.begin(9600); // Start Serial
+  left_motor.init();
+  right_motor.init();
 }
-
 
 void loop(void)
 {
@@ -41,5 +39,4 @@ void loop(void)
   if(ATB_arm.debug){
     ATB_arm.info();
   }
-  delay(500);
 }
