@@ -55,60 +55,49 @@
 
 //   // delay(50);
 
-//picking up ewoks
-#include <Wire.h>
-#include <irsensor.h>
+//#include "armControl.h"
+#include <SLIFT.h>
 
-int lookup_table_1[20][9] = {{1, 131, 125, 134, 132, 129, 133, 135, 140},
-                             {3, 140, 134, 145, 143, 140, 143, 149, 150},
-                             {5, 150, 145, 155, 151, 147, 152, 157, 159},
-                             {7, 160, 156, 163, 159, 156, 160, 165, 168},
-                             {10, 174, 169, 176, 170, 166, 171, 176, 179},
-                             {12, 182, 177, 183, 176, 172, 177, 184, 187},
-                             {15, 196, 188, 196, 188, 182, 188, 195, 198},
-                             {17, 207, 195, 205, 196, 189, 195, 204, 206},
-                             {20, 227, 207, 222, 210, 200, 206, 218, 219},
-                             {23, 373, 229, 277, 243, 220, 225, 255, 251},
-                             {25, 417, 237, 337, 268, 229, 235, 281, 267},
-                             {28, 629, 305, 613, 527, 291, 301, 551, 489},
-                             {30, 768, 429, 764, 703, 445, 459, 745, 685},
-                             {33, 856, 540, 900, 860, 601, 617, 883, 818},
-                             {36, 960, 659, 1038, 1014, 757, 779, 1038, 971},
-                             {39, 1029, 736, 1131, 1122, 866, 891, 1142, 1077},
-                             {42, 1081, 785, 1198, 1202, 947, 976, 1223, 1155},
-                             {44, 1097, 809, 1227, 1236, 981, 1015, 1255, 1188},
-                             {46, 1092, 810, 1233, 1247, 991, 1026, 1258, 1192},
-                             {50, 1156, 889, 1314, 1337, 1081, 1123, 1351, 1291}};
+// #define ARM_SERVO PB8   
+// #define ARM_POT PB1
+// #define GRABBER_SERVO PB9
+// #define GRABBER_SWITCH PB12 
 
-irsensor ewok_sensor = irsensor(0x48, lookup_table_1);
+#define SLIFT_SERVO PA8
 
-void setup()
+//ARMCONTROL ATB_arm = ARMCONTROL(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
+SLIFT ATB_slift = SLIFT(SLIFT_SERVO);
+
+void setup(void)
 {
-  Serial.begin(9600); // Start Serial
-  Serial.println("Sketch begin");
-  Wire.begin();
+  Serial.begin(9600);
+  //ATB_arm.init();
+  //ATB_arm.debug = true;
+  delay(6000);
+  Serial.println("Going to init");
+  ATB_slift.init();
+  Serial.println("Initialized");
+  delay(100);
+  Serial.println("Goin Up");
+  ATB_slift.moveUp();
+  Serial.println("wut");
+  ATB_slift.moveDown();
+  //ATB_slift.slift_servo.writeMicroseconds(1405);
 }
 
-void loop()
+void loop(void)
 {
-  ewok_sensor.update();
-  for (int i = 0; i < 8; i++)
-  {
-    Serial.print(ewok_sensor.distance_readings[i]);
-    Serial.print(",");
-  }
-  Serial.println();
-  Serial.print("Inverse weighted mean:");
-  Serial.print(ewok_sensor.inverse_weighted_mean());
-  Serial.println();
-  Serial.print("Mean:");
-  Serial.print(ewok_sensor.mean());
-  Serial.println();
-  Serial.print("Weighted Mean:");
-  Serial.print(ewok_sensor.weighted_mean());
-  Serial.println();
-  delay(1000); // Wait for 1 second
+//   ATB_arm.armPosition(ATB_arm.getDefaultPosition());
+  
+//   // ATB_arm.grabberHug();
+//   // ATB_arm.grabberOpen();
+
+//   //ATB_arm.armPosition(ATB_arm.getDefaultPosition());
+//   //delay(1000);
+//  // ATB_arm.armPosition(ATB_arm.getSearchPosition());
+//   //delay(100);
+//   if(ATB_arm.debug){
+//     ATB_arm.info();
+//   }
+//   delay(500);
 }
-
-
-// void ewok_pickup(irsensor ewok_sensor, Arm arm)

@@ -1,6 +1,6 @@
 #include "linefollower.h"
 
-linefollower::linefollower(track *_left_track, track *_right_track, irsensor *_main_sensor)
+linefollower::linefollower(HTHING *_left_track, HTHING *_right_track, irsensor *_main_sensor)
 {
 	left_track = _left_track;
 	right_track = _right_track;
