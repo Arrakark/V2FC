@@ -21,6 +21,14 @@ class robot
 public:
   //methods and constructor
   robot();
+  void drive_until_cliff();
+  void drive_until_black_line();
+  void turn_degrees(float degrees);
+  void move_meters(float meters);
+  void sweep_for_ewok(float angle);
+  void move_toward_ewok();
+  void calibrate_meters_per_second(int seconds);
+  void calibrate_degrees_per_second(int seconds);
 
   //different parts of the robot
   //initialized in robot constructor
@@ -32,5 +40,5 @@ public:
   irsensor *left_sensor;
   irsensor *right_sensor;
   SLIFT *lift;
-  pid * pid_controller;
+  pid *pid_controller;
 };
