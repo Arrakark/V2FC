@@ -17,6 +17,10 @@ SLIFT::SLIFT(int _pin)
     servo_pin = _pin;
 }
 
+void SLIFT::disconnect(){
+    slift_servo.detach();
+}
+
 
 void SLIFT::init(void)
 {

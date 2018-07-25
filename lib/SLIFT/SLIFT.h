@@ -16,6 +16,7 @@ class SLIFT
         bool atUpLimit();
         bool atBasketLimit();
         Servo slift_servo;
+        void disconnect();
     private:
         int dir_array[3];
         int limit_array[3];

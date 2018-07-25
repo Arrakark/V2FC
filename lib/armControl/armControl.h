@@ -19,6 +19,7 @@ class ARMCONTROL
     //ARMCONTROL(int arm_servo_pin, int grabber_servo_pin, int grabber_switch, int arm_pot_pin);
 
     static void init(int, int, int, int);
+    static void disconnect();
     /**
      * Base servo moves until potentiometer reads specified value
      **/

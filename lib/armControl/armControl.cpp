@@ -96,6 +96,11 @@ void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabbe
     grabber_servo.attach(grabber_servo_pin);
     grabber_servo.writeMicroseconds(GRABBER_OPEN);
 }
+
+void ARMCONTROL::disconnect(){
+    arm_servo.detach();
+    grabber_servo.detach();
+}
 int ARMCONTROL::getEncoderVal()
 {
     return analogRead(ARM_POT);

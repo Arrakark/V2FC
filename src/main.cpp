@@ -156,15 +156,15 @@ void setup()
 {
     Serial.begin(230400, SERIAL_8E1); // Start Serial    Wire.begin();
     //Initialize the tracks, scissor lift, and arm
-    atb_slift.init();
     //ARMCONTROL::init(PB8, PB9, PB12, PB1);
+    atb_slift.init();
     left_motor.init();
     right_motor.init();
 }
 
 void loop(void)
 {
-    atb_slift.slift_servo.writeMicroseconds(map(analogRead(PA6),0,4096,1000,2000));
-    Serial.println(map(analogRead(PA6),0,4096,1000,2000));
-   delay(100);
+    atb_slift.moveDown();
+    atb_slift.disconnect();
+    delay(1000);
 }
