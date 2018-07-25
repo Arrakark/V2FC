@@ -2,7 +2,7 @@
 
 #define SERVO_DOWN 1000
 #define SERVO_UP 2000
-#define SERVO_STATIC 1405
+#define SERVO_STATIC 2000
 
 #define PIN_DOWNLIMIT PB13
 #define PIN_UPLIMIT PB14
