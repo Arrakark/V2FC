@@ -6,6 +6,7 @@
 #include "Servo.h"
 #include "Time.h"
 #include <HardwareTimer.h>
+#include <pid.h>
 
 class ARMCONTROL
 {
@@ -55,6 +56,8 @@ class ARMCONTROL
 
     static int grabber_open;
     static int grabber_close;
-};
+
+    static pid * pid_controller;
+  };
 
 #endif

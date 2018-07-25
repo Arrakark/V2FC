@@ -14,7 +14,7 @@ Control class for arm motion. The arm has 3 positions:
 #define GRABBER_SERVO PB9
 #define GRABBER_SWITCH PB12
 
-#define DEADBAND 10
+#define DEADBAND 100
 #define STOP 1473
 #define GRABBER_OPEN 160
 #define GRABBER_CLOSE 5
@@ -38,13 +38,14 @@ int ARMCONTROL::arm_search = 2800;
 int ARMCONTROL::arm_horizontal = 2600;
 int ARMCONTROL::arm_vertical = 1540;
 int ARMCONTROL::arm_dropoff = 1320;
-int ARMCONTROL::position = 1320;
+int ARMCONTROL::position = 2600;
 bool ARMCONTROL::debug = false;
 
 int ARMCONTROL::arm_pot_pin = -1;
 int ARMCONTROL::grabber_switch = -1;
 int ARMCONTROL::grabber_servo_pin = -1;
 int ARMCONTROL::arm_servo_pin = -1;
+pid * ARMCONTROL::pid_controller = new pid();
 
 void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabber_switch, int p_arm_pot_pin)
 {
@@ -63,11 +64,6 @@ void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabbe
      * search:2800
      * down: pickup (2940)
      */
-    // ARMCONTROL::arm_pickup = 2940;
-    // ARMCONTROL::arm_search = 2800;
-    // ARMCONTROL::arm_horizontal = 2600;
-    // ARMCONTROL::arm_vertical = 1540;
-    // ARMCONTROL::arm_dropoff = 1320;
 
     position = arm_horizontal;
 
@@ -75,9 +71,11 @@ void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabbe
     pinMode(arm_pot_pin, INPUT);
 
     arm_servo.attach(arm_servo_pin);
+    arm_servo.writeMicroseconds(STOP);
     grabber_servo.attach(grabber_servo_pin);
+    grabber_servo.writeMicroseconds(GRABBER_OPEN);
 
-    HardwareTimer timer(4);
+    HardwareTimer timer(3);
     // Pause the timer while we're configuring it
     timer.pause();
 
@@ -94,6 +92,9 @@ void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabbe
 
     // Start the timer counting
     timer.resume();
+
+    pid_controller->p_gain = 0.6;
+    pid_controller->p_limit = 500;
 }
 int ARMCONTROL::getEncoderVal()
 {
@@ -105,18 +106,8 @@ int ARMCONTROL::getEncoderVal()
 void ARMCONTROL::update()
 {
     int encoder_val = getEncoderVal();
-    //encoder value is outside range
-    if (encoder_val > position + DEADBAND)
-    {
-        arm_servo.writeMicroseconds(RAISE);
-    }
-    else if (encoder_val < position - DEADBAND)
-    {
-        arm_servo.writeMicroseconds(LOWER);
-    }
-    else {
-        stop();
-    }
+    float value = pid_controller->output(encoder_val - position);
+    arm_servo.writeMicroseconds(STOP + value);
 }
 
 void ARMCONTROL::stop()
@@ -153,6 +144,7 @@ bool ARMCONTROL::switchStatus()
 
 void ARMCONTROL::info()
 {
+    Serial.println("position: " + String(ARMCONTROL::position));
     Serial.println("switch: " + String(digitalRead(GRABBER_SWITCH)));
     Serial.println("encoder: " + String(getEncoderVal()));
 }

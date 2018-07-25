@@ -9,10 +9,12 @@ void setup(void)
 {
   Serial.begin(230400, SERIAL_8E1);
   ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
-  ARMCONTROL::armVertical();
 }
 
 void loop(void)
 {
-    ARMCONTROL::info();
+  delay(2000);
+  ARMCONTROL::armVertical();
+  delay(2000);
+  ARMCONTROL::armHorizontal();
 }
