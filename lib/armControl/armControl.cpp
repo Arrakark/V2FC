@@ -14,10 +14,10 @@ Control class for arm motion. The arm has 3 positions:
 #define GRABBER_SERVO PB9
 #define GRABBER_SWITCH PB12
 
-#define DEADBAND 10
+#define DEADBAND 100
 #define STOP 1473
 #define GRABBER_OPEN 160
-#define GRABBER_CLOSE 5
+#define GRABBER_CLOSE 30
 #define UP_LIMIT 1300
 #define DOWN_LIMIT 2950
 
@@ -32,14 +32,27 @@ Control class for arm motion. The arm has 3 positions:
 
 Servo arm_servo;
 Servo grabber_servo;
-//constructor
-ARMCONTROL::ARMCONTROL(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabber_switch, int p_arm_pot_pin)
+
+int ARMCONTROL::arm_pickup = 2940;
+int ARMCONTROL::arm_search = 2800;
+int ARMCONTROL::arm_horizontal = 2600;
+int ARMCONTROL::arm_vertical = 1540;
+int ARMCONTROL::arm_dropoff = 1320;
+int ARMCONTROL::position = 2600;
+bool ARMCONTROL::debug = false;
+
+int ARMCONTROL::arm_pot_pin = -1;
+int ARMCONTROL::grabber_switch = -1;
+int ARMCONTROL::grabber_servo_pin = -1;
+int ARMCONTROL::arm_servo_pin = -1;
+pid * ARMCONTROL::pid_controller = new pid();
+
+void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabber_switch, int p_arm_pot_pin)
 {
     arm_servo_pin = p_arm_servo_pin;
     grabber_servo_pin = p_grabber_servo_pin;
     grabber_switch = p_grabber_switch;
     arm_pot_pin = p_arm_pot_pin;
-
 
     /**
      * Calibrated values via encoder potentiometer:
@@ -51,22 +64,37 @@ ARMCONTROL::ARMCONTROL(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabb
      * search:2800
      * down: pickup (2940)
      */
-    arm_pickup = 2940;
-    arm_search = 2800;
-    arm_horizontal = 2600;
-    arm_vertical = 1540;
-    arm_dropoff = 1320;
-}
 
-void ARMCONTROL::init()
-{
+    position = arm_horizontal;
+
     pinMode(grabber_switch, INPUT_PULLUP);
     pinMode(arm_pot_pin, INPUT);
 
     arm_servo.attach(arm_servo_pin);
     arm_servo.writeMicroseconds(STOP);
     grabber_servo.attach(grabber_servo_pin);
-    grabber_servo.write(GRABBER_OPEN);
+    grabber_servo.writeMicroseconds(GRABBER_OPEN);
+
+    HardwareTimer timer(2);
+    // Pause the timer while we're configuring it
+    timer.pause();
+
+    // Set up period
+    timer.setPeriod(100); // in microseconds
+
+    // Set up an interrupt on channel 1
+    timer.setChannel1Mode(TIMER_OUTPUT_COMPARE);
+    timer.setCompare(TIMER_CH1, 1); // Interrupt 1 count after each update
+    timer.attachCompare1Interrupt(ARMCONTROL::update);
+
+    // Refresh the timer's count, prescale, and overflow
+    timer.refresh();
+
+    // Start the timer counting
+    timer.resume();
+
+    pid_controller->p_gain = 0.6;
+    pid_controller->p_limit = 500;
 }
 int ARMCONTROL::getEncoderVal()
 {
@@ -75,23 +103,11 @@ int ARMCONTROL::getEncoderVal()
 /**
  * Move arm to the desired position. There are three positions: default (horizontal), searching (slightly down) and up.
  **/
-void ARMCONTROL::armPosition(int position)
+void ARMCONTROL::update()
 {
     int encoder_val = getEncoderVal();
-    //encoder value is outside range
-    while ((encoder_val < position - DEADBAND) || (encoder_val > position + DEADBAND))
-    {
-        if (encoder_val > position + DEADBAND)
-        {
-            arm_servo.writeMicroseconds(RAISE);
-        }
-        else if (encoder_val < position - DEADBAND)
-        {
-            arm_servo.writeMicroseconds(LOWER);
-        }
-        encoder_val = getEncoderVal();
-    }
-    stop();
+    float value = pid_controller->output(encoder_val - position);
+    arm_servo.writeMicroseconds(STOP + value);
 }
 
 void ARMCONTROL::stop()
@@ -120,37 +136,40 @@ void ARMCONTROL::grabberOpen()
 bool ARMCONTROL::switchStatus()
 {
     int reading = digitalRead(GRABBER_SWITCH);
-    if (reading == 0) return (true);
-    else return (false);
+    if (reading == 0)
+        return (true);
+    else
+        return (false);
 }
 
 void ARMCONTROL::info()
 {
+    Serial.println("position: " + String(ARMCONTROL::position));
     Serial.println("switch: " + String(digitalRead(GRABBER_SWITCH)));
     Serial.println("encoder: " + String(getEncoderVal()));
 }
 
 void ARMCONTROL::armDropoff()
 {
-   armPosition(arm_dropoff);
+    position = arm_dropoff;
 }
 
 void ARMCONTROL::armVertical()
 {
-    armPosition(arm_vertical);
+    position = arm_vertical;
 }
 
 void ARMCONTROL::armSearch()
 {
-   armPosition(arm_search);
+    position = arm_search;
 }
 
 void ARMCONTROL::armHorizontal()
 {
-    armPosition(arm_horizontal);
+    position = arm_horizontal;
 }
 
 void ARMCONTROL::armPickup()
 {
-    armPosition(arm_pickup);
+    position = arm_pickup;
 }
