@@ -70,11 +70,6 @@ void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabbe
     pinMode(grabber_switch, INPUT_PULLUP);
     pinMode(arm_pot_pin, INPUT);
 
-    arm_servo.attach(arm_servo_pin);
-    arm_servo.writeMicroseconds(STOP);
-    grabber_servo.attach(grabber_servo_pin);
-    grabber_servo.writeMicroseconds(GRABBER_OPEN);
-
     HardwareTimer timer(2);
     // Pause the timer while we're configuring it
     timer.pause();
@@ -84,7 +79,7 @@ void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabbe
 
     // Set up an interrupt on channel 1
     timer.setChannel1Mode(TIMER_OUTPUT_COMPARE);
-    timer.setCompare(TIMER_CH1, 1); // Interrupt 1 count after each update
+    timer.setCompare(TIMER_CH2, 1); // Interrupt 1 count after each update
     timer.attachCompare1Interrupt(ARMCONTROL::update);
 
     // Refresh the timer's count, prescale, and overflow
@@ -95,6 +90,11 @@ void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabbe
 
     pid_controller->p_gain = 0.6;
     pid_controller->p_limit = 500;
+    
+    arm_servo.attach(arm_servo_pin);
+    arm_servo.writeMicroseconds(STOP);
+    grabber_servo.attach(grabber_servo_pin);
+    grabber_servo.writeMicroseconds(GRABBER_OPEN);
 }
 int ARMCONTROL::getEncoderVal()
 {
