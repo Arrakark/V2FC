@@ -107,6 +107,8 @@ void robot::init()
     right_motor->init();
     Wire.begin();
     ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
+    ARMCONTROL::armSearch();
+    ARMCONTROL::grabberOpen();
 }
 
 //Does as name implies, drives forward until a cliff is detected
