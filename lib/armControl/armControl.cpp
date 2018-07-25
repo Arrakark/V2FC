@@ -17,7 +17,7 @@ Control class for arm motion. The arm has 3 positions:
 #define DEADBAND 100
 #define STOP 1473
 #define GRABBER_OPEN 160
-#define GRABBER_CLOSE 5
+#define GRABBER_CLOSE 30
 #define UP_LIMIT 1300
 #define DOWN_LIMIT 2950
 
