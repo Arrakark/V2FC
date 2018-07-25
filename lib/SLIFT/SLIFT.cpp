@@ -2,7 +2,7 @@
 
 #define SERVO_DOWN 1000
 #define SERVO_UP 2000
-#define SERVO_STATIC 1405
+#define SERVO_STATIC 1865
 
 #define PIN_DOWNLIMIT PB13
 #define PIN_UPLIMIT PB14
@@ -16,6 +16,7 @@ SLIFT::SLIFT(int _pin)
 {
     servo_pin = _pin;
 }
+
 
 void SLIFT::init(void)
 {

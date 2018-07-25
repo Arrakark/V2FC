@@ -5,7 +5,7 @@ in the order they are shown:
         -horizontal
         -search position
         -ewok position
-        -ewok grab and switch satisfaction (press manually to continue program)
+        -ewok grab and swi tch satisfaction (press manually to continue program)
         -arm vertical
         -arm to basket position
         -ewok release
