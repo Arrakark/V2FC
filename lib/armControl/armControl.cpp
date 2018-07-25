@@ -75,7 +75,7 @@ void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabbe
     grabber_servo.attach(grabber_servo_pin);
     grabber_servo.writeMicroseconds(GRABBER_OPEN);
 
-    HardwareTimer timer(3);
+    HardwareTimer timer(2);
     // Pause the timer while we're configuring it
     timer.pause();
 

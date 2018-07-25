@@ -118,9 +118,9 @@ void setup()
 void loop()
 {
     //first set arm in default horizontal  (useful for going up the ramp safely as well as edge detection)
-    admiral_track_bar.arm->armHorizontal();
+    ARMCONTROL::armHorizontal();
     //open grabber arm
-    admiral_track_bar.arm->grabberOpen();
+    ARMCONTROL::grabberOpen();
 
     //clearing the first stage
     //first_stage();

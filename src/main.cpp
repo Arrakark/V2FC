@@ -1,20 +1,36 @@
-#include "armControl.h"
+#include <robot.h>
 
-#define ARM_SERVO PB8   
-#define ARM_POT PB1
-#define GRABBER_SERVO PB9
-#define GRABBER_SWITCH PB12 
+robot atb = robot();
 
 void setup(void)
 {
-  Serial.begin(230400, SERIAL_8E1);
-  ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
+    Serial.begin(230400, SERIAL_8E1);
+    atb.init();
+    ARMCONTROL::armSearch();
+    ARMCONTROL::grabberOpen();
+    delay(1000);
+    //atb.drive_until_black_line();
+    //atb.calibrate_degrees_per_second(5);
+    //atb.calibrate_meters_per_second(5);
+    //atb.move_meters(2);
+    //delay(1000);
+    atb.follow_right_edge_until_ewok();
+    //atb.turn_degrees(180);
+    //delay(1000);
+    //atb.move_meters(2);
+    //atb.drive_until_cliff();
 }
 
 void loop(void)
 {
-  delay(2000);
-  ARMCONTROL::armVertical();
-  delay(2000);
-  ARMCONTROL::armHorizontal();
+    atb.front_sensor->update();
+    for (int i = 0; i < 8; i++)
+    {
+        Serial.print(atb.front_sensor->distance_readings[i]);
+        Serial.print(" ");
+    }
+    Serial.print("   ");
+    Serial.print(atb.front_sensor->inverse_weighted_mean());
+    Serial.println();
+    delay(500);
 }

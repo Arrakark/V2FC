@@ -9,15 +9,23 @@
 #include <pid.h>
 #include <HBRIDGE.h>
 
-#define NORMAL_SPEED 230
-#define TURN_SPEED 255
-#define FULL_CLIFF_DISTANCE 20
+
+#define ARM_SERVO PB8   
+#define ARM_POT PB1
+#define GRABBER_SERVO PB9
+#define GRABBER_SWITCH PB12 
+
+//#define NORMAL_SPEED 230
+#define NORMAL_SPEED 130
+#define EWOK_SPEED 20
+#define TURN_SPEED 200
+#define FULL_CLIFF_DISTANCE 17
 #define GAP_CLIFF_DISTANCE 10
-#define METERS_PER_SECOND 0.656
-#define DEGREES_PER_SECOND 140.0
-#define CLOSEST_DISTANCE_TO_EWOK 4.0
-#define LINE_DISTANCE 5.0
-#define EWOK_SCANNING_INTERVAL 100 //interval in ms to scan for the ewok
+#define METERS_PER_SECOND 0.799
+#define DEGREES_PER_SECOND 180
+#define CLOSEST_DISTANCE_TO_EWOK 10
+#define LINE_DISTANCE 6.0
+#define EWOK_LONG_DISTANCE_DETECTION 25 //interval in ms to scan for the ewok
 
 class robot
 {
@@ -33,10 +41,10 @@ public:
   void move_toward_ewok();
   void calibrate_meters_per_second(int seconds);
   void calibrate_degrees_per_second(int seconds);
+  void follow_right_edge_until_ewok();
 
   //different parts of the robot
   //initialized in robot constructor
-  ARMCONTROL *arm;
   HBRIDGE *left_motor;
   HBRIDGE *right_motor;
   irsensor *bottom_sensor;

@@ -92,13 +92,12 @@ robot::robot()
 {
     //elbow servo is servo 1, grabber servo is servo 2
     //limit switch is the first limit switch
-    //arm = new ARMCONTROL(PB8, PB9, PB12, PB1);
     left_motor = new HBRIDGE(PA1, PB0);
     right_motor = new HBRIDGE(PA3, PA7);
     bottom_sensor = new irsensor(0x49, lookup_table_2);
-    //front_sensor = new irsensor(0x48, lookup_table_1);
-    //left_sensor = new irsensor(0x4A, lookup_table_3);
-    //right_sensor = new irsensor(0x4B, lookup_table_4);
+    front_sensor = new irsensor(0x48, lookup_table_1);
+    left_sensor = new irsensor(0x4A, lookup_table_3);
+    right_sensor = new irsensor(0x4B, lookup_table_4);
     lift = new SLIFT(PA8);
 }
 
@@ -106,7 +105,8 @@ void robot::init()
 {
     left_motor->init();
     right_motor->init();
-    //arm->init();
+    Wire.begin();
+    ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
 }
 
 //Does as name implies, drives forward until a cliff is detected
@@ -126,10 +126,12 @@ void robot::drive_until_cliff()
 //Does as name implies, drives forward until a line is detected
 void robot::drive_until_black_line()
 {
-    while (bottom_sensor->min_distance() > LINE_DISTANCE)
+    bottom_sensor->update();
+    while (bottom_sensor->max_distance() < LINE_DISTANCE)
     {
         left_motor->run(NORMAL_SPEED);
         right_motor->run(NORMAL_SPEED);
+        bottom_sensor->update();
     }
     left_motor->stop();
     right_motor->stop();
@@ -189,56 +191,28 @@ void robot::sweep_for_ewok(float angle)
 {
     unsigned long start_time = millis();
     unsigned long scan_duration = (abs(angle) / DEGREES_PER_SECOND) * 1000;
-    //scanning paramters
-    int scan_number = (int)(scan_duration / EWOK_SCANNING_INTERVAL);
-    float scan_distances[scan_number] = {100};
-    int scan_count = 0;
-    //specifies the time-boundary of the sweep
-    while (scan_count < scan_number)
+
+    while (millis() < start_time + scan_duration)
     {
-        //turns in specified direction
         if (angle > 0)
         {
-
-            left_motor->run(NORMAL_SPEED);
-            right_motor->run(-NORMAL_SPEED);
+            left_motor->run(TURN_SPEED);
+            right_motor->run(-TURN_SPEED);
         }
         else
         {
-            left_motor->run(-NORMAL_SPEED);
-            right_motor->run(NORMAL_SPEED);
+            left_motor->run(-TURN_SPEED);
+            right_motor->run(TURN_SPEED);
         }
-        scan_distances[scan_count] = front_sensor->min_distance();
-        scan_count++;
-        delay(EWOK_SCANNING_INTERVAL);
+        front_sensor->update();
+        if (front_sensor->mean() < EWOK_LONG_DISTANCE_DETECTION)
+        {
+            break;
+        }
+        Serial.println(front_sensor->min_distance());
     }
-    //got scan results, stop the motors
     left_motor->stop();
     right_motor->stop();
-
-    //find minimum in scan array
-    float min_value = 100;
-    int min_position = 0;
-    for (int x = 0; x < scan_number; x++)
-    {
-        if (scan_distances[x] < min_value)
-        {
-            min_value = scan_distances[x];
-            min_position = x;
-        }
-    }
-
-    //turn back to the ewok
-    float angle_back_to_ewok = (scan_number - min_position) * EWOK_SCANNING_INTERVAL * 1000 * DEGREES_PER_SECOND;
-    if (angle > 0)
-    {
-        //initially scanned to the right, so turn back to the left
-        turn_degrees(-angle_back_to_ewok);
-    }
-    else
-    {
-        turn_degrees(angle_back_to_ewok);
-    }
 }
 
 /*
@@ -246,10 +220,12 @@ void robot::sweep_for_ewok(float angle)
  */
 void robot::move_toward_ewok()
 {
-    while (front_sensor->min_distance() < CLOSEST_DISTANCE_TO_EWOK)
+    front_sensor->update();
+    while (front_sensor->min_distance() > CLOSEST_DISTANCE_TO_EWOK)
     {
-        left_motor->run(NORMAL_SPEED);
-        right_motor->run(NORMAL_SPEED);
+        left_motor->run(EWOK_SPEED);
+        right_motor->run(EWOK_SPEED);
+        front_sensor->update();
     }
     left_motor->stop();
     right_motor->stop();
@@ -281,6 +257,29 @@ void robot::calibrate_degrees_per_second(int seconds)
     left_motor->run(TURN_SPEED);
     right_motor->run(-TURN_SPEED);
     delay(seconds * 1000);
+    left_motor->stop();
+    right_motor->stop();
+}
+
+/*
+ *  Follows the right edge using the right edge sensor until a minimum value is reached on the front sensor
+ * 
+ *  Used for getting and grabbing the first ewok
+ */
+void robot::follow_right_edge_until_ewok()
+{
+    pid edge_follower = pid();
+    edge_follower.p_gain = map(analogRead(PA6), 0, 4096, 0, 500);
+    edge_follower.p_limit = 50;
+    do
+    {
+        front_sensor->update();
+        right_sensor->update();
+        float error = right_sensor->inverse_weighted_mean() - 5.3;
+        float control = edge_follower.output(error);
+        right_motor->run(EWOK_SPEED + control);
+        left_motor->run(EWOK_SPEED - control);
+    } while (front_sensor->min_distance() > CLOSEST_DISTANCE_TO_EWOK);
     left_motor->stop();
     right_motor->stop();
 }
