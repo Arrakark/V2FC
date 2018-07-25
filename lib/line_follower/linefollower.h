@@ -1,6 +1,6 @@
 #pragma once
 #include <Arduino.h>
-#include <track.h>
+#include <HBRIDGE.h>
 #include <pid.h>
 #include <irsensor.h>
 
@@ -10,13 +10,13 @@ class linefollower
 {
 public:
 	//consturctor
-	linefollower(HTHING * left_track, HTHING * right_track, irsensor * _main_sensor);
+	linefollower(HBRIDGE* left_track, HBRIDGE* right_track, irsensor * _main_sensor);
 	//member functions
 	void follow_line();
 	bool debug;
 	pid pid_controller;
-	HTHING * left_track;
-	HTHING * right_track;
+	HBRIDGE* left_track;
+	HBRIDGE* right_track;
 	irsensor * main_sensor;
 	int default_speed;
 private:

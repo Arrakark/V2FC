@@ -8,6 +8,7 @@
 #include <IRBEACON.h>
 #include <pid.h>
 #include <HBRIDGE.h>
+#include <linefollower.h>
 
 
 #define ARM_SERVO PB8   
@@ -17,6 +18,7 @@
 
 //#define NORMAL_SPEED 230
 #define NORMAL_SPEED 80
+#define SECOND_GAP_SPEED 230
 #define EWOK_SPEED 20
 #define TURN_SPEED 200
 #define FULL_CLIFF_DISTANCE 17
@@ -53,4 +55,5 @@ public:
   irsensor *right_sensor;
   SLIFT *lift;
   pid *pid_controller;
+  linefollower *line_follower;
 };

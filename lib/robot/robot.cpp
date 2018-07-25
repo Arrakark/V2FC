@@ -99,6 +99,7 @@ robot::robot()
     left_sensor = new irsensor(0x4A, lookup_table_3);
     right_sensor = new irsensor(0x4B, lookup_table_4);
     lift = new SLIFT(PA8);
+    line_follower = new linefollower(left_motor, right_motor, bottom_sensor);
 }
 
 void robot::init()
@@ -274,6 +275,7 @@ void robot::follow_right_edge_until_ewok()
     pid edge_follower = pid();
     edge_follower.p_gain = 20;
     edge_follower.p_limit = 50;
+    
     do
     {
         front_sensor->update();
@@ -284,6 +286,7 @@ void robot::follow_right_edge_until_ewok()
         left_motor->run(EWOK_SPEED - (int)control);
         delay(20);
     } while (front_sensor->min_distance() > CLOSEST_DISTANCE_TO_EWOK);
+
     left_motor->stop();
     right_motor->stop();
 }
