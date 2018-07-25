@@ -34,10 +34,10 @@ Servo arm_servo;
 Servo grabber_servo;
 
 int ARMCONTROL::arm_pickup = 2940;
-int ARMCONTROL::arm_search = 2800;
+int ARMCONTROL::arm_search = 2850;
 int ARMCONTROL::arm_horizontal = 2600;
 int ARMCONTROL::arm_vertical = 1540;
-int ARMCONTROL::arm_dropoff = 1320;
+int ARMCONTROL::arm_dropoff = 1380;
 int ARMCONTROL::position = 2600;
 bool ARMCONTROL::debug = false;
 
