@@ -99,7 +99,7 @@ robot::robot()
     left_sensor = new irsensor(0x4A, lookup_table_3);
     right_sensor = new irsensor(0x4B, lookup_table_4);
     lift = new SLIFT(PA8);
-    line_follower = new linefollower(left_motor, right_motor, bottom_sensor);
+    //line_follower = new linefollower(left_motor, right_motor, bottom_sensor);
 }
 
 void robot::init()
@@ -107,9 +107,10 @@ void robot::init()
     left_motor->init();
     right_motor->init();
     Wire.begin();
-    ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
-    ARMCONTROL::armSearch();
-    ARMCONTROL::grabberOpen();
+    //ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
+    //ARMCONTROL::armSearch();
+    //ARMCONTROL::grabberOpen();
+    delay(500);
 }
 
 //Does as name implies, drives forward until a cliff is detected
@@ -272,7 +273,7 @@ void robot::calibrate_degrees_per_second(int seconds)
 void robot::follow_right_edge_until_ewok()
 {
     pid edge_follower = pid();
-    edge_follower.p_gain = map(analogRead(PA6), 0, 4096, 0, 500);
+    edge_follower.p_gain = 20;
     edge_follower.p_limit = 50;
     
     do
@@ -281,8 +282,11 @@ void robot::follow_right_edge_until_ewok()
         right_sensor->update();
         float error = right_sensor->inverse_weighted_mean() - 5.3;
         float control = edge_follower.output(error);
-        right_motor->run(EWOK_SPEED + control);
-        left_motor->run(EWOK_SPEED - control);
+        right_motor->run(EWOK_SPEED + (int)control);
+        left_motor->run(EWOK_SPEED - (int)control);
+        Serial.println(String(NORMAL_SPEED + (int)control));
+        Serial.println(String(NORMAL_SPEED - (int)control));
+        delay(100);
     } while (front_sensor->min_distance() > CLOSEST_DISTANCE_TO_EWOK);
 
     left_motor->stop();
