@@ -107,7 +107,7 @@ void robot::init()
     left_motor->init();
     right_motor->init();
     Wire.begin();
-    //ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
+    ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
     //ARMCONTROL::armSearch();
     //ARMCONTROL::grabberOpen();
     delay(500);

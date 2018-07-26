@@ -351,21 +351,21 @@ void ewok_triggering()
 
     //***
     //left sensor triggering
-    if (atb.left_sensor->min_distance < 4 && atb.left_sensor->inverse_weighted_mean() > 4.5)
+    if (atb.left_sensor->min_distance() < 4 && atb.left_sensor->inverse_weighted_mean() > 4.5)
     {
         left_trigger = true;
         ewok_trigger = true;
     }
 
     //right sensor triggering
-    else if (atb.right_sensor->min_distance < 4 && atb.right_sensor->inverse_weighted_mean() < 4.5)
+    else if (atb.right_sensor->min_distance() < 4 && atb.right_sensor->inverse_weighted_mean() < 4.5)
     {
         right_trigger = true;
         ewok_trigger = true;
     }
 
     //front sensor trigger
-    else if (atb.front_sensor->min_distance < 4)
+    else if (atb.front_sensor->min_distance() < 4)
     {
         ewok_trigger = true;
     }
