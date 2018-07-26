@@ -19,8 +19,8 @@ bool ewok_trigger = false;
 bool left_trigger = false;
 bool right_trigger = false;
 int num_ewok_grabbed = 0;
-unsigned long start_event_time;
-unsigned long end_event_time;
+unsigned long start_event_time = 0;
+unsigned long end_event_time = 0;
 
 //function prototypes (might be changed to robot member functions) (feel free to edit)
 void ewok_triggering();
@@ -45,9 +45,9 @@ void fifth_stage_2();
 
 void setup()
 {
-    Serial.begin(9600); // Start Serial
+    Serial.begin(9600); // Start Serial ***
     Serial.println("Sketch begin");
-    Wire.begin();
+    // Wire.begin(); // ***
     atb.init();
 }
 
@@ -135,7 +135,12 @@ void second_stage()
             break;
         }
     }
-    atb.line_follower->follow_line();
+
+    //line follow to go through archway
+    while (true)
+    {
+        atb.line_follower->follow_line();
+    }
 }
 
 void second_stage_2()
@@ -186,7 +191,7 @@ void second_stage_2()
     Before: robot just fully crossed the archway and following the line
             stormtroppers are not moving
             grabber is open 
-            arm is horizontal
+            arm is vertical (from IR Detection)
 
     Goals:  - pickup third ewok (to the left)
             - align robot -> getting ready to cross the second gap
@@ -195,6 +200,9 @@ void second_stage_2()
 void third_stage()
 {
     //pick up third ewok
+
+    //put arm back to horizontal (or search??)
+    ARMCONTROL::armHorizontal();
 
     //line follow until ewok on the right is detected
     while (!ewok_trigger)
@@ -221,8 +229,14 @@ void third_stage()
 
     //align robot to get ready to cross the second gap
 
-    //line follow until robot hits edge
-    atb.line_follower->follow_line();
+    /*  
+        line follow until robot hits edge 
+        (could be a good position for rotating the robot to get ready for second gap)
+    */
+    while (atb.bottom_sensor->mean() < CLIFF_DISTANCE)
+    {
+        atb.line_follower->follow_line();
+    }
 
     /*
         turn robot to the right 
@@ -500,6 +514,7 @@ void zipline_finish()
 
 /*
     function that triggers for ewok grabbing when ewok is near and stops the robot
+    use this function in a while loop
 
     function ends when:
     left and right motors are stopped
@@ -565,6 +580,7 @@ void sweep_find_ewok()
     //sweep depending if the ewok is first sensed by the left or right sensor
     if (left_trigger)
     {
+        atb.left_sensor->update();
         // ***
         //turn robot to the left until second (default orientation) sensor of front sensor is less than 30
         // or first 2 (default) sensors of front sensor?
@@ -572,6 +588,8 @@ void sweep_find_ewok()
         {
             atb.left_motor->run(-EWOK_SPEED); //default speed for sweeping <- slow enough for sensors
             atb.right_motor->run(EWOK_SPEED); //default speed for sweeping <- slow enough for sensors
+
+            atb.left_sensor->update();
         }
 
         //stop robot in the middle?
@@ -582,6 +600,8 @@ void sweep_find_ewok()
 
     else if (right_trigger)
     {
+        atb.right_sensor->update();
+
         // ***
         //turn robot to the right until second last (default orientation) sensor of front sensor is less than 30
         // or last 2 (default) sensors of front sensor?
@@ -589,6 +609,8 @@ void sweep_find_ewok()
         {
             atb.left_motor->run(EWOK_SPEED);   //default speed for sweeping <- slow enough for sensors
             atb.right_motor->run(-EWOK_SPEED); //default speed for sweeping <- slow enough for sensors
+
+            atb.right_sensor->update();
         }
 
         //stop robot in the middle?
@@ -598,6 +620,7 @@ void sweep_find_ewok()
     }
 
     //centering to ewok
+
     atb.front_sensor->update();
 
     while (atb.front_sensor->inverse_weighted_mean() != 4.5)
@@ -615,6 +638,8 @@ void sweep_find_ewok()
             atb.left_motor->run(EWOK_SPEED); //default speed for sweeping <- slow enough for sensors
             atb.right_motor->run(-EWOK_SPEED);
         }
+
+        atb.front_sensor->update();
     }
 
     //stop once ewok is located in front of the robot & front sensor
@@ -632,23 +657,26 @@ void sweep_find_ewok()
 */
 void sweep_back()
 {
-    //if sees ewok in the left before and it swept left, sweep robot to right
-    if (left_trigger)
-    {
-        left_trigger = false;
-        atb.left_motor->run(EWOK_SPEED);
-        atb.right_motor->run(-EWOK_SPEED);
-    }
+    unsigned long start_time = millis();
 
-    //if sees ewok in the right before and it swept right, sweep robot to left
-    if (right_trigger)
+    while (millis() - start_time == end_event_time - start_event_time)
     {
-        right_trigger = false;
-        atb.left_motor->run(-EWOK_SPEED);
-        atb.right_motor->run(EWOK_SPEED);
-    }
+        //if sees ewok in the left before and it swept left, sweep robot to right
+        if (left_trigger)
+        {
+            left_trigger = false;
+            atb.left_motor->run(EWOK_SPEED);
+            atb.right_motor->run(-EWOK_SPEED);
+        }
 
-    delay(end_event_time - start_event_time);
+        //if sees ewok in the right before and it swept right, sweep robot to left
+        if (right_trigger)
+        {
+            right_trigger = false;
+            atb.left_motor->run(-EWOK_SPEED);
+            atb.right_motor->run(EWOK_SPEED);
+        }
+    }
 
     start_event_time = 0;
     end_event_time = 0;
