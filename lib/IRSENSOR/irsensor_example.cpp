@@ -90,7 +90,7 @@ int lookup_table_4[20][9] = {{1, 137, 126, 124, 120, 126, 124, 136, 136},
                              {50, 2805, 2440, 2320, 1874, 2096, 2098, 2877, 2469}};
 
 
-                             
+
 
 irsensor front_sensor = irsensor(0x48, lookup_table_1);
 irsensor bottom_sensor = irsensor(0x49, lookup_table_2);
