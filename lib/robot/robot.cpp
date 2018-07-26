@@ -301,4 +301,7 @@ void robot::line_follow_meters(float meters)
 {
 	line_follower->follow_line();
 	delay(((float)abs(meters) / METERS_PER_SECOND) * 1000);
+
+    left_motor->stop();
+    right_motor->stop();
 }
