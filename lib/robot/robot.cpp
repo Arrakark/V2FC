@@ -98,8 +98,8 @@ robot::robot()
     front_sensor = new irsensor(0x48, lookup_table_1);
     left_sensor = new irsensor(0x4A, lookup_table_3);
     right_sensor = new irsensor(0x4B, lookup_table_4);
-    lift = new SLIFT(PA8);
-    //line_follower = new linefollower(left_motor, right_motor, bottom_sensor);
+    lift = new SLIFT(PA8); //init later when needed <- avoid timer conflicts
+    // line_follower = new linefollower(left_motor, right_motor, bottom_sensor);
 }
 
 void robot::init()
@@ -107,7 +107,7 @@ void robot::init()
     left_motor->init();
     right_motor->init();
     Wire.begin();
-    //ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
+    ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
     //ARMCONTROL::armSearch();
     //ARMCONTROL::grabberOpen();
     delay(500);
@@ -301,4 +301,7 @@ void robot::line_follow_meters(float meters)
 {
 	line_follower->follow_line();
 	delay(((float)abs(meters) / METERS_PER_SECOND) * 1000);
+
+    left_motor->stop();
+    right_motor->stop();
 }
