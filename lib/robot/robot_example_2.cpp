@@ -26,6 +26,7 @@ unsigned long end_event_time = 0;
 void ewok_triggering();
 void sweep_find_ewok();
 void sweep_back();
+void sweep_back_2();
 void grab_ewok();
 
 //stage function prototypes
@@ -532,14 +533,14 @@ void ewok_triggering()
 
     //***
     //left sensor triggering
-    if (atb.left_sensor->min_distance() < 4 && atb.left_sensor->inverse_weighted_mean() > 4.5)
+    if (atb.left_sensor->min_distance() < 4) // && atb.left_sensor->inverse_weighted_mean() > 4.5)
     {
         left_trigger = true;
         ewok_trigger = true;
     }
 
     //right sensor triggering
-    else if (atb.right_sensor->min_distance() < 4 && atb.right_sensor->inverse_weighted_mean() < 4.5)
+    else if (atb.right_sensor->min_distance() < 4) // && atb.right_sensor->inverse_weighted_mean() < 4.5)
     {
         right_trigger = true;
         ewok_trigger = true;
@@ -584,7 +585,7 @@ void sweep_find_ewok()
         // ***
         //turn robot to the left until second (default orientation) sensor of front sensor is less than 30
         // or first 2 (default) sensors of front sensor?
-        while (atb.front_sensor->distance_readings[1] < 30)
+        while (atb.front_sensor->distance_readings[0] < EWOK_LONG_DISTANCE_DETECTION)
         {
             atb.left_motor->run(-EWOK_SPEED); //default speed for sweeping <- slow enough for sensors
             atb.right_motor->run(EWOK_SPEED); //default speed for sweeping <- slow enough for sensors
@@ -605,7 +606,7 @@ void sweep_find_ewok()
         // ***
         //turn robot to the right until second last (default orientation) sensor of front sensor is less than 30
         // or last 2 (default) sensors of front sensor?
-        while (atb.front_sensor->distance_readings[6] < 30)
+        while (atb.front_sensor->distance_readings[7] < EWOK_LONG_DISTANCE_DETECTION)
         {
             atb.left_motor->run(EWOK_SPEED);   //default speed for sweeping <- slow enough for sensors
             atb.right_motor->run(-EWOK_SPEED); //default speed for sweeping <- slow enough for sensors
@@ -664,7 +665,6 @@ void sweep_back()
         //if sees ewok in the left before and it swept left, sweep robot to right
         if (left_trigger)
         {
-            left_trigger = false;
             atb.left_motor->run(EWOK_SPEED);
             atb.right_motor->run(-EWOK_SPEED);
         }
@@ -672,14 +672,48 @@ void sweep_back()
         //if sees ewok in the right before and it swept right, sweep robot to left
         if (right_trigger)
         {
-            right_trigger = false;
             atb.left_motor->run(-EWOK_SPEED);
             atb.right_motor->run(EWOK_SPEED);
         }
     }
 
+    if (left_trigger)
+        left_trigger = !left_trigger;
+
+    else if (right_trigger)
+        right_trigger = !right_trigger;
+
     start_event_time = 0;
     end_event_time = 0;
+}
+
+//sweep back robot until it sees black line <- useful for 2nd and 3rd ewok
+
+void sweep_back_2()
+{
+    //if sees ewok in the left before and it swept left, sweep robot to right
+    if (left_trigger)
+    {
+        //while (!(atb.front_sensor->distance_readings[0] < EWOK_LONG_DISTANCE_DETECTION))
+        while(atb.bottom_sensor->max_distance() < LINE_DISTANCE)
+        {
+            atb.left_motor->run(EWOK_SPEED);
+            atb.right_motor->run(-EWOK_SPEED);
+        }
+
+        left_trigger = !left_trigger;
+    }
+
+    //if sees ewok in the right before and it swept right, sweep robot to left
+    if (right_trigger)
+    {
+        while (atb.bottom_sensor->max_distance() < LINE_DISTANCE)
+        {
+            atb.left_motor->run(-EWOK_SPEED);
+            atb.right_motor->run(EWOK_SPEED);
+        }
+        right_trigger = !right_trigger;
+    }   
 }
 
 //=======================================
