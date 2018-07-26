@@ -9,9 +9,7 @@ void setup()
     //ARMCONTROL::init(PB8, PB9, PB12, PB1);
     atb.init();
     delay(2000);
-    atb.left_motor->run(255);
-    atb.right_motor->run(255);
-    // atb.follow_right_edge_until_ewok();
+    atb.follow_right_edge_until_ewok();
     // ARMCONTROL::grabberHug();
     // delay(2000);
     // ARMCONTROL::armDropoff();
