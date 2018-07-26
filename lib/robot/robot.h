@@ -51,7 +51,7 @@ public:
   HBRIDGE *left_motor;
   HBRIDGE *right_motor;
   irsensor *bottom_sensor;
-  irsensor *front_sensor;
+  irsensor *front_sensor; //only sensor that is upside down
   irsensor *left_sensor;
   irsensor *right_sensor;
   SLIFT *lift;

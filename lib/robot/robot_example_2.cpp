@@ -1,3 +1,5 @@
+//just some ideas of whats
+
 //using the the robot class
 #include <Wire.h>
 #include <Arduino.h>
@@ -21,7 +23,7 @@ int num_ewok_grabbed = 0;
 unsigned long start_event_time;
 unsigned long end_event_time;
 
-//function prototypes (might be changed to robot member functions)
+//function prototypes (might be changed to robot member functions) (feel free to edit)
 void ewok_triggering();
 void sweep_find_ewok();
 void sweep_back();
@@ -29,6 +31,16 @@ void grab_ewok();
 
 //stage function prototypes
 void second_stage();
+void third_stage();
+void fourth_stage();
+void fifth_stage();
+void zipline_finish();
+
+//functions that is based on the correct calibration of m/s and rad/s
+void second_stage_2();
+void third_stage_2();
+void fourth_stage_2();
+void fifth_stage_2();
 
 //==============================================================================================================
 
@@ -64,6 +76,74 @@ void second_stage()
 {
     //pick up second ewok (to the right)
 
+    //line follow until ewok is detected
+    while (!ewok_trigger)
+    {
+        ewok_triggering();
+
+        if (ewok_trigger)
+            break;
+
+        atb.line_follower->follow_line();
+    }
+
+    atb.left_motor->stop();
+    atb.right_motor->stop();
+
+    //when ewok is detected, rotate robot to sweep for ewok
+    sweep_find_ewok();
+    //grab ewok
+    grab_ewok();
+    //rotate robot back to original position before sweeping
+    sweep_back();
+
+    //----------------------------------------------------------------
+
+    //sense appropriate IR Beacon signal (10 kHz)
+
+    //adjust arm position for IR Beacon sensing
+    ARMCONTROL::armVertical(); //***
+
+    //robot line follow until it is positioned in front of IR Beacon
+
+    int value;
+
+    while (true)
+    {
+        value = IRBEACON::read(PA5);
+
+        if (value == 1 || value == 2)
+        {
+            atb.left_motor->stop();
+            atb.right_motor->stop();
+            break;
+        }
+
+        else
+        {
+            atb.line_follower->follow_line();
+        }
+    }
+
+    //robot waits until IR Beacon sensor senses 10kHz signal
+    while (true)
+    {
+        value = IRBEACON::read(PA5);
+
+        if (value == 2) //10 kHz detection
+        {
+            //line follow to cross the archway once 10kHz detected
+            break;
+        }
+    }
+    atb.line_follower->follow_line();
+
+}
+
+void second_stage_2()
+{
+    //pick up second ewok (to the right)
+
     atb.line_follow_meters(0.3); //***
     atb.sweep_for_ewok(45);      //***
     grab_ewok();
@@ -80,12 +160,175 @@ void second_stage()
     ARMCONTROL::armVertical();
 
     //IR Beacon Sensing
-    int value = IRBEACON::read(PA5);
-    if (value == 2)
+
+    while (true)
     {
-        Serial.println("10khz Beacon detected!");
+        int value = IRBEACON::read(PA5);
+
+        if (value == 2) //10 kHz detection
+        {
+            //cross the archway when 10kHz detected
+            atb.line_follow_meters(0.5); // ***
+            break;
+        }
+
+        else //robot stays as it is when detect other signals
+        {
+            atb.left_motor->stop();
+            atb.right_motor->stop();
+        }
     }
 }
+
+//=======================================
+
+/*
+    Third Stage of Competition
+
+    Before: robot just fully crossed the archway and following the line
+            stormtroppers are not moving
+            grabber is open 
+            arm is horizontal
+
+    Goals:  - pickup third ewok (to the left)
+            - align robot -> getting ready to cross the second gap
+*/
+
+void third_stage()
+{
+    //pick up third ewok
+
+    //line follow until ewok on the right is detected
+    while (!ewok_trigger)
+    {
+        ewok_triggering();
+
+        if (ewok_trigger)
+            break;
+
+        atb.line_follower->follow_line();
+    }
+
+    atb.left_motor->stop();
+    atb.right_motor->stop();
+
+    //when ewok is detected, rotate robot to sweep for ewok
+    sweep_find_ewok();
+    //grab ewok
+    grab_ewok();
+    //rotate robot back to original position before sweeping
+    sweep_back();
+
+    //----------------------------------------------------------------
+
+    //align robot to get ready to cross the second gap
+
+    //line follow until robot hits edge
+    atb.line_follower->follow_line();
+
+    /*
+        turn robot to the right 
+        (let left sensor sees weighted mean of 4.5 +/- 1 
+        <- should be the case when all ir sensors see competition floor)
+
+        use inverse weighted mean?
+    */
+   while(atb.left_sensor->weighted_mean() >= 3.5 && atb.left_sensor->weighted_mean() <= 5.5)
+   {
+       atb.left_motor->run(TURN_SPEED);
+       atb.right_motor->run(-TURN_SPEED);
+   }
+   atb.left_motor->stop();
+   atb.right_motor->stop();
+}
+
+void third_stage_2()
+{
+    //pickup third ewok
+
+    atb.line_follow_meters(0.8);
+    atb.sweep_for_ewok(45); //***
+    grab_ewok();
+    atb.turn_degrees(-45); //turn back to original position
+
+    //----------------------------------------------------------------
+
+    //align robot to get ready to cross the second gap
+
+    //line follow until robot hits edge
+    atb.line_follower->follow_line();
+
+    //turn robot 90 degrees right
+    atb.turn_degrees(90);
+}
+
+//=======================================
+
+/*
+    Fourth Stage of Competition
+
+    Before: robot properly aligned and is ready to cross the second gap
+            stormtroppers are not moving
+            grabber is open 
+            arm is horizontal
+
+    Goals:  - crosses second gap
+            - pick up fourth ewok?
+            - align robot to face forward of the suspension bridge or 
+              that it is ready for pid-ing on the suspension bridge with 
+              the edge (left and right) sensors
+*/
+
+void fourth_stage()
+{
+    // crosses second gap
+
+    /*
+        use this method for now <- if doesn't work well, use delay functions?
+
+        keep going forward until the open claw touches or is touching the ewok 
+        that's in front of the "tower"
+
+        use weighted mean instead?
+    */
+    while(!(atb.front_sensor->inverse_weighted_mean() == 4.5 && atb.front_sensor->min_distance() < 1))
+    {
+        atb.left_motor->run(SECOND_GAP_SPEED);
+        atb.right_motor->run(SECOND_GAP_SPEED);
+    }
+    atb.left_motor->stop();
+    atb.right_motor->stop();
+
+    //----------------------------------------------------------------
+
+    // pick up fourth ewok  
+
+    grab_ewok(); //grab ewok straight away since it's in front of us 
+
+    //----------------------------------------------------------------
+
+    // align robot to face forward of the suspension bridge
+
+    /*
+        turn robot to the right 
+        (let right sensor sees weighted mean of 4.5 +/- 1 
+        <- should be the case when all ir sensors see competition floor)
+
+        or just weighted mean < 4.5 and that max distance is 30?
+
+        use inverse weighted mean?
+    */
+   while(atb.right_sensor->inverse_weighted_mean() < 4.5 && atb.right_sensor->max_distance() >= 30)
+   {
+       atb.left_motor->run(TURN_SPEED);
+       atb.right_motor->run(-TURN_SPEED);
+   }
+
+   atb.left_motor->stop();
+   atb.right_motor->stop();
+}
+
+//==============================================================================================================
 
 //functions (might be added to the robot class if needed)
 
