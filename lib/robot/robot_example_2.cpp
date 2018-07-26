@@ -137,7 +137,6 @@ void second_stage()
         }
     }
     atb.line_follower->follow_line();
-
 }
 
 void second_stage_2()
@@ -233,13 +232,13 @@ void third_stage()
 
         use inverse weighted mean?
     */
-   while(atb.left_sensor->weighted_mean() >= 3.5 && atb.left_sensor->weighted_mean() <= 5.5)
-   {
-       atb.left_motor->run(TURN_SPEED);
-       atb.right_motor->run(-TURN_SPEED);
-   }
-   atb.left_motor->stop();
-   atb.right_motor->stop();
+    while (atb.left_sensor->weighted_mean() >= 3.5 && atb.left_sensor->weighted_mean() <= 5.5)
+    {
+        atb.left_motor->run(TURN_SPEED);
+        atb.right_motor->run(-TURN_SPEED);
+    }
+    atb.left_motor->stop();
+    atb.right_motor->stop();
 }
 
 void third_stage_2()
@@ -273,7 +272,7 @@ void third_stage_2()
             arm is horizontal
 
     Goals:  - crosses second gap
-            - pick up fourth ewok?
+            - pick up fourth ewok
             - align robot to face forward of the suspension bridge or 
               that it is ready for pid-ing on the suspension bridge with 
               the edge (left and right) sensors
@@ -291,7 +290,7 @@ void fourth_stage()
 
         use weighted mean instead?
     */
-    while(!(atb.front_sensor->inverse_weighted_mean() == 4.5 && atb.front_sensor->min_distance() < 1))
+    while (!(atb.front_sensor->inverse_weighted_mean() == 4.5 && atb.front_sensor->min_distance() < 1))
     {
         atb.left_motor->run(SECOND_GAP_SPEED);
         atb.right_motor->run(SECOND_GAP_SPEED);
@@ -301,9 +300,9 @@ void fourth_stage()
 
     //----------------------------------------------------------------
 
-    // pick up fourth ewok  
+    // pick up fourth ewok
 
-    grab_ewok(); //grab ewok straight away since it's in front of us 
+    grab_ewok(); //grab ewok straight away since it's in front of us
 
     //----------------------------------------------------------------
 
@@ -318,14 +317,182 @@ void fourth_stage()
 
         use inverse weighted mean?
     */
-   while(atb.right_sensor->inverse_weighted_mean() < 4.5 && atb.right_sensor->max_distance() >= 30)
-   {
-       atb.left_motor->run(TURN_SPEED);
-       atb.right_motor->run(-TURN_SPEED);
-   }
+    while (atb.right_sensor->inverse_weighted_mean() < 4.5 && atb.right_sensor->max_distance() >= 30)
+    {
+        atb.left_motor->run(TURN_SPEED);
+        atb.right_motor->run(-TURN_SPEED);
+    }
 
-   atb.left_motor->stop();
-   atb.right_motor->stop();
+    atb.left_motor->stop();
+    atb.right_motor->stop();
+}
+
+//=======================================
+
+/*
+    Fifth Stage of Competition
+
+    Before: robot is in a position that is ready for pid on the edges of the suspension bridge
+            stormtroppers are not moving
+            grabber is open 
+            arm is horizontal
+
+    Goals:  - cross the suspension bridge
+            - grabs Chewy
+            - align robot to face back to the bridge (ready for zipline finish)
+*/
+
+void fifth_stage()
+{
+    // cross suspension bridge
+
+    // atb.follow_right_edge_until_ewok(); //maybe that alone might work but until left_sensor sees chewy ***
+
+    // pid edge_follower = pid();
+    // edge_follower.p_gain = 20;
+    // edge_follower.p_limit = 50;
+
+    // do
+    // {
+    //     // atb.front_sensor->update();
+    //     atb.right_sensor->update();
+    //     float error = atb.right_sensor->inverse_weighted_mean() - 5.3;
+    //     float control = edge_follower.output(error);
+    //     atb.right_motor->run(EWOK_SPEED + (int)control);
+    //     atb.left_motor->run(EWOK_SPEED - (int)control);
+    //     Serial.println(String(NORMAL_SPEED + (int)control));
+    //     Serial.println(String(NORMAL_SPEED - (int)control));
+    //     delay(100);
+    // } while (atb.left_sensor->min_distance() > CLOSEST_DISTANCE_TO_EWOK);
+
+    // atb.left_motor->stop();
+    // atb.right_motor->stop();
+
+    //----------------------------------------------------------------
+
+    //pid edge following (pid wrt both left and right edges)
+    pid lr_edge_follower = pid();
+    lr_edge_follower.p_gain = 20;
+    lr_edge_follower.p_limit = 50;
+
+    //edge follow until Chewy (on the left) is detected
+    do
+    {
+        // atb.front_sensor->update();
+        atb.right_sensor->update();
+        atb.left_sensor->update();
+
+        float error =
+            (atb.right_sensor->inverse_weighted_mean() + atb.left_sensor->inverse_weighted_mean()) / 2 - 4.5;
+
+        float control = lr_edge_follower.output(error);
+
+        atb.right_motor->run(EWOK_SPEED + (int)control);
+        atb.left_motor->run(EWOK_SPEED - (int)control);
+        Serial.println(String(NORMAL_SPEED + (int)control));
+        Serial.println(String(NORMAL_SPEED - (int)control));
+        delay(100);
+    } while (atb.left_sensor->min_distance() > CLOSEST_DISTANCE_TO_EWOK);
+
+    atb.left_motor->stop();
+    atb.right_motor->stop();
+
+    //----------------------------------------------------------------
+
+    // grabs Chewy
+
+    //as Chewy is detected, rotate robot to sweep for Chewy
+    sweep_find_ewok();
+    //grab Chewy
+    grab_ewok();
+    //rotate robot back to original position before sweeping
+    sweep_back();
+
+    //----------------------------------------------------------------
+
+    // align robot to face back to the bridge (ready for zipline finish)
+
+    //first make robot go front until bottom sensor detects edge
+
+    while (atb.bottom_sensor->mean() < CLIFF_DISTANCE)
+    {
+        atb.left_motor->run(NORMAL_SPEED);
+        atb.right_motor->run(NORMAL_SPEED);
+    }
+
+    //make a 180 degree (or approximately) turn
+    while (atb.bottom_sensor->inverse_weighted_mean() == 4.5 && (atb.left_sensor->inverse_weighted_mean() >= 3.7 && atb.left_sensor->inverse_weighted_mean() <= 5.3) && (atb.right_sensor->inverse_weighted_mean() >= 3.7 && atb.right_sensor->inverse_weighted_mean() <= 5.3))
+    {
+        atb.left_motor->run(TURN_SPEED);
+        atb.right_motor->run(-TURN_SPEED);
+    }
+}
+
+//=======================================
+
+/*
+    Zipline Finish of Competition
+
+    Before: robot is facing the suspension bridge (about to move down to the towers)
+            stormtroppers are not moving
+            grabber is open 
+            arm is horizontal
+
+    Goals:  - make scissor lift to go up
+            - basket hooks to the zipline
+            - robot will keep moving foward (in back direction) 
+              until basket is detached from the robot
+            - basket slides down the zipline
+*/
+
+void zipline_finish()
+{
+    // make scissor lift to go up
+
+    //initialize scissor lift of robot (cancel some of the initializations that were made to avoid timer conflict?)
+    atb.lift->init();
+
+    //raise scissor lift and make it stay there
+    atb.lift->moveUp();
+    atb.lift->stay();
+
+    //----------------------------------------------------------------
+
+    //send ewoks and Chewy back
+
+    /*
+        make robot to move forward until reaching back to Tower 1
+        while basket is hooked to zipline and is detached from the robot
+    */
+
+    //edge follow until robot reaches back to Tower 1 (bottom sensors senses CLIFF)
+
+    //pid edge following (pid wrt both left and right edges)
+    pid lr_edge_follower = pid();
+    lr_edge_follower.p_gain = 20;
+    lr_edge_follower.p_limit = 50;
+
+    //edge follow until Chewy (on the left) is detected
+    do
+    {
+        atb.bottom_sensor->update();
+        atb.right_sensor->update();
+        atb.left_sensor->update();
+
+        float error =
+            (atb.right_sensor->inverse_weighted_mean() + atb.left_sensor->inverse_weighted_mean()) / 2 - 4.5;
+
+        float control = lr_edge_follower.output(error);
+
+        atb.right_motor->run(EWOK_SPEED + (int)control);
+        atb.left_motor->run(EWOK_SPEED - (int)control);
+        Serial.println(String(NORMAL_SPEED + (int)control));
+        Serial.println(String(NORMAL_SPEED - (int)control));
+        delay(100);
+    } while (atb.bottom_sensor->mean() < CLIFF_DISTANCE);
+
+    atb.left_motor->stop();
+    atb.right_motor->stop();
 }
 
 //==============================================================================================================
@@ -333,14 +500,14 @@ void fourth_stage()
 //functions (might be added to the robot class if needed)
 
 /*
-function that triggers for ewok grabbing when ewok is near and stops the robot
+    function that triggers for ewok grabbing when ewok is near and stops the robot
 
-function ends when:
-left and right motors are stopped
-grabber is open
-arm is in search position
+    function ends when:
+    left and right motors are stopped
+    grabber is open
+    arm is in search position
 
-this/similar functions like that would be useful after grabbing the first ewok
+    this/similar functions like that would be useful after grabbing the first ewok
 */
 void ewok_triggering()
 {
