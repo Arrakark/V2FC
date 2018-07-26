@@ -394,7 +394,8 @@ Regardless think we should have some functions that are like that after the firs
 */
 void sweep_find_ewok()
 {
-    start_event_time = millis();
+    start_event_time = millis(); //use later for sweep_back()
+
     //sweep depending if the ewok is first sensed by the left or right sensor
     if (left_trigger)
     {
@@ -403,8 +404,8 @@ void sweep_find_ewok()
         // or first 2 (default) sensors of front sensor?
         while (atb.front_sensor->distance_readings[1] < 30)
         {
-            atb.left_motor->run(-80); //default speed for sweeping <- slow enough for sensors
-            atb.right_motor->run(80); //default speed for sweeping <- slow enough for sensors
+            atb.left_motor->run(-EWOK_SPEED); //default speed for sweeping <- slow enough for sensors
+            atb.right_motor->run(EWOK_SPEED); //default speed for sweeping <- slow enough for sensors
         }
 
         //stop robot in the middle?
@@ -420,8 +421,8 @@ void sweep_find_ewok()
         // or last 2 (default) sensors of front sensor?
         while (atb.front_sensor->distance_readings[6] < 30)
         {
-            atb.left_motor->run(80);   //default speed for sweeping <- slow enough for sensors
-            atb.right_motor->run(-80); //default speed for sweeping <- slow enough for sensors
+            atb.left_motor->run(EWOK_SPEED);   //default speed for sweeping <- slow enough for sensors
+            atb.right_motor->run(-EWOK_SPEED); //default speed for sweeping <- slow enough for sensors
         }
 
         //stop robot in the middle?
@@ -438,15 +439,15 @@ void sweep_find_ewok()
         //to the left of sensor array (default orientation),but ewok to the robot's left -> turn left
         if (atb.front_sensor->inverse_weighted_mean() < 4.5)
         {
-            atb.left_motor->run(-80); //default speed for sweeping <- slow enough for sensors
-            atb.right_motor->run(80);
+            atb.left_motor->run(-EWOK_SPEED); //default speed for sweeping <- slow enough for sensors
+            atb.right_motor->run(EWOK_SPEED);
         }
 
         //to the right of sensor array (default orientation),but ewok to the robot's right -> turn right
         else if (atb.front_sensor->inverse_weighted_mean() > 4.5)
         {
-            atb.left_motor->run(80); //default speed for sweeping <- slow enough for sensors
-            atb.right_motor->run(-80);
+            atb.left_motor->run(EWOK_SPEED); //default speed for sweeping <- slow enough for sensors
+            atb.right_motor->run(-EWOK_SPEED);
         }
     }
 
@@ -454,7 +455,7 @@ void sweep_find_ewok()
     atb.left_motor->stop();
     atb.right_motor->stop();
 
-    end_event_time = millis();
+    end_event_time = millis(); //use later for sweep_back()
 }
 
 //=======================================
@@ -469,16 +470,16 @@ void sweep_back()
     if (left_trigger)
     {
         left_trigger = false;
-        atb.left_motor->run(80);
-        atb.right_motor->run(-80);
+        atb.left_motor->run(EWOK_SPEED);
+        atb.right_motor->run(-EWOK_SPEED);
     }
 
     //if sees ewok in the right before and it swept right, sweep robot to left
     if (right_trigger)
     {
         right_trigger = false;
-        atb.left_motor->run(-80);
-        atb.right_motor->run(80);
+        atb.left_motor->run(-EWOK_SPEED);
+        atb.right_motor->run(EWOK_SPEED);
     }
 
     delay(end_event_time - start_event_time);
