@@ -98,7 +98,7 @@ robot::robot()
     front_sensor = new irsensor(0x48, lookup_table_1);
     left_sensor = new irsensor(0x4A, lookup_table_3);
     right_sensor = new irsensor(0x4B, lookup_table_4);
-    lift = new SLIFT(PA8);
+    lift = new SLIFT(PA8); //init later when needed <- avoid timer conflicts
     // line_follower = new linefollower(left_motor, right_motor, bottom_sensor);
 }
 
