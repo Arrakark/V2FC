@@ -21,9 +21,11 @@ void HBRIDGE::run(int _vector){
 
     if(_vector > 0 ){
         analogWrite(reverse_pin,0);
+        delay(40);
         analogWrite(forward_pin,_vector);
     } else {
         analogWrite(forward_pin,0);
+        delay(40);
         analogWrite(reverse_pin,abs(_vector));
     }
 }
