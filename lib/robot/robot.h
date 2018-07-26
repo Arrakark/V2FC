@@ -44,6 +44,7 @@ public:
   void calibrate_meters_per_second(int seconds);
   void calibrate_degrees_per_second(int seconds);
   void follow_right_edge_until_ewok();
+  void line_follow_meters(float meters);
 
   //different parts of the robot
   //initialized in robot constructor

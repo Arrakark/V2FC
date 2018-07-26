@@ -292,3 +292,13 @@ void robot::follow_right_edge_until_ewok()
     left_motor->stop();
     right_motor->stop();
 }
+
+/*
+Follows black line for a certain amount of meters
+*/
+
+void robot::line_follow_meters(float meters)
+{
+	line_follower->follow_line();
+	delay(((float)abs(meters) / METERS_PER_SECOND) * 1000);
+}
