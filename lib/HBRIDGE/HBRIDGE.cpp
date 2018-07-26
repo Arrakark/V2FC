@@ -19,7 +19,7 @@ void HBRIDGE::run(int _vector){
     if (_vector < -255) _vector = -255;
     else if (_vector > 255) _vector = 255;
 
-    if(_vector > 0 ){
+    if(_vector >= 0 ){
         analogWrite(reverse_pin,0);
         delay(40);
         analogWrite(forward_pin,_vector);
