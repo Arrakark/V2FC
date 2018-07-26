@@ -107,9 +107,9 @@ void robot::init()
     left_motor->init();
     right_motor->init();
     Wire.begin();
-    //ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
-    //ARMCONTROL::armSearch();
-    //ARMCONTROL::grabberOpen();
+    ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
+    ARMCONTROL::armHorizontal();
+    ARMCONTROL::grabberOpen();
     delay(500);
 }
 
@@ -282,10 +282,8 @@ void robot::follow_right_edge_until_ewok()
         right_sensor->update();
         float error = right_sensor->inverse_weighted_mean() - 5.3;
         float control = edge_follower.output(error);
-        right_motor->run(EWOK_SPEED + (int)control);
-        left_motor->run(EWOK_SPEED - (int)control);
-        Serial.println(String(NORMAL_SPEED + (int)control));
-        Serial.println(String(NORMAL_SPEED - (int)control));
+        right_motor->run(NORMAL_SPEED + (int)control);
+        left_motor->run(NORMAL_SPEED - (int)control);
         delay(100);
     } while (front_sensor->min_distance() > CLOSEST_DISTANCE_TO_EWOK);
 

@@ -17,15 +17,13 @@ void HBRIDGE::init(){
 void HBRIDGE::run(int _vector){
     //makes sure that _vector is between -255 and 255
     if (_vector < -255) _vector = -255;
-    else if (_vector > 255) _vector = 255;
+    else if (_vector > 255) _vector = 255;   
 
     if(_vector > 0 ){
         analogWrite(reverse_pin,0);
-        delay(40);
         analogWrite(forward_pin,_vector);
     } else {
         analogWrite(forward_pin,0);
-        delay(40);
         analogWrite(reverse_pin,abs(_vector));
     }
 }
