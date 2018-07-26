@@ -27,10 +27,8 @@ int line_lookup[20][9] =
 irsensor line_sensor = irsensor(0x49, line_lookup);
 
 //create tracks
-HTHING left_motor = HTHING(PB0, PB3);
-HTHING right_motor = HTHING(PA7, PB5);
-track left_track = track(&left_motor); //track will contain functions in the future (closed loop motor control)
-track right_track = track(&right_motor);
+HBRIDGE left_motor = HBRIDGE(PB0, PB3);
+HBRIDGE right_motor = HBRIDGE(PA7, PB5);
 
 //create line follower
 linefollower line_follower = linefollower(&left_motor, &right_motor, &line_sensor);

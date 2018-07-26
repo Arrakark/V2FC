@@ -18,7 +18,6 @@ robot atb = robot(); //admiral track bar
 bool ewok_trigger = false;
 bool left_trigger = false;
 bool right_trigger = false;
-bool mid_trigger = false;
 int num_ewok_grabbed = 0;
 unsigned long start_event_time;
 unsigned long end_event_time;
