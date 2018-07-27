@@ -24,6 +24,7 @@ class irsensor
     virtual int min_position();
     int adc_readings[8];
     float distance_readings[8];
+    virtual void info();
     
   private:
     ADS7828 adc;

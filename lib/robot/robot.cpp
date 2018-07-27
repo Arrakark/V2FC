@@ -79,7 +79,7 @@ robot::robot()
     front_sensor = new irsensor(0x48, lookup_table_5);
     left_sensor = new irsensor(0x4A, lookup_table_3);
     right_sensor = new irsensor(0x4B, lookup_table_4);
-    lift = new SLIFT(PA8); //init later when needed <- avoid timer conflicts
+   // lift = new SLIFT(PA8); //init later when needed <- avoid timer conflicts
     // line_follower = new linefollower(left_motor, right_motor, bottom_sensor);
 }
 
@@ -133,12 +133,29 @@ void robot::check_sensors()
 void robot::drive_until_cliff()
 {
     bottom_sensor->update();
-    while (bottom_sensor->mean() < FULL_CLIFF_DISTANCE)
+    while (bottom_sensor->mean() < 11)
     {
         left_motor->run(NORMAL_SPEED);
         right_motor->run(NORMAL_SPEED);
         bottom_sensor->update();
         Serial.println(bottom_sensor->mean());
+        robot::delay_update(10);
+    }
+    left_motor->stop();
+    right_motor->stop();
+}
+
+//Does as name implies, drives forward until a cliff is detected
+void robot::drive_until_cliff_early()
+{
+    left_sensor->update();
+    right_sensor->update();
+    while (left_sensor->mean() < 30 && right_sensor->mean() < 30)
+    {
+        left_motor->run(NORMAL_SPEED);
+        right_motor->run(NORMAL_SPEED);
+        left_sensor->update();
+        right_sensor->update();
         robot::delay_update(10);
     }
     left_motor->stop();
@@ -294,6 +311,19 @@ void robot::calibrate_degrees_per_second(int seconds)
     right_motor->stop();
 }
 
+void robot::grab_ewok(){
+    ARMCONTROL::armPickup();
+    robot::delay_update(500);
+    ARMCONTROL::grabberHug();
+    robot::delay_update(1000);
+    ARMCONTROL::armDropoff();
+    robot::delay_update(2000);
+    ARMCONTROL::grabberOpen();
+    robot::delay_update(1000);
+    ARMCONTROL::armSearch();
+    robot::delay_update(2000);
+}
+
 /*
  *  Follows the right edge using the right edge sensor until a minimum value is reached on the front sensor
  * 
@@ -302,24 +332,20 @@ void robot::calibrate_degrees_per_second(int seconds)
 void robot::follow_right_edge_until_ewok()
 {
     pid edge_follower = pid();
-    edge_follower.p_gain = 200;
+    edge_follower.p_gain = 85;
     edge_follower.p_limit = 100;
-    do
     {
-        Serial.println("started update 1");
         front_sensor->update();
-        Serial.println("started update 2");
         right_sensor->update();
-        Serial.println("started control");
         float error = right_sensor->inverse_weighted_mean() - 5.3;
         float control = edge_follower.output(error);
-        right_motor->run(130 + (int)control);
-        left_motor->run(130 - (int)control);
-        Serial.println("wrote values");
+        right_motor->run(80 + (int)control);
+        left_motor->run(80 - (int)control);
         robot::delay_update(10);
     } while (front_sensor->min_distance() > CLOSEST_DISTANCE_TO_EWOK);
     left_motor->stop();
     right_motor->stop();
+    move_meters(-0.05);
 }
 
 /*
@@ -328,14 +354,19 @@ Follows black line for a certain amount of meters
 
 void robot::line_follow_meters(float meters)
 {
-<<<<<<< HEAD
     line_follower->follow_line();
     robot::delay_update(((float)abs(meters) / METERS_PER_SECOND) * 1000);
-=======
-	line_follower->follow_line();
-	delay(((float)abs(meters) / METERS_PER_SECOND) * 1000);
+}
 
-    left_motor->stop();
-    right_motor->stop();
->>>>>>> dc903a859aec4475c417f1109a207f8b9b14c0d5
+void robot::sensor_info()
+{
+    left_sensor->update();
+    front_sensor->update();
+    right_sensor->update();
+    left_sensor->info();
+    Serial.print("   ");
+    front_sensor->info();
+    Serial.print("   ");
+    right_sensor->info();
+    Serial.println();
 }

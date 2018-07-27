@@ -10,22 +10,21 @@
 #include <HBRIDGE.h>
 #include <linefollower.h>
 
-
-#define ARM_SERVO PB8   
+#define ARM_SERVO PB8
 #define ARM_POT PB1
 #define GRABBER_SERVO PB9
-#define GRABBER_SWITCH PB12 
+#define GRABBER_SWITCH PB12
 
 //#define NORMAL_SPEED 230
-#define NORMAL_SPEED 255
+#define NORMAL_SPEED 130
 #define SECOND_GAP_SPEED 230
 #define EWOK_SPEED 50
 #define TURN_SPEED 200
 #define FULL_CLIFF_DISTANCE 17
 #define GAP_CLIFF_DISTANCE 10
-#define METERS_PER_SECOND 1
-#define DEGREES_PER_SECOND 1
-#define CLOSEST_DISTANCE_TO_EWOK 10
+#define METERS_PER_SECOND 0.46333333 //NORMAL_SPEED is 130 -> 0.46333333m/s
+#define DEGREES_PER_SECOND 86        //TURN_SPEED is 200 -> 86 deg/sec
+#define CLOSEST_DISTANCE_TO_EWOK 12
 #define LINE_DISTANCE 6.0
 #define EWOK_LONG_DISTANCE_DETECTION 25 //interval in ms to scan for the ewok
 
@@ -47,10 +46,13 @@ public:
   void line_follow_meters(float meters);
   static void delay_update(long ms);
   static void check_sensors();
+  void drive_until_cliff_early();
+  void sensor_info();
+  void grab_ewok();
 
-  //different parts of the robot
-  //initialized in robot constructor
-  HBRIDGE *left_motor;
+      //different parts of the robot
+      //initialized in robot constructor
+      HBRIDGE *left_motor;
   HBRIDGE *right_motor;
   irsensor *bottom_sensor;
   irsensor *front_sensor; //only sensor that is upside down

@@ -159,6 +159,15 @@ float irsensor::mean()
     return t_sum / SENSOR_COUNT;
 }
 
+void irsensor::info()
+{
+    for (int i = 0; i < 8; i++)
+    {
+        Serial.print(distance_readings[i]);
+        Serial.print(" ");
+    }
+}
+
 //private function for calculating the distance from the raw values
 void irsensor::get_distance()
 {
@@ -204,7 +213,8 @@ void irsensor::get_distance()
 
                 int x1 = lookup_table[ind - 1][i + 1];
                 int y1 = lookup_table[ind - 1][0];
-                if (x2 - x1 == 0){
+                if (x2 - x1 == 0)
+                {
                     return;
                 }
 

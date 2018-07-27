@@ -2,10 +2,11 @@
 #define HBRIDGE_H
 
 #include <Arduino.h>
+#include <HardwareTimer.h>
 
 class HBRIDGE
 {
-public:
+  public:
     /*
     Make sure that the pins passed are pwm enabled pins. Attaches
     these pins to the HBRIDGE
@@ -26,7 +27,9 @@ public:
     The equivalent of saying run(0)
     */
     void stop();
-private:
+
+
+  private:
     int forward_pin;
     int reverse_pin;
 };
