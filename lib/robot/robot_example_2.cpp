@@ -10,7 +10,7 @@
 #include <linefollower.h>
 #include <HBRIDGE.h>
 #include <IRBEACON.h>
-// #include <SPI.h>
+#include <SPI.h>
 
 //creating robot object
 robot atb = robot(); //admiral track bar
@@ -40,6 +40,8 @@ void fourth_stage();
 void fifth_stage();
 void zipline_finish();
 
+void back_after_first_stage();
+
 //functions that is based on the correct calibration of m/s and rad/s
 void second_stage_2();
 void third_stage_2();
@@ -59,7 +61,7 @@ void setup()
 void loop()
 {
     first_stage();
-    second_stage();
+    back_after_first_stage();
 }
 
 //==============================================================================================================
@@ -93,6 +95,65 @@ void first_stage()
         ARMCONTROL::grabberOpen();
         robot::delay_update(2000);
         ARMCONTROL::armHorizontal();
+    }
+}
+
+/*
+    Assumes first ewok is picked after first_stage()
+    Turns around 180 degrees, heads back to start
+    Turns another 180 or 135 degrees or until black line is detected
+*/
+
+void back_after_first_stage()
+{
+    //turns 180 degrees to the left
+    while(atb.left_sensor->distance_readings[7] < 30)
+    {
+        atb.left_motor->run(-NORMAL_SPEED);
+        atb.right_motor->run(NORMAL_SPEED);
+    }
+
+    //left edge sensor detection until robot arrives to base
+    pid edge_follower = pid();
+    edge_follower.p_gain = 200;
+    edge_follower.p_limit = 100;
+    do
+    {
+        atb.bottom_sensor->update();
+        atb.left_sensor->update();
+
+        float error = atb.left_sensor->inverse_weighted_mean() - 3.7; //***
+        float control = edge_follower.output(error);
+
+        atb.right_motor->run(130 + (int)control);
+        atb.left_motor->run(130 - (int)control);
+        robot::delay_update(10);
+
+    } while (atb.bottom_sensor->mean() < FULL_CLIFF_DISTANCE);
+
+
+    // //turn robot to the right for like 2 seconds
+    // unsigned long start_time = millis();
+
+    // while (millis() - start_time == 2000)
+    // {
+    //     atb.left_motor->run(NORMAL_SPEED);
+    //     atb.right_motor->run(-NORMAL_SPEED);
+    // }
+
+    // //make robot drive until it sees a black line
+    // atb.drive_until_black_line();
+
+    right_trigger = true;
+
+    sweep_back_2();
+
+    
+
+    //robot resumes back to normal line following
+    while(!ewok_trigger)
+    {
+        atb.line_follower->follow_line();
     }
 }
 
@@ -723,7 +784,10 @@ void sweep_back()
     end_event_time = 0;
 }
 
-//sweep back robot until it sees black line <- useful for 2nd and 3rd ewok
+/*
+    sweep back robot until it sees black line <- useful for 2nd and 3rd ewok
+    similar to "turn_until_see_black"
+*/
 
 void sweep_back_2()
 {
@@ -794,7 +858,7 @@ void step_back()
     //make robot travel back for about 2 seconds
     unsigned long start_time = millis();
 
-    while (millis() - start_time == 2)
+    while (millis() - start_time == 2000)
     {
         atb.left_motor->run(-NORMAL_SPEED);
         atb.right_motor->run(-NORMAL_SPEED);

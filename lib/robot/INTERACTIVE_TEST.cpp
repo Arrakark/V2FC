@@ -163,7 +163,7 @@ void INTERACTIVE_TEST::motorTests() {
                 while (digitalRead(middleButton) == HIGH) {
                     leftMotor.run(-180);
                     delay(4);
-                    rightMotor.run-(180);
+                    rightMotor.run(-180);
                     delay(4);
                 }
                 leftMotor.stop();
