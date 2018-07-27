@@ -77,7 +77,7 @@ class INTERACTIVE_TEST
         static char* motorStrings[];
         static char* sensorStrings[];
         static char* beaconStrings[];
-    
+
 };
 
 #endif

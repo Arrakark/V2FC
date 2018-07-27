@@ -10,6 +10,7 @@
 #include <linefollower.h>
 #include <HBRIDGE.h>
 #include <IRBEACON.h>
+// #include <SPI.h>
 
 //creating robot object
 robot atb = robot(); //admiral track bar
@@ -28,8 +29,10 @@ void sweep_find_ewok();
 void sweep_back();
 void sweep_back_2();
 void grab_ewok();
+void step_back();
 
 //stage function prototypes
+void first_stage();
 void second_stage();
 void third_stage();
 void fourth_stage();
@@ -54,6 +57,7 @@ void setup()
 
 void loop()
 {
+    second_stage();
 }
 
 //==============================================================================================================
@@ -65,14 +69,14 @@ void loop()
 
     Before: robot just fully crossed the first gap (straight and in the middle of tap)
             arm is horizontal 
-            grabber is open
+            grabber is open (or close?)
 
     Goals:  - pickup second ewok (at the right)
             - sense appropriate IR Beacon signal (10 kHz)
             - line follow through the archway within 5 seconds the start of 10 kHz signal
 */
 
-void second_stage()
+void second_stage() 
 {
     //pick up second ewok (to the right)
 
@@ -746,4 +750,14 @@ void grab_ewok()
         //set arm back to default horizontal position
         ARMCONTROL::armHorizontal();
     }
+}
+
+
+/*
+    Assuming claw is closed and that an ewok has just been detected on the left or right
+*/
+
+void step_back()
+{
+
 }
