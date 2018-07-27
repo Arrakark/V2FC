@@ -1,0 +1,253 @@
+#include <INTERACTIVE_TEST.h>
+
+#define OLED_RESET 4
+
+#define ID_ARM 0
+#define ID_SLIFT 1
+#define ID_MOTOR 2
+#define ID_SENSOR 3
+#define ID_BEACON 4
+
+#define ARM_SERVO PB8   
+#define ARM_POT PB1
+#define GRABBER_SERVO PB9
+#define GRABBER_SWITCH PB12 
+
+#define SLIFT_SERVO PA8
+
+static int menuPosition = 0;
+
+static int leftButton = 1;
+static int rightButton = 2;
+static int middleButton = 3;
+
+static char* menuStrings[] = {"ARM TESTS", "SLIFT TESTS", "MOTOR TESTS", "SENSOR TESTS", "BEACON TESTS"};
+static char* armStrings[] = {"ARM VERTICAL", "ARM HORIZONTAL","ARM SEARCH", "ARM PICKUP", "ARM DROPOFF", "GRABBER OPEN", "GRABBER HUG"};
+static char* sliftStrings[] = {"SLIFT DOWN SWITCH", "SLIFT UP SWITCH", "SLIFT BASKET SWITCH", "SLIFT MOVE UP", "SLIFT MOVE DOWN", "SLIFT STAY"};
+static char* motorStrings[] = {"MOTORS FOWARD", "MOTORS REVERSE", "MOTORS OPPOSITE 1", "MOTORS OPPOSITE 2", "RIGHT FORWARD", "RIGHT REVERSE", "LEFT FORWARD", "LEFT REVERSE", "ALL STOP"};
+static char* sensorStrings[] = {"LINE SENSOR","EWOK SENSOR","LEFT EDGE","RIGHT EDGE"};
+static char* beaconStrings[] = {"DETECT BEACON"};
+
+
+static Adafruit_SSD1306 display(OLED_RESET);
+static SLIFT scissorLift = SLIFT(SLIFT_SERVO);
+static HBRIDGE leftMotor = HBRIDGE(PA1, PB0);
+static HBRIDGE rightMotor = HBRIDGE(PA3, PA7);
+
+void INTERACTIVE_TEST::init() {
+    pinMode(leftButton,INPUT_PULLUP);
+    pinMode(rightButton,INPUT_PULLUP);
+    pinMode(middleButton,INPUT_PULLUP);
+
+    scissorLift.init();
+
+    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+    display.display();
+    delay(2000);
+    display.clearDisplay();
+}
+
+void INTERACTIVE_TEST::mainMenu() {
+    menuPosition = 0;
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    display.setCursor(0,0);
+    while (digitalRead(leftButton) == HIGH && digitalRead(rightButton) == HIGH && digitalRead(middleButton) == HIGH) {
+        if(digitalRead(leftButton) == LOW) {
+            menuPosition = (menuPosition -1) % 5;
+            display.clearDisplay();
+        }
+        else if (digitalRead(rightButton) == LOW) {
+            menuPosition = (menuPosition + 1) % 5;
+            display.clearDisplay();
+        }
+        else if (digitalRead(middleButton) == LOW) {
+            if (menuPosition == 0) armTests();
+            else if (menuPosition == 1) sliftTests();
+            else if (menuPosition == 2) motorTests();
+            else if (menuPosition == 3) sensorTests();
+            else if (menuPosition == 4) beaconTests();
+        }
+        display.println(menuStrings[menuPosition]);
+        display.display();
+        delay(20);
+    }
+}
+
+void INTERACTIVE_TEST::armTests() {
+    menuPosition = 0;
+    ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    display.setCursor(0,0);
+    while (digitalRead(leftButton) == HIGH && digitalRead(rightButton) == HIGH && digitalRead(middleButton) == HIGH) {
+        if(digitalRead(leftButton) == LOW) {
+            menuPosition = (menuPosition -1) % 7;
+            display.clearDisplay();
+        }
+        else if (digitalRead(rightButton) == LOW) {
+            menuPosition = (menuPosition + 1) % 7;
+            display.clearDisplay();
+        }
+        else if (digitalRead(middleButton) == LOW) {
+            if (menuPosition == 0) ARMCONTROL::armVertical();
+            else if (menuPosition == 1) ARMCONTROL::armHorizontal();
+            else if (menuPosition == 2) ARMCONTROL::armSearch();
+            else if (menuPosition == 3) ARMCONTROL::armPickup();
+            else if (menuPosition == 4) ARMCONTROL::armDropoff();
+            else if (menuPosition == 5) ARMCONTROL::grabberOpen();
+            else if (menuPosition == 6) ARMCONTROL::grabberHug();
+        }
+        display.println(armStrings[menuPosition]);
+        display.display();
+        delay(20);
+    }
+    ARMCONTROL::disconnect();
+    mainMenu();
+}
+void INTERACTIVE_TEST::sliftTests() {
+    menuPosition = 0;
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    display.setCursor(0,0);
+    while (digitalRead(leftButton) == HIGH && digitalRead(rightButton) == HIGH && digitalRead(middleButton) == HIGH) {
+        if(digitalRead(leftButton) == LOW) {
+            menuPosition = (menuPosition -1) % 6;
+            display.clearDisplay();
+        }
+        else if (digitalRead(rightButton) == LOW) {
+            menuPosition = (menuPosition + 1) % 6;
+            display.clearDisplay();
+        }
+        else if (digitalRead(middleButton) == LOW) {
+            if (menuPosition == 0) scissorLift.atDownLimit();
+            else if (menuPosition == 1) scissorLift.atUpLimit();
+            else if (menuPosition == 2) scissorLift.atBasketLimit();
+            else if (menuPosition == 3) scissorLift.moveUp();
+            else if (menuPosition == 4) scissorLift.moveDown();
+            else if (menuPosition == 5) scissorLift.stay();
+        }
+        display.println(sliftStrings[menuPosition]);
+        display.display();
+        delay(20);
+    }
+    mainMenu();
+}
+void INTERACTIVE_TEST::motorTests() {
+    menuPosition = 0;
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    display.setCursor(0,0);
+    while (digitalRead(leftButton) == HIGH && digitalRead(rightButton) == HIGH && digitalRead(middleButton) == HIGH) {
+        if(digitalRead(leftButton) == LOW) {
+            menuPosition = (menuPosition -1) % 9;
+            display.clearDisplay();
+        }
+        else if (digitalRead(rightButton) == LOW) {
+            menuPosition = (menuPosition + 1) % 9;
+            display.clearDisplay();
+        }
+        else if (digitalRead(middleButton) == LOW) {
+            if (menuPosition == 0) {
+                while (digitalRead(middleButton) == HIGH) {
+                    leftMotor.run(180);
+                    delay(4);
+                    rightMotor.run(180);
+                    delay(4);
+                }
+                leftMotor.stop();
+                delay(4);
+                rightMotor.stop();
+            }
+            else if (menuPosition == 1) {
+                while (digitalRead(middleButton) == HIGH) {
+                    leftMotor.run(-180);
+                    delay(4);
+                    rightMotor.run-(180);
+                    delay(4);
+                }
+                leftMotor.stop();
+                delay(4);
+                rightMotor.stop();
+            }
+            else if (menuPosition == 2) {
+                while (digitalRead(middleButton) == HIGH) {
+                    leftMotor.run(-180);
+                    delay(4);
+                    rightMotor.run(180);
+                    delay(4);
+                }
+                leftMotor.stop();
+                delay(4);
+                rightMotor.stop();
+            }
+            else if (menuPosition == 3) {
+                while (digitalRead(middleButton) == HIGH) {
+                    leftMotor.run(180);
+                    delay(4);
+                    rightMotor.run(-180);
+                    delay(4);
+                }
+                leftMotor.stop();
+                delay(4);
+                rightMotor.stop();
+            }
+            else if (menuPosition == 4) {
+                while (digitalRead(middleButton) == HIGH) {
+                    leftMotor.stop();
+                    delay(4);
+                    rightMotor.run(180);
+                    delay(4);
+                }
+                leftMotor.stop();
+                delay(4);
+                rightMotor.stop();
+            }
+            else if (menuPosition == 5) {
+                while (digitalRead(middleButton) == HIGH) {
+                    leftMotor.stop();
+                    delay(4);
+                    rightMotor.run(-180);
+                    delay(4);
+                }
+                leftMotor.stop();
+                delay(4);
+                rightMotor.stop();
+            }
+            else if (menuPosition == 6) {
+                while (digitalRead(middleButton) == HIGH) {
+                    rightMotor.stop();
+                    delay(4);
+                    leftMotor.run(180);
+                    delay(4);
+                }
+                leftMotor.stop();
+                delay(4);
+                rightMotor.stop();
+            }
+            else if (menuPosition == 7) {
+                while (digitalRead(middleButton) == HIGH) {
+                    rightMotor.stop();
+                    delay(4);
+                    leftMotor.run(-180);
+                    delay(4);
+                }
+                leftMotor.stop();
+                delay(4);
+                rightMotor.stop();
+            }
+            else if (menuPosition == 8) {
+                leftMotor.stop();
+                delay(4);
+                rightMotor.stop();
+            }
+
+        }
+        display.println(motorStrings[menuPosition]);
+        display.display();
+        delay(20);
+    }
+    mainMenu();
+}
+void INTERACTIVE_TEST::sensorTests() {}
+void INTERACTIVE_TEST::beaconTests() {}

@@ -79,8 +79,8 @@ robot::robot()
     front_sensor = new irsensor(0x48, lookup_table_5);
     left_sensor = new irsensor(0x4A, lookup_table_3);
     right_sensor = new irsensor(0x4B, lookup_table_4);
-    lift = new SLIFT(PA8);
-    //line_follower = new linefollower(left_motor, right_motor, bottom_sensor);
+    lift = new SLIFT(PA8); //init later when needed <- avoid timer conflicts
+    // line_follower = new linefollower(left_motor, right_motor, bottom_sensor);
 }
 
 void robot::init()
@@ -328,6 +328,14 @@ Follows black line for a certain amount of meters
 
 void robot::line_follow_meters(float meters)
 {
+<<<<<<< HEAD
     line_follower->follow_line();
     robot::delay_update(((float)abs(meters) / METERS_PER_SECOND) * 1000);
+=======
+	line_follower->follow_line();
+	delay(((float)abs(meters) / METERS_PER_SECOND) * 1000);
+
+    left_motor->stop();
+    right_motor->stop();
+>>>>>>> dc903a859aec4475c417f1109a207f8b9b14c0d5
 }
