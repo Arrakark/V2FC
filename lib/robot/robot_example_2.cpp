@@ -846,9 +846,11 @@ void grab_ewok()
     {
         //arm going down first
         ARMCONTROL::armPickup();
+        robot::delay_update(2000);
 
         //close the grabber to get the ewok
         ARMCONTROL::grabberHug();
+        robot::delay_update(2000);
 
         //count number of ewoks grabbed or check if the switch is pressed
         if (!ARMCONTROL::switchStatus()) //***
@@ -856,12 +858,15 @@ void grab_ewok()
 
         //bring arm up towards the robot's basket
         ARMCONTROL::armDropoff();
+        robot::delay_update(2000);
 
         //open grabber
         ARMCONTROL::grabberOpen();
+        robot::delay_update(2000);
 
         //set arm back to default horizontal position
         ARMCONTROL::armHorizontal();
+        robot::delay_update(2000);
     }
 }
 
