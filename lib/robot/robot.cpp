@@ -328,14 +328,9 @@ Follows black line for a certain amount of meters
 
 void robot::line_follow_meters(float meters)
 {
-<<<<<<< HEAD
-    line_follower->follow_line();
-    robot::delay_update(((float)abs(meters) / METERS_PER_SECOND) * 1000);
-=======
 	line_follower->follow_line();
 	delay(((float)abs(meters) / METERS_PER_SECOND) * 1000);
 
     left_motor->stop();
     right_motor->stop();
->>>>>>> dc903a859aec4475c417f1109a207f8b9b14c0d5
 }

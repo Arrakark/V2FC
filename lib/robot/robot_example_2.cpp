@@ -30,6 +30,7 @@ void sweep_back();
 void sweep_back_2();
 void grab_ewok();
 void step_back();
+void step_back_2();
 
 //stage function prototypes
 void first_stage();
@@ -57,12 +58,43 @@ void setup()
 
 void loop()
 {
+    first_stage();
     second_stage();
 }
 
 //==============================================================================================================
 
 //stage  functions
+
+void first_stage()
+{
+    atb.follow_right_edge_until_ewok();
+    robot::delay_update(2000);
+    ARMCONTROL::armPickup();
+    ARMCONTROL::grabberHug();
+    robot::delay_update(2000);
+
+    if (ARMCONTROL::switchStatus())
+    {
+        ARMCONTROL::armDropoff();
+        robot::delay_update(2000);
+        ARMCONTROL::grabberOpen();
+        robot::delay_update(2000);
+        ARMCONTROL::armHorizontal();
+    }
+    else
+    {
+        ARMCONTROL::grabberOpen();
+        robot::delay_update(2000);
+        ARMCONTROL::grabberHug();
+        robot::delay_update(2000);
+        ARMCONTROL::armDropoff();
+        robot::delay_update(2000);
+        ARMCONTROL::grabberOpen();
+        robot::delay_update(2000);
+        ARMCONTROL::armHorizontal();
+    }
+}
 
 /*
     Second Stage of Competition
@@ -759,5 +791,12 @@ void grab_ewok()
 
 void step_back()
 {
+    //make robot travel back for about 2 seconds
+    unsigned long start_time = millis();
 
+    while (millis() - start_time == 2)
+    {
+        atb.left_motor->run(-NORMAL_SPEED);
+        atb.right_motor->run(-NORMAL_SPEED);
+    }
 }
