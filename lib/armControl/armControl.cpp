@@ -17,7 +17,7 @@ Control class for arm motion. The arm has 3 positions:
 #define DEADBAND 100
 #define STOP 1473
 #define GRABBER_OPEN 160
-#define GRABBER_CLOSE 30
+#define GRABBER_CLOSE 5
 #define UP_LIMIT 1300
 #define DOWN_LIMIT 2950
 
@@ -33,8 +33,8 @@ Control class for arm motion. The arm has 3 positions:
 Servo arm_servo;
 Servo grabber_servo;
 
-int ARMCONTROL::arm_pickup = 2940;
-int ARMCONTROL::arm_search = 2850;
+int ARMCONTROL::arm_pickup = 2850;
+int ARMCONTROL::arm_search = 2800;
 int ARMCONTROL::arm_horizontal = 2600;
 int ARMCONTROL::arm_vertical = 1540;
 int ARMCONTROL::arm_dropoff = 1380;
@@ -70,24 +70,6 @@ void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabbe
     pinMode(grabber_switch, INPUT_PULLUP);
     pinMode(arm_pot_pin, INPUT);
 
-    HardwareTimer timer(1);
-    // Pause the timer while we're configuring it
-    timer.pause();
-
-    // Set up period    
-    timer.setPeriod(10); // in microseconds
-
-    // Set up an interrupt on channel 1
-    timer.setChannel1Mode(TIMER_OUTPUT_COMPARE);
-    timer.setCompare(TIMER_CH1, 1); // Interrupt 1 count after each update
-    timer.attachCompare1Interrupt(ARMCONTROL::update);
-
-    // Refresh the timer's count, prescale, and overflow
-    timer.refresh();
-
-    // Start the timer counting
-    timer.resume();
-
     pid_controller->p_gain = 0.6;
     pid_controller->p_limit = 500;
     
@@ -100,10 +82,6 @@ void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabbe
 void ARMCONTROL::disconnect(){
     arm_servo.detach();
     grabber_servo.detach();
-    HardwareTimer timer(1);
-    timer.pause();
-    timer.detachCompare1Interrupt();
-    timer.resume();
 }
 int ARMCONTROL::getEncoderVal()
 {

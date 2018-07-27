@@ -1,26 +1,7 @@
 #include "robot.h"
 
 //detect ewoks
-int lookup_table_1[20][9] = {{1, 131, 125, 134, 132, 129, 133, 135, 140},
-                             {3, 140, 134, 145, 143, 140, 143, 149, 150},
-                             {5, 150, 145, 155, 151, 147, 152, 157, 159},
-                             {7, 160, 156, 163, 159, 156, 160, 165, 168},
-                             {10, 174, 169, 176, 170, 166, 171, 176, 179},
-                             {12, 182, 177, 183, 176, 172, 177, 184, 187},
-                             {15, 196, 188, 196, 188, 182, 188, 195, 198},
-                             {17, 207, 195, 205, 196, 189, 195, 204, 206},
-                             {20, 227, 207, 222, 210, 200, 206, 218, 219},
-                             {23, 373, 229, 277, 243, 220, 225, 255, 251},
-                             {25, 417, 237, 337, 268, 229, 235, 281, 267},
-                             {28, 629, 305, 613, 527, 291, 301, 551, 489},
-                             {30, 768, 429, 764, 703, 445, 459, 745, 685},
-                             {33, 856, 540, 900, 860, 601, 617, 883, 818},
-                             {36, 960, 659, 1038, 1014, 757, 779, 1038, 971},
-                             {39, 1029, 736, 1131, 1122, 866, 891, 1142, 1077},
-                             {42, 1081, 785, 1198, 1202, 947, 976, 1223, 1155},
-                             {44, 1097, 809, 1227, 1236, 981, 1015, 1255, 1188},
-                             {46, 1092, 810, 1233, 1247, 991, 1026, 1258, 1192},
-                             {50, 1156, 889, 1314, 1337, 1081, 1123, 1351, 1291}};
+int lookup_table_5[20][9] = {{1, 137, 127, 124, 128, 131, 131, 138, 145}, {3, 144, 135, 133, 136, 140, 137, 147, 153}, {5, 157, 145, 145, 144, 149, 147, 154, 164}, {7, 169, 154, 153, 152, 156, 154, 161, 172}, {10, 196, 171, 167, 165, 169, 167, 176, 187}, {12, 244, 182, 176, 173, 178, 177, 186, 200}, {15, 875, 204, 192, 189, 195, 194, 207, 238}, {17, 1227, 236, 210, 204, 216, 212, 236, 455}, {20, 1568, 495, 271, 243, 319, 280, 507, 864}, {23, 1745, 746, 541, 473, 676, 629, 849, 1138}, {25, 1866, 906, 732, 689, 895, 855, 1051, 1304}, {28, 2013, 1102, 967, 953, 1162, 1132, 1310, 1525}, {30, 2126, 1239, 1129, 1129, 1340, 1313, 1482, 1677}, {33, 2248, 1392, 1307, 1325, 1536, 1512, 1678, 1850}, {36, 2329, 1496, 1436, 1467, 1678, 1660, 1816, 1972}, {39, 2426, 1607, 1558, 1598, 1806, 1790, 1942, 2084}, {42, 2473, 1670, 1637, 1685, 1894, 1882, 2036, 2172}, {44, 2520, 1724, 1700, 1752, 1961, 1951, 2102, 2233}, {46, 2559, 1771, 1752, 1809, 2019, 2011, 2162, 2291}, {50, 2616, 1843, 1834, 1898, 2107, 2100, 2254, 2378}};
 
 //line following
 int lookup_table_2[20][9] = {{1, 125, 121, 128, 125, 124, 131, 134, 148},
@@ -95,7 +76,7 @@ robot::robot()
     left_motor = new HBRIDGE(PA1, PB0);
     right_motor = new HBRIDGE(PA3, PA7);
     bottom_sensor = new irsensor(0x49, lookup_table_2);
-    front_sensor = new irsensor(0x48, lookup_table_1);
+    front_sensor = new irsensor(0x48, lookup_table_5);
     left_sensor = new irsensor(0x4A, lookup_table_3);
     right_sensor = new irsensor(0x4B, lookup_table_4);
     lift = new SLIFT(PA8);
@@ -107,10 +88,45 @@ void robot::init()
     left_motor->init();
     right_motor->init();
     Wire.begin();
+    pinMode(PC13, OUTPUT);
+    robot::check_sensors();
     ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
-    ARMCONTROL::armHorizontal();
+    ARMCONTROL::armSearch();
     ARMCONTROL::grabberOpen();
-    delay(500);
+    robot::delay_update(2000);
+}
+
+void robot::check_sensors()
+{
+
+    digitalWrite(PC13, HIGH);
+
+    byte error, address;
+    int nDevices;
+
+    nDevices = 0;
+    for (address = 72; address < 76; address++)
+    {
+        Wire.beginTransmission(address);
+        error = Wire.endTransmission();
+        if (error == 0)
+        {
+            //Serial.print("I2C device found at address 0x");
+            //if (address < 16)
+            //Serial.print("0");
+            //Serial.print(address, HEX);
+            // Serial.println("  !");
+            nDevices++;
+        }
+    }
+    if (nDevices != 4)
+    {
+        digitalWrite(PC13, HIGH);
+    }
+    else
+    {
+        digitalWrite(PC13, LOW);
+    }
 }
 
 //Does as name implies, drives forward until a cliff is detected
@@ -122,6 +138,8 @@ void robot::drive_until_cliff()
         left_motor->run(NORMAL_SPEED);
         right_motor->run(NORMAL_SPEED);
         bottom_sensor->update();
+        Serial.println(bottom_sensor->mean());
+        robot::delay_update(10);
     }
     left_motor->stop();
     right_motor->stop();
@@ -162,6 +180,17 @@ void robot::turn_degrees(float degrees)
     delay((abs(degrees) / DEGREES_PER_SECOND) * 1000);
     left_motor->stop();
     right_motor->stop();
+}
+
+void robot::delay_update(long ms)
+{
+    unsigned long starttime = millis();
+    while (millis() < starttime + ms)
+    {
+        ARMCONTROL::update();
+        robot::check_sensors();
+        delay(5);
+    }
 }
 
 /*
@@ -273,20 +302,32 @@ void robot::calibrate_degrees_per_second(int seconds)
 void robot::follow_right_edge_until_ewok()
 {
     pid edge_follower = pid();
-    edge_follower.p_gain = 20;
-    edge_follower.p_limit = 50;
-    
+    edge_follower.p_gain = 200;
+    edge_follower.p_limit = 100;
     do
     {
+        Serial.println("started update 1");
         front_sensor->update();
+        Serial.println("started update 2");
         right_sensor->update();
+        Serial.println("started control");
         float error = right_sensor->inverse_weighted_mean() - 5.3;
         float control = edge_follower.output(error);
-        right_motor->run(NORMAL_SPEED + (int)control);
-        left_motor->run(NORMAL_SPEED - (int)control);
-        delay(100);
+        right_motor->run(130 + (int)control);
+        left_motor->run(130 - (int)control);
+        Serial.println("wrote values");
+        robot::delay_update(10);
     } while (front_sensor->min_distance() > CLOSEST_DISTANCE_TO_EWOK);
-
     left_motor->stop();
     right_motor->stop();
+}
+
+/*
+Follows black line for a certain amount of meters
+*/
+
+void robot::line_follow_meters(float meters)
+{
+    line_follower->follow_line();
+    robot::delay_update(((float)abs(meters) / METERS_PER_SECOND) * 1000);
 }

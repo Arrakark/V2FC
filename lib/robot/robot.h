@@ -23,9 +23,9 @@
 #define TURN_SPEED 200
 #define FULL_CLIFF_DISTANCE 17
 #define GAP_CLIFF_DISTANCE 10
-#define METERS_PER_SECOND 0.799
-#define DEGREES_PER_SECOND 180
-#define CLOSEST_DISTANCE_TO_EWOK 15
+#define METERS_PER_SECOND 1
+#define DEGREES_PER_SECOND 1
+#define CLOSEST_DISTANCE_TO_EWOK 10
 #define LINE_DISTANCE 6.0
 #define EWOK_LONG_DISTANCE_DETECTION 25 //interval in ms to scan for the ewok
 
@@ -44,13 +44,16 @@ public:
   void calibrate_meters_per_second(int seconds);
   void calibrate_degrees_per_second(int seconds);
   void follow_right_edge_until_ewok();
+  void line_follow_meters(float meters);
+  static void delay_update(long ms);
+  static void check_sensors();
 
   //different parts of the robot
   //initialized in robot constructor
   HBRIDGE *left_motor;
   HBRIDGE *right_motor;
   irsensor *bottom_sensor;
-  irsensor *front_sensor;
+  irsensor *front_sensor; //only sensor that is upside down
   irsensor *left_sensor;
   irsensor *right_sensor;
   SLIFT *lift;

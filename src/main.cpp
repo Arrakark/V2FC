@@ -1,8 +1,6 @@
 #include <robot.h>
-
+#define DELAY 2000
 robot atb = robot();
-
-HBRIDGE bridge = HBRIDGE(PB0, PA1);
 
 void setup()
 {
@@ -10,18 +8,35 @@ void setup()
     //Initialize the tracks, scissor lift, and arm
     //ARMCONTROL::init(PB8, PB9, PB12, PB1);
     atb.init();
-    ARMCONTROL::disconnect();
-    //atb.move_meters(2);
-    // ARMCONTROL::grabberHug();
-    // delay(2000);
-    // ARMCONTROL::armDropoff();
-    // delay(2000);
-    // ARMCONTROL::grabberOpen();
+
+    //atb.drive_until_cliff();
+    atb.follow_right_edge_until_ewok();
+    robot::delay_update(2000);
+    ARMCONTROL::armPickup();
+    ARMCONTROL::grabberHug();
+    robot::delay_update(2000);
+    if (ARMCONTROL::switchStatus())
+    {
+        ARMCONTROL::armDropoff();
+        robot::delay_update(2000);
+        ARMCONTROL::grabberOpen();
+        robot::delay_update(2000);
+        ARMCONTROL::armHorizontal();
+    }
+    else
+    {
+        ARMCONTROL::grabberOpen();
+        robot::delay_update(2000);
+        ARMCONTROL::grabberHug();
+        robot::delay_update(2000);
+        ARMCONTROL::armDropoff();
+        robot::delay_update(2000);
+        ARMCONTROL::grabberOpen();
+        robot::delay_update(2000);
+        ARMCONTROL::armHorizontal();
+    }
 }
 
 void loop(void)
 {
-    ARMCONTROL::info();
-    delay(300);
-    //ARMCONTROL::armPickup();
 }
