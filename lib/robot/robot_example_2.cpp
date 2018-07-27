@@ -41,6 +41,7 @@ void fifth_stage();
 void zipline_finish();
 
 void back_after_first_stage();
+void back_after_first_stage_2();
 
 //functions that is based on the correct calibration of m/s and rad/s
 void second_stage_2();
@@ -107,7 +108,7 @@ void first_stage()
 void back_after_first_stage()
 {
     //turns 180 degrees to the left
-    while(atb.left_sensor->distance_readings[7] < 30)
+    while (atb.left_sensor->distance_readings[7] < 30)
     {
         atb.left_motor->run(-NORMAL_SPEED);
         atb.right_motor->run(NORMAL_SPEED);
@@ -131,7 +132,6 @@ void back_after_first_stage()
 
     } while (atb.bottom_sensor->mean() < FULL_CLIFF_DISTANCE);
 
-
     // //turn robot to the right for like 2 seconds
     // unsigned long start_time = millis();
 
@@ -141,17 +141,34 @@ void back_after_first_stage()
     //     atb.right_motor->run(-NORMAL_SPEED);
     // }
 
-    // //make robot drive until it sees a black line
-    // atb.drive_until_black_line();
+    //make robot drive until it sees a black line
+    atb.drive_until_black_line();
 
     right_trigger = true;
 
     sweep_back_2();
 
-    
-
     //robot resumes back to normal line following
-    while(!ewok_trigger)
+    while (!ewok_trigger)
+    {
+        atb.line_follower->follow_line();
+    }
+}
+
+void back_after_first_stage_2()
+{
+    //turns 180 degrees to the left
+    atb.turn_degrees(-180);
+
+    //turn robot to right until black line is detected *** might need to comment it out
+    right_trigger = true;
+    sweep_back_2();
+
+    //go foward until black line is detected
+    atb.drive_until_black_line();
+
+    //line follow back to start until robot detects edge
+    while (atb.bottom_sensor->mean() < CLIFF_DISTANCE)
     {
         atb.line_follower->follow_line();
     }
@@ -169,7 +186,7 @@ void back_after_first_stage()
             - line follow through the archway within 5 seconds the start of 10 kHz signal
 */
 
-void second_stage() 
+void second_stage()
 {
     //pick up second ewok (to the right)
 
@@ -795,7 +812,7 @@ void sweep_back_2()
     if (left_trigger)
     {
         //while (!(atb.front_sensor->distance_readings[0] < EWOK_LONG_DISTANCE_DETECTION))
-        while(atb.bottom_sensor->max_distance() < LINE_DISTANCE)
+        while (atb.bottom_sensor->max_distance() < LINE_DISTANCE)
         {
             atb.left_motor->run(EWOK_SPEED);
             atb.right_motor->run(-EWOK_SPEED);
@@ -813,7 +830,7 @@ void sweep_back_2()
             atb.right_motor->run(EWOK_SPEED);
         }
         right_trigger = !right_trigger;
-    }   
+    }
 }
 
 //=======================================
@@ -847,7 +864,6 @@ void grab_ewok()
         ARMCONTROL::armHorizontal();
     }
 }
-
 
 /*
     Assuming claw is closed and that an ewok has just been detected on the left or right
