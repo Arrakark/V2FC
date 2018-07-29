@@ -121,7 +121,7 @@ float irsensor::weighted_mean()
         b_sum = b_sum + distance_readings[x];
     }
 
-    if (b_sum != 0)
+    if (b_sum > 0.1)
     {
         return t_sum / b_sum;
     }
@@ -140,7 +140,7 @@ float irsensor::inverse_weighted_mean()
         t_sum = t_sum + (MAX_VALUE - distance_readings[x]) * (x + 1);
         b_sum = b_sum + (MAX_VALUE - distance_readings[x]);
     }
-    if (b_sum != 0)
+    if (b_sum > 0.1)
     {
         return t_sum / b_sum;
     }

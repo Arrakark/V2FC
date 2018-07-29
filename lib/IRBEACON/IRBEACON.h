@@ -21,7 +21,7 @@
 #define SAMPLING_TIME 5 //sampling period in us (microseconds)
 #define NUMBER_OF_SAMPLES 300 //number of samples in array
 
-#define TIMER 4
+#define TIMER 1
 
 class IRBEACON
 {

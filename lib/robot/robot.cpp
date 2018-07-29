@@ -316,12 +316,12 @@ void robot::grab_ewok(){
     robot::delay_update(500);
     ARMCONTROL::grabberHug();
     robot::delay_update(1000);
-    ARMCONTROL::armDropoff();
-    robot::delay_update(2000);
-    ARMCONTROL::grabberOpen();
-    robot::delay_update(1000);
-    ARMCONTROL::armSearch();
-    robot::delay_update(2000);
+    // ARMCONTROL::armDropoff();
+    // robot::delay_update(2000);
+    // ARMCONTROL::grabberOpen();
+    // robot::delay_update(1000);
+    // ARMCONTROL::armSearch();
+    // robot::delay_update(2000);
 }
 
 /*
@@ -334,14 +334,13 @@ void robot::follow_right_edge_until_ewok()
     pid edge_follower = pid();
     edge_follower.p_gain = 85;
     edge_follower.p_limit = 100;
-    {
+    do {
         front_sensor->update();
         right_sensor->update();
         float error = right_sensor->inverse_weighted_mean() - 5.3;
         float control = edge_follower.output(error);
-        right_motor->run(80 + (int)control);
-        left_motor->run(80 - (int)control);
-        robot::delay_update(10);
+        right_motor->run(130 + (int)control);
+        left_motor->run(130 - (int)control);
     } while (front_sensor->min_distance() > CLOSEST_DISTANCE_TO_EWOK);
     left_motor->stop();
     right_motor->stop();

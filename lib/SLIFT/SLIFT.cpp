@@ -51,6 +51,7 @@ void SLIFT::init(void)
 void SLIFT::moveUp(){
     slift_servo.writeMicroseconds(SERVO_UP);
     while (!atUpLimit()) {
+        //robot::delay_update(5);
         delay(5);
     }
     slift_servo.writeMicroseconds(SERVO_STATIC);
@@ -58,6 +59,7 @@ void SLIFT::moveUp(){
 void SLIFT::moveDown(){
     slift_servo.writeMicroseconds(SERVO_DOWN);  
     while (!atDownLimit()) {
+        //robot::delay_update(5);
         delay(5);
     }
     slift_servo.writeMicroseconds(SERVO_STATIC); 

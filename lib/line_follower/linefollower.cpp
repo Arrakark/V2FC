@@ -8,7 +8,7 @@ linefollower::linefollower(HBRIDGE*_left_track, HBRIDGE*_right_track, irsensor *
 	pid_controller = pid();
 	pid_controller.p_gain = 5.0;
 	pid_controller.p_limit = 200.0;
-	default_speed = 100;
+	default_speed = 120;
 	debug = false;
 }
 
@@ -35,8 +35,8 @@ void linefollower::follow_line()
 	else {
 		//driving off a cliff, continue to go forward
 		Serial.println("CLIFF!!!");
-		left_track->run(0);
-		right_track->run(0);
+		left_track->run(default_speed);
+		right_track->run(default_speed);
 	}
 
 	//debug

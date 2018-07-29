@@ -136,6 +136,10 @@ void ARMCONTROL::info()
     Serial.println("encoder: " + String(getEncoderVal()));
 }
 
+void ARMCONTROL::arm45(){
+    position = 2000;
+}
+
 void ARMCONTROL::armDropoff()
 {
     position = arm_dropoff;

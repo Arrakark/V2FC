@@ -44,6 +44,7 @@ public:
   static void armSearch();
   static void armHorizontal();
   static void armPickup();
+  static void arm45();
 
 private:
   ARMCONTROL() {}
