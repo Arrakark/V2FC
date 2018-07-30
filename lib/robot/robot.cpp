@@ -420,3 +420,11 @@ void robot::turn_until_black_line(int turn_dir)
     left_motor->run(0);
     right_motor->run(0);
 }
+
+void robot::line_follow_until_second_ewok()
+{
+    line_follower->pid_controller.p_gain = 550.0;
+    line_follower->default_speed = 120.0;
+    line_follower->follow_line();
+    delay_update(20);
+}

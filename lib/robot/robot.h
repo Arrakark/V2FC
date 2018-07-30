@@ -52,6 +52,7 @@ public:
   void sensor_info();
   void grab_ewok();
   void turn_until_black_line(int turn_dir);
+  void line_follow_until_second_ewok();
 
       //different parts of the robot
       //initialized in robot constructor
