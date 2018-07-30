@@ -17,7 +17,7 @@ Control class for arm motion. The arm has 3 positions:
 #define DEADBAND 100
 #define STOP 1473
 #define GRABBER_OPEN 160
-#define GRABBER_CLOSE 0
+#define GRABBER_CLOSE 25
 #define UP_LIMIT 1300
 #define DOWN_LIMIT 2950
 
@@ -33,11 +33,12 @@ Control class for arm motion. The arm has 3 positions:
 Servo arm_servo;
 Servo grabber_servo;
 
-int ARMCONTROL::arm_pickup = 2850;
+int ARMCONTROL::arm_pickup = 2920;
 int ARMCONTROL::arm_search = 2800;
 int ARMCONTROL::arm_horizontal = 2600;
 int ARMCONTROL::arm_vertical = 1540;
-int ARMCONTROL::arm_dropoff = 1380;
+//int ARMCONTROL::arm_dropoff = 1380;
+int ARMCONTROL::arm_dropoff = 1300;
 int ARMCONTROL::position = 2600;
 bool ARMCONTROL::debug = false;
 
@@ -70,7 +71,7 @@ void ARMCONTROL::init(int p_arm_servo_pin, int p_grabber_servo_pin, int p_grabbe
     pinMode(grabber_switch, INPUT_PULLUP);
     pinMode(arm_pot_pin, INPUT);
 
-    pid_controller->p_gain = 0.6;
+    pid_controller->p_gain = 0.7;
     pid_controller->p_limit = 500;
     
     arm_servo.attach(arm_servo_pin);

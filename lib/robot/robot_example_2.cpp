@@ -10,7 +10,6 @@
 #include <linefollower.h>
 #include <HBRIDGE.h>
 #include <IRBEACON.h>
-#include <SPI.h>
 
 //creating robot object
 robot atb = robot(); //admiral track bar
@@ -835,40 +834,40 @@ void sweep_back_2()
 
 //=======================================
 
-void grab_ewok()
-{
+// void grab_ewok()
+// {
     //***assume arm is open and in search position in the beginning
 
     //zero when limit switch is pressed
 
     //repeat motion of grab_ewok until grabber switch is PRESSED
-    while (ARMCONTROL::switchStatus()) // ***
-    {
-        //arm going down first
-        ARMCONTROL::armPickup();
-        robot::delay_update(2000);
+//     while (ARMCONTROL::switchStatus()) // ***
+//     {
+//         //arm going down first
+//         ARMCONTROL::armPickup();
+//         robot::delay_update(2000);
 
-        //close the grabber to get the ewok
-        ARMCONTROL::grabberHug();
-        robot::delay_update(2000);
+//         //close the grabber to get the ewok
+//         ARMCONTROL::grabberHug();
+//         robot::delay_update(2000);
 
-        //count number of ewoks grabbed or check if the switch is pressed
-        if (!ARMCONTROL::switchStatus()) //***
-            num_ewok_grabbed++;
+//         //count number of ewoks grabbed or check if the switch is pressed
+//         if (!ARMCONTROL::switchStatus()) //***
+//             num_ewok_grabbed++;
 
-        //bring arm up towards the robot's basket
-        ARMCONTROL::armDropoff();
-        robot::delay_update(2000);
+//         //bring arm up towards the robot's basket
+//         ARMCONTROL::armDropoff();
+//         robot::delay_update(2000);
 
-        //open grabber
-        ARMCONTROL::grabberOpen();
-        robot::delay_update(2000);
+//         //open grabber
+//         ARMCONTROL::grabberOpen();
+//         robot::delay_update(2000);
 
-        //set arm back to default horizontal position
-        ARMCONTROL::armHorizontal();
-        robot::delay_update(2000);
-    }
-}
+//         //set arm back to default horizontal position
+//         ARMCONTROL::armHorizontal();
+//         robot::delay_update(2000);
+//     }
+// }
 
 /*
     Assuming claw is closed and that an ewok has just been detected on the left or right

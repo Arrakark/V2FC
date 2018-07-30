@@ -1,15 +1,16 @@
 #include "linefollower.h"
 
-linefollower::linefollower(HBRIDGE*_left_track, HBRIDGE*_right_track, irsensor *_main_sensor)
+linefollower::linefollower(HBRIDGE *_left_track, HBRIDGE *_right_track, irsensor *_main_sensor)
 {
 	left_track = _left_track;
 	right_track = _right_track;
 	main_sensor = _main_sensor;
 	pid_controller = pid();
-	pid_controller.p_gain = 5.0;
-	pid_controller.p_limit = 200.0;
+	pid_controller.p_gain = 500.0;
+	pid_controller.p_limit = 250.0;
 	default_speed = 120;
 	debug = false;
+	cross_gap = true;
 }
 
 void linefollower::follow_line()
@@ -26,21 +27,26 @@ void linefollower::follow_line()
 	//checks if we are driving off a cliff
 	if (main_sensor->mean() < CLIFF_DISTANCE)
 	{
-		//control the tracks normally (on solid ground)
-		
-		// Serial.println("No CLIFF!!!");
 		left_track->run((int)left_speed);
 		right_track->run((int)right_speed);
 	}
-	else {
-		//driving off a cliff, continue to go forward
-		Serial.println("CLIFF!!!");
-		left_track->run(default_speed);
-		right_track->run(default_speed);
+	else
+	{
+		if (cross_gap)
+		{
+			left_track->run(default_speed);
+			right_track->run(default_speed);
+		}
+		else
+		{
+			left_track->run(0);
+			right_track->run(0);
+		}
 	}
 
 	//debug
-	if (debug){
+	if (debug)
+	{
 		Serial.print("Error: ");
 		Serial.print(error);
 		Serial.print(" Control: ");

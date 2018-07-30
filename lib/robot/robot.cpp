@@ -79,8 +79,8 @@ robot::robot()
     front_sensor = new irsensor(0x48, lookup_table_5);
     left_sensor = new irsensor(0x4A, lookup_table_3);
     right_sensor = new irsensor(0x4B, lookup_table_4);
-   // lift = new SLIFT(PA8); //init later when needed <- avoid timer conflicts
-    // line_follower = new linefollower(left_motor, right_motor, bottom_sensor);
+    // lift = new SLIFT(PA8); //init later when needed <- avoid timer conflicts
+    line_follower = new linefollower(left_motor, right_motor, bottom_sensor);
 }
 
 void robot::init()
@@ -311,17 +311,18 @@ void robot::calibrate_degrees_per_second(int seconds)
     right_motor->stop();
 }
 
-void robot::grab_ewok(){
+void robot::grab_ewok()
+{
     ARMCONTROL::armPickup();
     robot::delay_update(500);
     ARMCONTROL::grabberHug();
     robot::delay_update(1000);
-    // ARMCONTROL::armDropoff();
-    // robot::delay_update(2000);
-    // ARMCONTROL::grabberOpen();
-    // robot::delay_update(1000);
-    // ARMCONTROL::armSearch();
-    // robot::delay_update(2000);
+    ARMCONTROL::armDropoff();
+    robot::delay_update(2000);
+    ARMCONTROL::grabberOpen();
+    robot::delay_update(1000);
+    ARMCONTROL::armSearch();
+    robot::delay_update(2000);
 }
 
 /*
@@ -334,7 +335,8 @@ void robot::follow_right_edge_until_ewok()
     pid edge_follower = pid();
     edge_follower.p_gain = 85;
     edge_follower.p_limit = 100;
-    do {
+    do
+    {
         front_sensor->update();
         right_sensor->update();
         float error = right_sensor->inverse_weighted_mean() - 5.3;
@@ -353,8 +355,28 @@ Follows black line for a certain amount of meters
 
 void robot::line_follow_meters(float meters)
 {
-    line_follower->follow_line();
-    robot::delay_update(((float)abs(meters) / METERS_PER_SECOND) * 1000);
+}
+
+void robot::line_follow_until_right_ewok()
+{
+    float min_value = 30.0;
+    while (1)
+    {
+        right_sensor->update();
+        bottom_sensor->update();
+        line_follower->follow_line();
+        robot::delay_update(4);
+        if (bottom_sensor->mean() < min_value)
+        {
+            min_value = bottom_sensor->mean();
+        }
+        if (bottom_sensor->mean() > 1.75 * min_value)
+        {
+            break;
+        }
+    }
+    move_meters(-0.01);
+    //robot::delay_update(((float)abs(meters) / METERS_PER_SECOND) * 1000);
 }
 
 void robot::sensor_info()
@@ -368,4 +390,33 @@ void robot::sensor_info()
     Serial.print("   ");
     right_sensor->info();
     Serial.println();
+}
+
+void robot::turn_until_black_line(int turn_dir)
+{
+    //if sees ewok in the left before and it swept left, sweep robot to right
+    if (turn_dir < 0)
+    {
+        //while (!(atb.front_sensor->distance_readings[0] < EWOK_LONG_DISTANCE_DETECTION))
+        do
+        {
+            bottom_sensor->update();
+            left_motor->run(255);
+            right_motor->run(-255);
+        } while (bottom_sensor->max_distance() < LINE_DISTANCE);
+    }
+
+    //if sees ewok in the right before and it swept right, sweep robot to left
+    else
+    {
+        do
+        {
+            bottom_sensor->update();
+            left_motor->run(-255);
+            right_motor->run(255);
+        } while (bottom_sensor->max_distance() < LINE_DISTANCE);
+    }
+
+    left_motor->run(0);
+    right_motor->run(0);
 }

@@ -19,5 +19,6 @@ public:
 	HBRIDGE* right_track;
 	irsensor * main_sensor;
 	int default_speed;
+	bool cross_gap;
 private:
 };

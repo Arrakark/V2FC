@@ -18,13 +18,14 @@
 //#define NORMAL_SPEED 230
 #define NORMAL_SPEED 130
 #define SECOND_GAP_SPEED 230
-#define EWOK_SPEED 50
+#define EWOK_SPEED 135
 #define TURN_SPEED 200
 #define FULL_CLIFF_DISTANCE 17
 #define GAP_CLIFF_DISTANCE 10
 #define METERS_PER_SECOND 0.46333333 //NORMAL_SPEED is 130 -> 0.46333333m/s
 #define DEGREES_PER_SECOND 86        //TURN_SPEED is 200 -> 86 deg/sec
-#define CLOSEST_DISTANCE_TO_EWOK 12
+#define CLOSEST_DISTANCE_TO_EWOK 8.0
+#define CLOSEST_DISTANCE_TO_CHEWY 6.0
 #define LINE_DISTANCE 6.0
 #define EWOK_LONG_DISTANCE_DETECTION 25 //interval in ms to scan for the ewok
 
@@ -43,12 +44,14 @@ public:
   void calibrate_meters_per_second(int seconds);
   void calibrate_degrees_per_second(int seconds);
   void follow_right_edge_until_ewok();
+  void line_follow_until_right_ewok();
   void line_follow_meters(float meters);
   static void delay_update(long ms);
   static void check_sensors();
   void drive_until_cliff_early();
   void sensor_info();
   void grab_ewok();
+  void turn_until_black_line(int turn_dir);
 
       //different parts of the robot
       //initialized in robot constructor
