@@ -15,7 +15,7 @@
 #define GRABBER_SERVO PB9
 #define GRABBER_SWITCH PB12
 
-//#define NORMAL_SPEED 230
+// #define NORMAL_SPEED 150
 #define NORMAL_SPEED 130
 #define SECOND_GAP_SPEED 230
 #define EWOK_SPEED 135
@@ -54,6 +54,7 @@ public:
   void turn_until_black_line(int turn_dir);
   void line_follow_until_second_ewok();
   void wait_for_10khz();
+  void sweep_ewok(int turn_dir);
 
   //different parts of the robot
   //initialized in robot constructor

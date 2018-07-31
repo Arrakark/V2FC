@@ -443,3 +443,32 @@ void robot::wait_for_10khz(){
         delay_update(20);
     }
 }
+
+void robot::sweep_ewok(int turn_dir)
+{
+    //if sees ewok in the left before and it swept left, sweep robot to right
+    if (turn_dir < 0)
+    {
+        //while (!(atb.front_sensor->distance_readings[0] < EWOK_LONG_DISTANCE_DETECTION))
+        do
+        {
+            front_sensor->update();
+            left_motor->run(TURN_SPEED);
+            right_motor->run(-TURN_SPEED);
+        } while (front_sensor->min_distance() > 8);
+    }
+
+    //if sees ewok in the right before and it swept right, sweep robot to left
+    else
+    {
+        do
+        {
+            front_sensor->update();
+            left_motor->run(-TURN_SPEED);
+            right_motor->run(TURN_SPEED);
+        } while (front_sensor->min_distance() > 8);
+    }
+
+    left_motor->run(0);
+    right_motor->run(0);
+}
