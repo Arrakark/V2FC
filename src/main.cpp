@@ -18,12 +18,12 @@ void setup()
     atb.move_meters(-0.05);
     atb.grab_ewok();
     atb.turn_until_black_line(-1);
-    atb.turn_degrees(-1);
+    atb.turn_degrees(-1); //to make the turn_until_black_line stop
     robot::delay_update(2000);
     //This will try to cross the gap and then turn back onto the line
     atb.cross_gap_one();
     delay(2000);
-    atb.turn_until_black_line(-1);
+    atb.turn_until_black_line(-1); //is that a bug?
     //Back to trying to find the second ewok
     atb.line_follow_until_second_ewok_2(5000);
     robot::delay_update(2000);
