@@ -428,6 +428,8 @@ void robot::line_follow_until_second_ewok()
         right_sensor->update();
         line_follower->pid_controller.p_gain = 500.0;
         line_follower->pid_controller.p_limit = 150.0;
+        line_follower->pid_controller.d_gain = 2.0;
+        line_follower->pid_controller.d_limit = 100.0;
         line_follower->follow_line();
         delay_update(4);
     } while (right_sensor->min_distance() > 9);
@@ -459,7 +461,12 @@ void robot::line_follow_until_second_ewok_2(float milliseconds)
         line_follower->pid_controller.p_limit = 250;
         line_follower->pid_controller.d_gain = 2.0;
         line_follower->pid_controller.d_limit = 100.0;
-        line_follower->default_speed = 100.0;
+        line_follower->default_speed = 120.0;
+        // line_follower->default_speed = 100.0;
+        // line_follower->pid_controller.p_gain = 500.0;
+        // line_follower->pid_controller.p_limit = 150.0;
+        // line_follower->pid_controller.d_gain = 2.0;
+        // line_follower->pid_controller.d_limit = 100.0;
         line_follower->follow_line();
         delay_update(4);
     } while (right_sensor->min_distance() > 9 || millis() < start_time + milliseconds);
@@ -512,7 +519,7 @@ void robot::line_follow_until_third_ewok()
 
         if (left_sensor->min_distance() < CLOSEST_DISTANCE_TO_EWOK)
         {
-            flag ++;
+            flag++;
         }
     }
     move_meters(-0.01);

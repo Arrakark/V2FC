@@ -27,11 +27,11 @@ void setup()
     atb.move_toward_ewok();
     atb.move_meters(0.08);
     atb.grab_ewok();
-    ARMCONTROL::arm45();
-    atb.turn_until_black_line(-1);
-    robot::delay_update(2000);
-    atb.wait_for_10khz();
-    atb.move_meters(-0.05);
+    // ARMCONTROL::arm45();
+    // atb.turn_until_black_line(-1);
+    // robot::delay_update(2000);
+    // atb.wait_for_10khz();
+    // atb.move_meters(-0.05);
     //atb.turn_until_black_line(-1);
 }
 
