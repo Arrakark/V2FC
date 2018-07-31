@@ -52,6 +52,7 @@ public:
   void sensor_info();
   void grab_ewok();
   void turn_until_black_line(int turn_dir);
+  void cross_gap_one();
   void line_follow_until_second_ewok();
   void line_follow_until_second_ewok_2(float milliseconds);
   void wait_for_10khz();
