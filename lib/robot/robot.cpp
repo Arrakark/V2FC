@@ -446,6 +446,35 @@ void robot::wait_for_10khz()
 }
 
 /*
+Line follow untill the first gap, cross the first gap, and then speep
+left and right untill the robot is back on the line.
+*/
+
+void robot::cross_gap_one()
+{
+    unsigned long start_time = millis();
+    do
+    {
+        bottom_sensor->update();
+        line_follower->pid_controller.p_gain = 600.0;
+        line_follower->pid_controller.p_limit = 250;
+        line_follower->pid_controller.d_gain = 2.0;
+        line_follower->pid_controller.d_limit = 100.0;
+        line_follower->default_speed = 100.0;
+        line_follower->follow_line();
+        delay_update(4);
+    } while (bottom_sensor->min_distance() < 4);
+    do
+    {
+        bottom_sensor->update();
+        move_meters(0.05);
+    } while (bottom_sensor->min_distance() > 4);
+   
+
+
+    move_meters(-0.05);
+}
+/*
  *  Line follow until the second ewok for a minimum of milliseconds specified.
  *  This should help avoid noise from the IR beacon!
  * 
