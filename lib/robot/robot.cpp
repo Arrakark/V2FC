@@ -449,7 +449,7 @@ void robot::wait_for_10khz()
  * 
  * 
  */
-void robot::line_follow_until_second_ewok(float milliseconds)
+void robot::line_follow_until_second_ewok_2(float milliseconds)
 {
     unsigned long start_time = millis();
     do
