@@ -472,3 +472,26 @@ void robot::sweep_ewok(int turn_dir)
     left_motor->run(0);
     right_motor->run(0);
 }
+
+/*
+    Let the robot sense the stormtropper (assuming its platform won't rotate) and ewok
+    Stop robot once it senses the ewok
+*/
+
+void robot::line_follow_until_third_ewok()
+{
+    int flag = 0;
+    while (flag != 2)
+    {
+        left_sensor->update();
+        line_follower->follow_line();
+        robot::delay_update(4);
+
+        if (left_sensor->min_distance() < CLOSEST_DISTANCE_TO_EWOK)
+        {
+            flag ++;
+        }
+    }
+    move_meters(-0.01);
+    //robot::delay_update(((float)abs(meters) / METERS_PER_SECOND) * 1000);
+}
