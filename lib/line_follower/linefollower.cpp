@@ -6,7 +6,7 @@ linefollower::linefollower(HBRIDGE *_left_track, HBRIDGE *_right_track, irsensor
 	right_track = _right_track;
 	main_sensor = _main_sensor;
 	pid_controller = pid();
-	pid_controller.p_gain = 500.0;
+	pid_controller.p_gain = 600.0;
 	pid_controller.p_limit = 250.0;
 	default_speed = 120;
 	debug = false;

@@ -423,8 +423,23 @@ void robot::turn_until_black_line(int turn_dir)
 
 void robot::line_follow_until_second_ewok()
 {
-    line_follower->pid_controller.p_gain = 550.0;
-    line_follower->default_speed = 120.0;
-    line_follower->follow_line();
-    delay_update(20);
+    do
+    {
+        right_sensor->update();
+        line_follower->pid_controller.p_gain = 600.0;
+        line_follower->pid_controller.p_limit = 250;
+        line_follower->pid_controller.d_gain = 2.0;
+        line_follower->pid_controller.d_limit = 100.0;
+        line_follower->default_speed = 100.0;
+        line_follower->follow_line();
+        delay_update(4);
+    } while (right_sensor->min_distance() > 9);
+
+    move_meters(-0.05);
+}
+
+void robot::wait_for_10khz(){
+    while(IRBEACON::read(PA5) != 2){
+        delay_update(20);
+    }
 }
