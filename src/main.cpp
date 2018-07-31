@@ -26,7 +26,7 @@ void setup()
 
     //This will try to cross the gap and then turn back onto the line
     atb.cross_gap_one();
-    delay(2000); //possible bug?
+    robot::delay_update(2000);
     atb.turn_until_black_line(-1); //is that a bug?
 
     //Back to trying to find the second ewok
