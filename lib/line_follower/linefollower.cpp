@@ -10,7 +10,7 @@ linefollower::linefollower(HBRIDGE *_left_track, HBRIDGE *_right_track, irsensor
 	pid_controller.p_limit = 250.0;
 	pid_controller.d_gain = 2.0;
 	pid_controller.d_limit = 100.0;
-	default_speed = 120;
+	default_speed = 115;
 	debug = false;
 	cross_gap = true;
 }

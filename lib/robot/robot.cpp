@@ -401,8 +401,8 @@ void robot::turn_until_black_line(int turn_dir)
         do
         {
             bottom_sensor->update();
-            left_motor->run(255);
-            right_motor->run(-255);
+            left_motor->run(TURN_SPEED);
+            right_motor->run(-TURN_SPEED);
         } while (bottom_sensor->max_distance() < LINE_DISTANCE);
     }
 
@@ -412,8 +412,8 @@ void robot::turn_until_black_line(int turn_dir)
         do
         {
             bottom_sensor->update();
-            left_motor->run(-255);
-            right_motor->run(255);
+            left_motor->run(-TURN_SPEED);
+            right_motor->run(TURN_SPEED);
         } while (bottom_sensor->max_distance() < LINE_DISTANCE);
     }
 
@@ -460,17 +460,15 @@ void robot::cross_gap_one()
         line_follower->pid_controller.p_limit = 250;
         line_follower->pid_controller.d_gain = 2.0;
         line_follower->pid_controller.d_limit = 100.0;
-        line_follower->default_speed = 100.0;
+        line_follower->default_speed = 80.0;
         line_follower->follow_line();
         delay_update(4);
     } while (bottom_sensor->min_distance() < 4);
-    do
-    {
-        bottom_sensor->update();
-        move_meters(0.05);
-    } while (bottom_sensor->min_distance() > 4);
-   
-
+    // do
+    // {
+    //     bottom_sensor->update();
+    //     move_meters(0.05);
+    // } while (bottom_sensor->min_distance() > 4);
 
     move_meters(-0.05);
 }
@@ -490,7 +488,7 @@ void robot::line_follow_until_second_ewok_2(float milliseconds)
         line_follower->pid_controller.p_limit = 250;
         line_follower->pid_controller.d_gain = 2.0;
         line_follower->pid_controller.d_limit = 100.0;
-        line_follower->default_speed = 120.0;
+        line_follower->default_speed = 80.0;
         // line_follower->default_speed = 100.0;
         // line_follower->pid_controller.p_gain = 500.0;
         // line_follower->pid_controller.p_limit = 150.0;
@@ -498,7 +496,7 @@ void robot::line_follow_until_second_ewok_2(float milliseconds)
         // line_follower->pid_controller.d_limit = 100.0;
         line_follower->follow_line();
         delay_update(4);
-    } while (right_sensor->min_distance() > 9 || millis() < start_time + milliseconds);
+    } while (right_sensor->min_distance() > 12 || millis() < start_time + milliseconds);
 
     move_meters(-0.05);
 }
@@ -506,7 +504,7 @@ void robot::line_follow_until_second_ewok_2(float milliseconds)
 void robot::sweep_ewok(int turn_dir)
 {
     //if sees ewok in the left before and it swept left, sweep robot to right
-    if (turn_dir < 0)
+    if (turn_dir > 0)
     {
         //while (!(atb.front_sensor->distance_readings[0] < EWOK_LONG_DISTANCE_DETECTION))
         do
