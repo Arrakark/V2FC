@@ -20,17 +20,19 @@ void setup()
     atb.turn_until_black_line(-1);
     atb.turn_degrees(-1);
     robot::delay_update(2000);
-    atb.line_follow_until_second_ewok();
+    atb.line_follow_until_second_ewok(5000);
     robot::delay_update(2000);
-    // atb.move_meters(-0.05);
+    atb.move_meters(-0.05);
     atb.sweep_ewok(1);
-    // atb.move_toward_ewok();
+    atb.move_toward_ewok();
     atb.move_meters(0.08);
     atb.grab_ewok();
-    // ARMCONTROL::arm45();
-    // robot::delay_update(2000);
-    // atb.wait_for_10khz();
-    // atb.turn_until_black_line(-1);
+    ARMCONTROL::arm45();
+    atb.turn_until_black_line(-1);
+    robot::delay_update(2000);
+    atb.wait_for_10khz();
+    atb.move_meters(-0.05);
+    //atb.turn_until_black_line(-1);
 }
 
 void loop()
