@@ -468,6 +468,32 @@ void robot::wait_for_10khz()
         delay_update(20);
     }
 }
+/**
+ * This is the edge in front of the IR beacon 
+ **/
+void robot::find_second_edge(){
+    unsigned long start_time = millis();
+    do
+    {
+        bottom_sensor->update();
+        line_follower->pid_controller.p_gain = 600.0;
+        line_follower->pid_controller.p_limit = 250;
+        // line_follower->pid_controller.d_gain = 2.0;
+        // line_follower->pid_controller.d_limit = 100.0;
+        // line_follower->default_speed = 80.0;
+        line_follower->default_speed = 85.0;
+        line_follower->follow_line();
+        delay_update(4);
+    } while (bottom_sensor->min_distance() < CLIFF_DISTANCE);
+    // do
+    // {
+    //     bottom_sensor->update();
+    //     move_meters(0.05);
+    // } while (bottom_sensor->min_distance() > 4);
+
+    move_meters(-0.05);
+}
+
 
 void robot::find_gap_one()
 {
@@ -529,6 +555,7 @@ void robot::sweep_ewok(int turn_dir)
         {
             front_sensor->update();
             left_motor->run(TURN_SPEED);
+            delay_update(20);
             right_motor->run(-TURN_SPEED);
         } while (front_sensor->min_distance() > 10);
     }
@@ -569,4 +596,14 @@ void robot::line_follow_until_third_ewok()
     }
     move_meters(-0.01);
     //robot::delay_update(((float)abs(meters) / METERS_PER_SECOND) * 1000);
+}
+
+void robot::first_ewok_pick_up(){
+    ARMCONTROL::grabberHug();
+    robot::line_follow_until_right_ewok();
+    ARMCONTROL::grabberOpen();
+    robot::delay_update(500);
+    robot::move_toward_ewok();
+    robot::move_meters(-0.05);
+    robot::grab_ewok();
 }
