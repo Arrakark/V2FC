@@ -444,10 +444,7 @@ void robot::line_follow_until_second_ewok()
 
 void robot::wait_for_10khz()
 {
-    // 2 = 10 kHz
-    //0 = nothing
-    //1 = 1 kHz
-    while (IRBEACON::read(PA5) != 2)
+    while (IRBEACON::read(PA5) != TEN_KHZ)
     {
         delay_update(20);
     }
@@ -480,8 +477,6 @@ void robot::find_gap_one()
 /*
  *  Line follow until the second ewok for a minimum of milliseconds specified.
  *  This should help avoid noise from the IR beacon!
- * 
- * 
  */
 void robot::line_follow_until_second_ewok_2(float milliseconds)
 {
