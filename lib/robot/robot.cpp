@@ -93,6 +93,11 @@ void robot::init()
     ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
     ARMCONTROL::armSearch();
     ARMCONTROL::grabberOpen();
+
+    //Initializing i2c as input pullup
+    pinMode(PB6,INPUT_PULLUP);
+    pinMode(PB7,INPUT_PULLUP);
+
     robot::delay_update(2000);
 }
 
