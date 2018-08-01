@@ -9,9 +9,6 @@ public:
   static void run_surprise();
 
 private:
-  static void beep(int note, int duration);
-  static void firstSection();
-  static void secondSection();
   surprise(){};
 };
 

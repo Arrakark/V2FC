@@ -1,5 +1,55 @@
 #include "surprise.h"
 
+<<<<<<< HEAD
+//Note Definitions
+const int NOTE_AS3 = 233;
+const int NOTE_C4 = 262;
+const int NOTE_D4 = 294;
+const int NOTE_E4 = 330;
+const int NOTE_F4 = 349;
+const int NOTE_G4 = 392;
+const int NOTE_GS4 = 415;
+const int NOTE_A4 = 440;
+const int NOTE_AS4 = 466;
+const int NOTE_B4 = 494;
+const int NOTE_C5 = 523;
+const int NOTE_CS5 = 554;
+const int NOTE_D5 = 587;
+const int NOTE_DS5 = 622;
+const int NOTE_E5 = 659;
+const int NOTE_F5 = 699;
+const int NOTE_FS5 = 740;
+const int NOTE_G5 = 784;
+const int NOTE_GS5 = 831;
+const int NOTE_A5 = 880;
+
+const int rhythmBuzzerPin = PA1;
+const int rhythmLength = 115;
+
+int rhythmNotes[] = {NOTE_A4, 0, NOTE_A4, NOTE_A4, NOTE_A4, NOTE_A4, 0, NOTE_A4, NOTE_A4, NOTE_A4, NOTE_A4, 0, NOTE_A4, NOTE_A4, NOTE_A4, NOTE_F4, NOTE_F4, NOTE_F4, NOTE_C5, NOTE_C5, NOTE_C5, //Intro 1 (21 Notes)
+                     NOTE_A4, 0, NOTE_A4, NOTE_A4, NOTE_A4, NOTE_A4, 0, NOTE_A4, NOTE_A4, NOTE_A4, NOTE_A4, 0, NOTE_A4, NOTE_A4, NOTE_A4, NOTE_F4, NOTE_F4, NOTE_F4, NOTE_C5, NOTE_C5, NOTE_C5, //Intro 2 (21 Notes)
+                     NOTE_A4, NOTE_A4, NOTE_A4, NOTE_F4, NOTE_C5, NOTE_A4, NOTE_F4, NOTE_C5, NOTE_A4,                                                                                           //Part 1  (9 Notes)
+                     0, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_F5, NOTE_C5, NOTE_GS4, NOTE_F4, NOTE_C5, NOTE_A4,                                                                                       //Part 2  (10 Notes)
+                     0, NOTE_A5, NOTE_A4, NOTE_A4, NOTE_A5, NOTE_GS5, NOTE_G5, NOTE_FS5, NOTE_F5, NOTE_FS5,                                                                                     //Part 3  (10 Notes)
+                     0, NOTE_AS4, NOTE_DS5, NOTE_D5, NOTE_CS5, NOTE_C5, NOTE_B4, NOTE_C5,                                                                                                       //Part 4  (8 Notes)
+                     0, NOTE_F4, NOTE_GS4, NOTE_F4, NOTE_A4, NOTE_C5, NOTE_A4, NOTE_C5, NOTE_E5,                                                                                                //Part 5  (9 Notes)
+                     0, NOTE_A5, NOTE_A4, NOTE_A4, NOTE_A5, NOTE_GS5, NOTE_G5, NOTE_FS5, NOTE_F5, NOTE_FS5,                                                                                     //Part 6  (10 Notes)
+                     0, NOTE_AS4, NOTE_DS5, NOTE_D5, NOTE_CS5, NOTE_C5, NOTE_B4, NOTE_C5,                                                                                                       //Part 7  (8 Notes)
+                     0, NOTE_F4, NOTE_GS4, NOTE_F4, NOTE_C5, NOTE_A4, NOTE_F4, NOTE_C5, NOTE_A4};                                                                                               //Part 8  (9 Notes)
+
+int rhythmBeats[] = {1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, //Intro 1
+                     1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, //Intro 2
+                     4, 4, 4, 3, 1, 4, 3, 1, 4,                                     //Part 1
+                     4, 4, 4, 4, 3, 1, 4, 3, 1, 4,                                  //Part 2
+                     4, 4, 3, 1, 4, 3, 1, 1, 1, 1,                                  //Part 3
+                     3, 2, 4, 3, 1, 1, 1, 1,                                        //Part 4
+                     3, 2, 4, 3, 1, 4, 3, 1, 4,                                     //Part 5
+                     3, 4, 3, 1, 4, 3, 1, 1, 1, 1,                                  //Part 6
+                     3, 2, 4, 3, 1, 1, 1, 1,                                        //Part 7
+                     3, 2, 4, 3, 1, 4, 3, 1, 4};                                    //Part 8
+
+int tempo = 150;
+=======
 const int c = 261;
 const int d = 294;
 const int e = 329;
@@ -20,116 +70,36 @@ const int gH = 784;
 const int gSH = 830;
 const int aH = 880;
 
-const int buzzerPin = 8;
+//const int buzzerPin = 8;
 
 int counter = 0;
 
 const int buzzerPin = PA1;
+>>>>>>> 64e18855b564aae3f4b4e222bced91ecb08de358
 
 void surprise::run_surprise()
 {
-    //protect motor from blowing
     digitalWrite(PB0, LOW);
-    digitalWrite(buzzerPin, LOW);
-
-    while (1)
+    while (true)
     {
-        //Play first section
-        firstSection();
 
-        //Play second section
-        secondSection();
+        int i, rhythmDuration;
 
-        //Variant 1
-        beep(f, 250);
-        beep(gS, 500);
-        beep(f, 350);
-        beep(a, 125);
-        beep(cH, 500);
-        beep(a, 375);
-        beep(cH, 125);
-        beep(eH, 650);
+        for (i = 0; i < rhythmLength; i++) // step through the song arrays
+        {
+            rhythmDuration = rhythmBeats[i] * tempo; // length of note/rest in ms
 
-        delay(500);
+            if (rhythmNotes[i] == '0') // is this a rest?
+            {
+                delay(rhythmDuration); // then pause for a moment
+            }
 
-        //Repeat second section
-        secondSection();
-
-        //Variant 2
-        beep(f, 250);
-        beep(gS, 500);
-        beep(f, 375);
-        beep(cH, 125);
-        beep(a, 500);
-        beep(f, 375);
-        beep(cH, 125);
-        beep(a, 650);
-
-        delay(650);
+            else // otherwise, play the note
+            {
+                tone(rhythmBuzzerPin, rhythmNotes[i], rhythmDuration);
+                delay(rhythmDuration); // wait for tone to finish
+            }
+            delay(tempo / 10); // brief pause between notes
+        }
     }
-}
-
-void surprise::beep(int note, int duration)
-{
-    //Play tone on buzzerPin
-    tone(buzzerPin, note, duration);
-    //Stop tone on buzzerPin
-    noTone(buzzerPin);
-
-    delay(50);
-
-    //Increment counter
-    counter++;
-}
-
-void surprise::firstSection()
-{
-    beep(a, 500);
-    beep(a, 500);
-    beep(a, 500);
-    beep(f, 350);
-    beep(cH, 150);
-    beep(a, 500);
-    beep(f, 350);
-    beep(cH, 150);
-    beep(a, 650);
-
-    delay(500);
-
-    beep(eH, 500);
-    beep(eH, 500);
-    beep(eH, 500);
-    beep(fH, 350);
-    beep(cH, 150);
-    beep(gS, 500);
-    beep(f, 350);
-    beep(cH, 150);
-    beep(a, 650);
-
-    delay(500);
-}
-
-void surprise::secondSection()
-{
-    beep(aH, 500);
-    beep(a, 300);
-    beep(a, 150);
-    beep(aH, 500);
-    beep(gSH, 325);
-    beep(gH, 175);
-    beep(fSH, 125);
-    beep(fH, 125);
-    beep(fSH, 250);
-
-    delay(325);
-
-    beep(aS, 250);
-    beep(dSH, 500);
-    beep(dH, 325);
-    beep(cSH, 175);
-    beep(cH, 125);
-    beep(b, 125);
-    beep(cH, 250);
-
-    delay(350);
 }
