@@ -180,6 +180,20 @@ void robot::drive_until_black_line()
     left_motor->stop();
     right_motor->stop();
 }
+/**
+ * Follows the line untill BOTH beacon sensors
+ * detect a signal. A signal is defined as IR
+ * light that is either 1kHz or 10 kHz. Random
+ * IR noise will not be considered a signal
+ */
+void robot::line_follow_until_beacon()
+{
+    while (IRBEACON::read(PA5) == NO_BEACON || IRBEACON::read(PA0) == NO_BEACON)
+    {
+        line_follower->follow_line();
+    }
+    move_meters(-0.01);
+}
 
 /*
  *  Turns the specified number of degrees
@@ -445,12 +459,15 @@ void robot::line_follow_until_second_ewok()
 
 void robot::wait_for_10khz()
 {
-    while (IRBEACON::read(PA5) != TEN_KHZ)
+    while (IRBEACON::read(PA5) != ONE_KHZ || IRBEACON::read(PA0) != ONE_KHZ)
+    {
+        delay_update(20);
+    }
+    while (IRBEACON::read(PA5) != TEN_KHZ || IRBEACON::read(PA0) != TEN_KHZ)
     {
         delay_update(20);
     }
 }
-
 
 void robot::find_gap_one()
 {

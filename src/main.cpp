@@ -18,9 +18,9 @@ void setup()
 
     //==========================SECOND STAGE==========================
     atb.turn_until_black_line(RIGHT); //sweep back to black line after grabbing ewok
-    robot::delay_update(1000);
+    robot::delay_update(500);
     atb.turn_degrees(10); //to make the turn_until_black_line stop
-    robot::delay_update(1000);
+    robot::delay_update(500);
     //This will try to cross the gap and then turn back onto the line
     atb.find_gap_one(); 
     robot::delay_update(500);
@@ -47,18 +47,24 @@ void setup()
     // robot::delay_update(500);
     // atb.grab_ewok();
     //========================== IR BEACON ARCHWAY ==========================
-    ARMCONTROL::arm45();
     ARMCONTROL::grabberHug();
-    robot::delay_update(2000);
+    ARMCONTROL::armDropoff();
+    robot::delay_update(1000);
+    atb.line_follow_until_beacon();
+    atb.wait_for_10khz();
+
     //turn 90 degrees to the right
-    atb.turn_degrees(110);
-    atb.wait_for_10khz();  
-    atb.turn_until_black_line(LEFT);
-    atb.turn_degrees(-10);
+    // atb.turn_degrees(110);
+    // atb.wait_for_10khz();  
+    // atb.turn_until_black_line(LEFT);
+    // atb.turn_degrees(-10);
+    atb.line_follower->cross_gap=false;
+    atb.line_follower->default_speed=85;
 }
 
 void loop()
 {
+   atb.line_follower->follow_line();
     // atb.line_follower->follow_line();
     // ARMCONTROL::grabberOpen();
     // robot::delay_update(2000);
@@ -81,10 +87,10 @@ void loop()
     // atb.line_follower->pid_controller.p_gain = 550.0;
     // atb.line_follower->default_speed = 120.0;
     // atb.line_follower->follow_line();
-    atb.bottom_sensor->update();
-    atb.bottom_sensor->info();
-    Serial.println();
-    atb.delay_update(500);
+    // atb.bottom_sensor->update();
+    // atb.bottom_sensor->info();
+    // Serial.println();
+    atb.delay_update(20);
     // atb.left_sensor->update();
     // atb.right_sensor->update();
     // atb.front_sensor->update();

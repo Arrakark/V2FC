@@ -58,6 +58,7 @@ public:
   void line_follow_until_second_ewok();
   void line_follow_until_second_ewok_2(float milliseconds);
   void wait_for_10khz();
+  void line_follow_until_beacon();
   void sweep_ewok(int turn_dir);
   void line_follow_until_third_ewok();
 
