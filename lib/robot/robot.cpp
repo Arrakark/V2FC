@@ -488,7 +488,7 @@ void robot::line_follow_until_second_ewok_2(float milliseconds)
         line_follower->pid_controller.p_limit = 250;
         line_follower->pid_controller.d_gain = 2.0;
         line_follower->pid_controller.d_limit = 100.0;
-        line_follower->default_speed = 80.0;
+        line_follower->default_speed = 100.0;
         // line_follower->default_speed = 100.0;
         // line_follower->pid_controller.p_gain = 500.0;
         // line_follower->pid_controller.p_limit = 150.0;
@@ -512,7 +512,7 @@ void robot::sweep_ewok(int turn_dir)
             front_sensor->update();
             left_motor->run(TURN_SPEED);
             right_motor->run(-TURN_SPEED);
-        } while (front_sensor->min_distance() > 8);
+        } while (front_sensor->min_distance() > 10);
     }
 
     //if sees ewok in the right before and it swept right, sweep robot to left
@@ -523,7 +523,7 @@ void robot::sweep_ewok(int turn_dir)
             front_sensor->update();
             left_motor->run(-TURN_SPEED);
             right_motor->run(TURN_SPEED);
-        } while (front_sensor->min_distance() > 8);
+        } while (front_sensor->min_distance() > 10);
     }
 
     left_motor->run(0);

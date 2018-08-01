@@ -26,17 +26,17 @@ void setup()
 
     //This will try to cross the gap and then turn back onto the line
     atb.cross_gap_one(); //doesnt actually cross gap
-    robot::delay_update(2000);
+    robot::delay_update(500);
     atb.move_meters(-0.2);
-    robot::delay_update(2000);
-    atb.move_meters(0.60);
-    robot::delay_update(1000);
+    robot::delay_update(500);
+    atb.move_meters(0.80);
+    robot::delay_update(500);
     atb.turn_until_black_line(-1);
-    robot::delay_update(1000);
-    atb.line_follow_until_second_ewok_2(1500);
-    robot::delay_update(1000);
-    atb.sweep_ewok(1);
-    robot::delay_update(1000);
+    robot::delay_update(500);
+    atb.line_follow_until_second_ewok_2(2000);
+    robot::delay_update(500);
+    atb.sweep_ewok(-1);
+    robot::delay_update(500);
     atb.grab_ewok();
 }
 
