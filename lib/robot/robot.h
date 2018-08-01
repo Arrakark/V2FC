@@ -65,6 +65,13 @@ public:
 
   //competition surface stages
   void first_ewok_pick_up();
+  void second_ewok_pick_up();
+  void archway_crossing();
+  void third_ewok_pick_up();
+
+  //info
+  void sensor_mean();
+  void sensor_min();
 
   //different parts of the robot
   //initialized in robot constructor
