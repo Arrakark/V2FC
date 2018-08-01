@@ -1,6 +1,5 @@
 #include "surprise.h"
 
-<<<<<<< HEAD
 //Note Definitions
 const int NOTE_AS3 = 233;
 const int NOTE_C4 = 262;
@@ -49,33 +48,6 @@ int rhythmBeats[] = {1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1,
                      3, 2, 4, 3, 1, 4, 3, 1, 4};                                    //Part 8
 
 int tempo = 150;
-=======
-const int c = 261;
-const int d = 294;
-const int e = 329;
-const int f = 349;
-const int g = 391;
-const int gS = 415;
-const int a = 440;
-const int aS = 455;
-const int b = 466;
-const int cH = 523;
-const int cSH = 554;
-const int dH = 587;
-const int dSH = 622;
-const int eH = 659;
-const int fH = 698;
-const int fSH = 740;
-const int gH = 784;
-const int gSH = 830;
-const int aH = 880;
-
-//const int buzzerPin = 8;
-
-int counter = 0;
-
-const int buzzerPin = PA1;
->>>>>>> 64e18855b564aae3f4b4e222bced91ecb08de358
 
 void surprise::run_surprise()
 {
