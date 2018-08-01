@@ -28,7 +28,8 @@
 #define CLOSEST_DISTANCE_TO_CHEWY 6.0
 #define LINE_DISTANCE 6.0
 #define EWOK_LONG_DISTANCE_DETECTION 25 //interval in ms to scan for the ewok
-//#define 
+#define RIGHT 1
+#define LEFT -1
 
 class robot
 {

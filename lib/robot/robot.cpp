@@ -397,12 +397,14 @@ void robot::sensor_info()
     Serial.println();
 }
 
+/**
+ * Moves robot in a specified direction until it senses the black tape.
+ * Param: turn direction. num > 0 means turn right, num < 0 means turn left
+ **/
 void robot::turn_until_black_line(int turn_dir)
 {
-    //if sees ewok in the left before and it swept left, sweep robot to right
-    if (turn_dir < 0)
+    if (turn_dir > 0)
     {
-        //while (!(atb.front_sensor->distance_readings[0] < EWOK_LONG_DISTANCE_DETECTION))
         do
         {
             bottom_sensor->update();
@@ -411,7 +413,6 @@ void robot::turn_until_black_line(int turn_dir)
         } while (bottom_sensor->max_distance() < LINE_DISTANCE);
     }
 
-    //if sees ewok in the right before and it swept right, sweep robot to left
     else
     {
         do
