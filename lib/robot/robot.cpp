@@ -557,7 +557,7 @@ void robot::sweep_ewok(int turn_dir)
             left_motor->run(TURN_SPEED);
             delay_update(20);
             right_motor->run(-TURN_SPEED);
-        } while (front_sensor->min_distance() > 10);
+        } while (front_sensor->min_distance() > 8);
     }
 
     //if sees ewok in the right before and it swept right, sweep robot to left
@@ -568,7 +568,7 @@ void robot::sweep_ewok(int turn_dir)
             front_sensor->update();
             left_motor->run(-TURN_SPEED);
             right_motor->run(TURN_SPEED);
-        } while (front_sensor->min_distance() > 10);
+        } while (front_sensor->min_distance() > 8);
     }
 
     left_motor->run(0);
