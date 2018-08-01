@@ -679,6 +679,22 @@ void robot::third_ewok_pick_up(){
     grab_ewok();
 }
 
+// void robot::second_gap_crossing(){
+
+// }
+
+// void robot::fourth_ewok_pick_up(){
+
+// }
+
+// void robot::chewbacca_pick_up(){
+
+// }
+
+// void robot::zipline(){
+
+//}
+
 void robot::sensor_mean(){
     robot::delay_update(20);
     left_sensor->update();
@@ -701,5 +717,5 @@ void robot::sensor_min(){
     Serial.print(front_sensor->min_distance()); 
     Serial.print(",");
     Serial.println(right_sensor->min_distance());
-
 }
+

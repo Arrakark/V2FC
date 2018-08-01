@@ -68,6 +68,10 @@ public:
   void second_ewok_pick_up();
   void archway_crossing();
   void third_ewok_pick_up();
+  void second_gap_crossing();
+  void fourth_ewok_pick_up();
+  void chewbacca_pick_up();
+  void zipline();  
 
   //info
   void sensor_mean();
