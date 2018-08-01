@@ -28,6 +28,7 @@
 #define CLOSEST_DISTANCE_TO_CHEWY 6.0
 #define LINE_DISTANCE 6.0
 #define EWOK_LONG_DISTANCE_DETECTION 25 //interval in ms to scan for the ewok
+//#define 
 
 class robot
 {
@@ -52,7 +53,7 @@ public:
   void sensor_info();
   void grab_ewok();
   void turn_until_black_line(int turn_dir);
-  void cross_gap_one();
+  void find_gap_one();
   void line_follow_until_second_ewok();
   void line_follow_until_second_ewok_2(float milliseconds);
   void wait_for_10khz();

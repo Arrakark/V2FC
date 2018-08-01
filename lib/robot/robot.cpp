@@ -95,8 +95,8 @@ void robot::init()
     ARMCONTROL::grabberOpen();
 
     //Initializing i2c as input pullup
-    pinMode(PB6,INPUT_PULLUP);
-    pinMode(PB7,INPUT_PULLUP);
+    //pinMode(PB6,INPUT_PULLUP);
+    //pinMode(PB7,INPUT_PULLUP);
 
     robot::delay_update(2000);
 }
@@ -199,7 +199,7 @@ void robot::turn_degrees(float degrees)
         left_motor->run(-TURN_SPEED);
         right_motor->run(TURN_SPEED);
     }
-    delay((abs(degrees) / DEGREES_PER_SECOND) * 1000);
+    delay_update((abs(degrees) / DEGREES_PER_SECOND) * 1000);
     left_motor->stop();
     right_motor->stop();
 }
@@ -231,7 +231,7 @@ void robot::move_meters(float meters)
         left_motor->run(-NORMAL_SPEED);
         right_motor->run(-NORMAL_SPEED);
     }
-    delay(((float)abs(meters) / METERS_PER_SECOND) * 1000);
+    delay_update(((float)abs(meters) / METERS_PER_SECOND) * 1000);
     left_motor->stop();
     right_motor->stop();
 }
@@ -296,7 +296,7 @@ void robot::calibrate_meters_per_second(int seconds)
 {
     left_motor->run(NORMAL_SPEED);
     right_motor->run(NORMAL_SPEED);
-    delay(seconds * 1000);
+    delay_update(seconds * 1000);
     left_motor->stop();
     right_motor->stop();
 }
@@ -311,7 +311,7 @@ void robot::calibrate_degrees_per_second(int seconds)
 {
     left_motor->run(TURN_SPEED);
     right_motor->run(-TURN_SPEED);
-    delay(seconds * 1000);
+    delay_update(seconds * 1000);
     left_motor->stop();
     right_motor->stop();
 }
@@ -444,18 +444,17 @@ void robot::line_follow_until_second_ewok()
 
 void robot::wait_for_10khz()
 {
+    // 2 = 10 kHz
+    //0 = nothing
+    //1 = 1 kHz
     while (IRBEACON::read(PA5) != 2)
     {
         delay_update(20);
     }
 }
 
-/*
-Line follow untill the first gap, cross the first gap, and then speep
-left and right untill the robot is back on the line.
-*/
 
-void robot::cross_gap_one()
+void robot::find_gap_one()
 {
     unsigned long start_time = millis();
     do
@@ -463,9 +462,10 @@ void robot::cross_gap_one()
         bottom_sensor->update();
         line_follower->pid_controller.p_gain = 600.0;
         line_follower->pid_controller.p_limit = 250;
-        line_follower->pid_controller.d_gain = 2.0;
-        line_follower->pid_controller.d_limit = 100.0;
-        line_follower->default_speed = 80.0;
+        // line_follower->pid_controller.d_gain = 2.0;
+        // line_follower->pid_controller.d_limit = 100.0;
+        // line_follower->default_speed = 80.0;
+        line_follower->default_speed = 70.0;
         line_follower->follow_line();
         delay_update(4);
     } while (bottom_sensor->min_distance() < 4);
