@@ -25,7 +25,7 @@ int IRBEACON::read(int _pin)
     if (crossed > 56 && crossed < 65){
         return TEN_KHZ;
     }
-    return NOTHING;
+    return NO_BEACON;
 }
 
 void IRBEACON::sample()

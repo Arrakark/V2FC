@@ -28,8 +28,8 @@
 #define CLOSEST_DISTANCE_TO_CHEWY 6.0
 #define LINE_DISTANCE 6.0
 #define EWOK_LONG_DISTANCE_DETECTION 25 //interval in ms to scan for the ewok
-#define RIGHT 1
-#define LEFT -1
+#define RIGHT -1
+#define LEFT 1
 
 class robot
 {
@@ -58,8 +58,24 @@ public:
   void line_follow_until_second_ewok();
   void line_follow_until_second_ewok_2(float milliseconds);
   void wait_for_10khz();
+  void line_follow_until_beacon();
   void sweep_ewok(int turn_dir);
   void line_follow_until_third_ewok();
+  void find_second_edge();
+
+  //competition surface stages
+  void first_ewok_pick_up();
+  void second_ewok_pick_up();
+  void archway_crossing();
+  void third_ewok_pick_up();
+  void second_gap_crossing();
+  void fourth_ewok_pick_up();
+  void chewbacca_pick_up();
+  void zipline();  
+
+  //info
+  void sensor_mean();
+  void sensor_min();
 
   //different parts of the robot
   //initialized in robot constructor
