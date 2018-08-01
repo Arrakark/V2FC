@@ -22,6 +22,10 @@
 #define NUMBER_OF_SAMPLES 300 //number of samples in array
 
 #define TIMER 1
+#define NOTHING 0
+#define ONE_KHZ 1
+#define TEN_KHZ 10
+
 
 class IRBEACON
 {

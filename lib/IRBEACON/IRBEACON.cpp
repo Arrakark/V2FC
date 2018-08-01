@@ -20,12 +20,12 @@ int IRBEACON::read(int _pin)
     delayMicroseconds(NUMBER_OF_SAMPLES * SAMPLING_TIME + SAMPLING_TIME);
     int crossed = times_crossed();
     if (crossed > 4 && crossed < 8){
-        return 1;
+        return ONE_KHZ;
     }
     if (crossed > 56 && crossed < 65){
-        return 2;
+        return TEN_KHZ;
     }
-    return 0;
+    return NOTHING;
 }
 
 void IRBEACON::sample()
