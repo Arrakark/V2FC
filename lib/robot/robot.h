@@ -75,6 +75,7 @@ public:
   void chewbacca_pick_up();
   void zipline();  
   void zipline_follow();
+  void compass_turn_degrees(float degrees);
 
   //info
   void sensor_mean();

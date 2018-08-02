@@ -7,17 +7,16 @@ void setup()
     //Start Serial
     Serial.begin(230400, SERIAL_8E1);
     atb.init();
-    delay(500);
-  
+    delay(500); 
 
     //========================== FIRST EWOK ==========================
-    //atb.first_ewok_pick_up();
+    atb.first_ewok_pick_up();
     //========================== SECOND EWOK ==========================
-    //atb.second_ewok_pick_up();
+    atb.second_ewok_pick_up();
     //========================== IR BEACON ARCHWAY WAIT ==========================
-    //atb.archway_crossing();
+    atb.archway_crossing();
     //========================== LINE FOLLOW TO THIRD EWOK ==========================
-    //atb.third_ewok_pick_up();
+    atb.third_ewok_pick_up();
     //========================== SECOND GAP CROSSING ==========================
 
     //========================== FOURTH EWOK ==========================
@@ -26,7 +25,7 @@ void setup()
     ARMCONTROL::arm80();
     atb.delay_update(1000);
     // atb.turn_degrees(190);
-    // atb.move_meters(-0.2);
+    //atb.move_meters(-0.2);
     atb.sweep_for_zipline(RIGHT);
     atb.delay_update(1000);
     atb.zipline_follow();

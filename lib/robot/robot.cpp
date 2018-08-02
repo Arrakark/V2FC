@@ -196,9 +196,17 @@ void robot::line_follow_until_beacon()
 }
 
 /*
- *  Turns the specified number of degrees
- *  left is negative degrees, right is positive degrees
+ * Hardcoded turns. Use compass function: compass_turn_degrees
+ * for more accuracy. 
+ * 
+ * Turns the specified number of degrees
+ * left is negative degrees, right is positive degrees
+ *  
  */
+// void robot::compass_turn_degrees(float degrees){
+
+// }
+
 void robot::turn_degrees(float degrees)
 {
     if (degrees < 0)
@@ -735,6 +743,11 @@ void robot::third_ewok_pick_up()
     //grab_ewok();
 }
 
+/**
+ * Tries to follow the zipline however it is limited by the sensor's 30 cm range.
+ * Do not use.
+ */
+ 
 void robot::zipline_follow(){
     pid zipline_follower = pid();
     zipline_follower.p_gain = 300;

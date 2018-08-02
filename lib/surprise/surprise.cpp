@@ -23,6 +23,7 @@ const int NOTE_GS5 = 831;
 const int NOTE_A5 = 880;
 
 const int rhythmBuzzerPin = PA1;
+const int rhythmBuzzerPin2 = PA3;
 const int rhythmLength = 115;
 
 int rhythmNotes[] = {NOTE_A4, 0, NOTE_A4, NOTE_A4, NOTE_A4, NOTE_A4, 0, NOTE_A4, NOTE_A4, NOTE_A4, NOTE_A4, 0, NOTE_A4, NOTE_A4, NOTE_A4, NOTE_F4, NOTE_F4, NOTE_F4, NOTE_C5, NOTE_C5, NOTE_C5, //Intro 1 (21 Notes)
@@ -52,6 +53,7 @@ int tempo = 150;
 void surprise::run_surprise()
 {
     digitalWrite(PB0, LOW);
+    digitalWrite(PA7, LOW);
     while (true)
     {
 
@@ -69,6 +71,7 @@ void surprise::run_surprise()
             else // otherwise, play the note
             {
                 tone(rhythmBuzzerPin, rhythmNotes[i], rhythmDuration);
+                //tone(rhythmBuzzerPin2, rhythmNotes[i], rhythmDuration);
                 delay(rhythmDuration); // wait for tone to finish
             }
             delay(tempo / 10); // brief pause between notes
