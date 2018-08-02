@@ -73,7 +73,7 @@ robot::robot()
 {
     //elbow servo is servo 1, grabber servo is servo 2
     //limit switch is the first limit switch
-    left_motor = new HBRIDGE(PA1, PB0);
+    left_motor = new HBRIDGE(PB0, PA1);
     right_motor = new HBRIDGE(PA3, PA7);
     bottom_sensor = new irsensor(0x49, lookup_table_2);
     front_sensor = new irsensor(0x48, lookup_table_5);
@@ -191,6 +191,7 @@ void robot::line_follow_until_beacon()
     while (IRBEACON::read(PA5) == NO_BEACON || IRBEACON::read(PA0) == NO_BEACON)
     {
         line_follower->follow_line();
+        delay_update(20);
     }
     move_meters(-0.01);
 }
@@ -298,7 +299,8 @@ void robot::sweep_for_ewok(float angle)
 void robot::move_toward_ewok()
 {
     front_sensor->update();
-    while (front_sensor->min_distance() > CLOSEST_DISTANCE_TO_EWOK)
+    //while (front_sensor->min_distance() > CLOSEST_DISTANCE_TO_EWOK)
+    while (front_sensor->min_distance() > 12)
     {
         left_motor->run(EWOK_SPEED);
         right_motor->run(EWOK_SPEED);
@@ -393,11 +395,12 @@ void robot::line_follow_until_right_ewok()
         bottom_sensor->update();
         line_follower->follow_line();
         robot::delay_update(4);
+        // Serial.println(bottom_sensor->mean());
         if (bottom_sensor->mean() < min_value)
         {
             min_value = bottom_sensor->mean();
         }
-        if (bottom_sensor->mean() > 1.75 * min_value)
+        if (bottom_sensor->mean() > 1.338582677165354 * min_value)
         {
             break;
         }
@@ -432,7 +435,8 @@ void robot::turn_until_black_line(int turn_dir)
             bottom_sensor->update();
             left_motor->run(TURN_SPEED);
             right_motor->run(-TURN_SPEED);
-        } while (bottom_sensor->max_distance() < LINE_DISTANCE);
+        // } while (bottom_sensor->max_distance() < LINE_DISTANCE);
+        }while(bottom_sensor->max_distance()< 10);
     }
 
     else
@@ -517,13 +521,8 @@ void robot::find_gap_one()
         line_follower->default_speed = 70.0;
         line_follower->follow_line();
         delay_update(4);
-    } while (bottom_sensor->min_distance() < 4);
-    // do
-    // {
-    //     bottom_sensor->update();
-    //     move_meters(0.05);
-    // } while (bottom_sensor->min_distance() > 4);
-
+    // } while (bottom_sensor->min_distance() < 4);
+    } while(bottom_sensor->mean() < 12);
     move_meters(-0.05);
 }
 /*
@@ -652,6 +651,7 @@ void robot::first_ewok_pick_up()
     ARMCONTROL::grabberOpen();
     delay_update(500);
     move_toward_ewok();
+    //make it stop
     move_meters(-0.05);
     grab_ewok();
 }
@@ -663,7 +663,7 @@ void robot::second_ewok_pick_up()
 {
     turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
     robot::delay_update(500);
-    turn_degrees(-10); //turn left 10 degrees
+    //    turn_degrees(-15); //turn left 15 degrees
     robot::delay_update(500);
     //This will find the gap and back up
     find_gap_one();
@@ -692,10 +692,11 @@ void robot::second_ewok_pick_up()
 
 void robot::archway_crossing()
 {
-    move_meters(0.2);
+    move_meters(-0.1);
     delay_update(500);
     turn_until_black_line(LEFT);
     robot::delay_update(500);
+    //move arm out of the way
     ARMCONTROL::grabberHug();
     ARMCONTROL::armVertical();
     robot::delay_update(1000);
@@ -711,8 +712,8 @@ void robot::third_ewok_pick_up()
     line_follower->cross_gap = false;
     line_follower->default_speed = 85;
 
-    ARMCONTROL::armVertical();
-    robot::delay_update(500);
+    //ARMCONTROL::armVertical();
+    //robot::delay_update(500);
     find_second_edge();
     ARMCONTROL::grabberOpen();
     ARMCONTROL::armPickup();
@@ -739,8 +740,6 @@ void robot::third_ewok_pick_up()
     move_meters(0.2);
 
     ARMCONTROL::grabberOpen();
-
-    //grab_ewok();
 }
 
 /**

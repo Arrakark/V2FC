@@ -161,11 +161,13 @@ float irsensor::mean()
 
 void irsensor::info()
 {
+    update();
     for (int i = 0; i < 8; i++)
     {
         Serial.print(distance_readings[i]);
         Serial.print(" ");
     }
+    Serial.println();
 }
 
 //private function for calculating the distance from the raw values

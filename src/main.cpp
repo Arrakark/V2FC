@@ -22,21 +22,26 @@ void setup()
     //========================== FOURTH EWOK ==========================
     //========================== CHEWBACCA ==========================
     //========================== ZIPLINE ==========================
-    ARMCONTROL::arm80();
-    atb.delay_update(1000);
+   // atb.turn_degrees(45);
+    // ARMCONTROL::arm80();
+    // atb.delay_update(1000);
     // atb.turn_degrees(190);
     //atb.move_meters(-0.2);
-    atb.sweep_for_zipline(RIGHT);
-    atb.delay_update(1000);
-    atb.zipline_follow();
+    // atb.sweep_for_zipline(RIGHT);
+    // atb.delay_update(1000);
+    // atb.zipline_follow();
     
     //atb.turn_degrees(90);
 }
 
 void loop()
 {
-    atb.delay_update(100);
-    atb.sensor_inverse_mean();
+    // atb.bottom_sensor->update();
+    //atb.bottom_sensor->info();
+    //atb.delay_update(20);
+
+    //atb.sensor_info();
+    //atb.sensor_inverse_mean();
 //atb.move_meters(-1);
 //atb.sensor_min_distance();
 //atb.sensor_mean();
