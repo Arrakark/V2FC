@@ -28,7 +28,8 @@ public:
   static void stop();
 
   static void grabberHug();
-  static void grabberOpen();
+  static void grabberTightHug();
+    static void grabberOpen();
 
   /*
  *  If true, switch is hit
@@ -45,6 +46,7 @@ public:
   static void armHorizontal();
   static void armPickup();
   static void arm45();
+  static void arm80();
 
 private:
   ARMCONTROL() {}

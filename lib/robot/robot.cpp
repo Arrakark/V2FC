@@ -471,7 +471,8 @@ void robot::wait_for_10khz()
 /**
  * This is the edge in front of the IR beacon 
  **/
-void robot::find_second_edge(){
+void robot::find_second_edge()
+{
     unsigned long start_time = millis();
     do
     {
@@ -493,7 +494,6 @@ void robot::find_second_edge(){
 
     move_meters(-0.05);
 }
-
 
 void robot::find_gap_one()
 {
@@ -545,6 +545,40 @@ void robot::line_follow_until_second_ewok_2(float milliseconds)
     move_meters(-0.05);
 }
 
+void robot::sweep_for_zipline(int turn_dir)
+{
+
+    ARMCONTROL::arm80();
+    delay_update(1000);
+    //if sees ewok in the left before and it swept left, sweep robot to right
+    if (turn_dir > 0)
+    {
+        //while (!(atb.front_sensor->distance_readings[0] < EWOK_LONG_DISTANCE_DETECTION))
+        do
+        {
+            front_sensor->update();
+            left_motor->run(FAST_TURN_SPEED);
+            delay_update(20);
+            right_motor->run(-FAST_TURN_SPEED);
+        } while (front_sensor->min_distance() > 25);
+    }
+
+    //if sees ewok in the right before and it swept right, sweep robot to left
+    else
+    {
+        do
+        {
+            front_sensor->update();
+            left_motor->run(-FAST_TURN_SPEED);
+            right_motor->run(FAST_TURN_SPEED);
+            delay_update(20);
+        } while (front_sensor->min_distance() > 25);
+    }
+
+    left_motor->run(0);
+    right_motor->run(0);
+}
+
 void robot::sweep_ewok(int turn_dir)
 {
     //if sees ewok in the left before and it swept left, sweep robot to right
@@ -557,7 +591,7 @@ void robot::sweep_ewok(int turn_dir)
             left_motor->run(TURN_SPEED);
             delay_update(20);
             right_motor->run(-TURN_SPEED);
-        } while (front_sensor->min_distance() > 8);
+        } while (front_sensor->min_distance() > 10);
     }
 
     //if sees ewok in the right before and it swept right, sweep robot to left
@@ -568,7 +602,8 @@ void robot::sweep_ewok(int turn_dir)
             front_sensor->update();
             left_motor->run(-TURN_SPEED);
             right_motor->run(TURN_SPEED);
-        } while (front_sensor->min_distance() > 8);
+            delay_update(20);
+        } while (front_sensor->min_distance() > 10);
     }
 
     left_motor->run(0);
@@ -602,7 +637,8 @@ void robot::line_follow_until_third_ewok()
  * Begin when the bottom sensor is touching the line. Line-follow up to the first ewok
  * and grab it.
  * */
-void robot::first_ewok_pick_up(){
+void robot::first_ewok_pick_up()
+{
     ARMCONTROL::grabberHug();
     line_follow_until_right_ewok();
     ARMCONTROL::grabberOpen();
@@ -615,14 +651,15 @@ void robot::first_ewok_pick_up(){
 /**
  *Begin at the position where first ewok was picked up. Turn left until it finds the black line again.
  **/
-void robot::second_ewok_pick_up(){
+void robot::second_ewok_pick_up()
+{
     turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
     robot::delay_update(500);
-    turn_degrees(-10); //to make the turn_until_black_line stop ???
+    turn_degrees(-10); //turn left 10 degrees
     robot::delay_update(500);
     //This will find the gap and back up
-    find_gap_one(); 
-    robot::delay_update(500);
+    find_gap_one();
+    robot::delay_update(1000);
     move_meters(-0.2);
     robot::delay_update(500);
     //realign with the gap again
@@ -645,8 +682,9 @@ void robot::second_ewok_pick_up(){
  * detects a fresh 10 Khz signal, we can proceed to line follow to the 3rd ewok.
  */
 
-void robot::archway_crossing(){
-    move_meters(-0.2);
+void robot::archway_crossing()
+{
+    move_meters(0.2);
     delay_update(500);
     turn_until_black_line(LEFT);
     robot::delay_update(500);
@@ -660,23 +698,41 @@ void robot::archway_crossing(){
 /**
  * Line-follow to the edge in front of second IR beacon. Back up to find the third ewok.
  */
-void robot::third_ewok_pick_up(){
-    line_follower->cross_gap=false;
-    line_follower->default_speed=85;
+void robot::third_ewok_pick_up()
+{
+    line_follower->cross_gap = false;
+    line_follower->default_speed = 85;
 
     ARMCONTROL::armVertical();
     robot::delay_update(500);
-    find_second_edge(); 
+    find_second_edge();
     ARMCONTROL::grabberOpen();
     ARMCONTROL::armPickup();
-    move_meters(-0.55);
+    move_meters(-0.53);
     delay_update(500);
     sweep_ewok(LEFT);
 
     robot::delay_update(500);
     move_toward_ewok();
+    //move_meters(0.05);
     robot::delay_update(500);
-    grab_ewok();
+
+    ARMCONTROL::armPickup();
+    robot::delay_update(500);
+    ARMCONTROL::grabberTightHug();
+    robot::delay_update(1000);
+    ARMCONTROL::armHorizontal();
+
+    turn_degrees(20);
+
+    // turn_degrees(-40);
+    move_meters(0.4);
+    turn_degrees(-50);
+    move_meters(0.2);
+
+    ARMCONTROL::grabberOpen();
+
+    //grab_ewok();
 }
 
 // void robot::second_gap_crossing(){
@@ -694,28 +750,45 @@ void robot::third_ewok_pick_up(){
 // void robot::zipline(){
 
 //}
-
-void robot::sensor_mean(){
+/**
+ * Max sensor value for IR array is 30. Inverse weighted mean takes current reading and
+ * subtract it from 30 and computes the weighted mean from 8 sensor values using sensor indices. 
+ */ 
+void robot::sensor_inverse_mean()
+{
     robot::delay_update(20);
     left_sensor->update();
     right_sensor->update();
     front_sensor->update();
-    Serial.print(left_sensor->mean()); 
+    Serial.print(left_sensor->inverse_weighted_mean());
     Serial.print(",");
-    Serial.print(front_sensor->mean()); 
+    Serial.print(front_sensor->inverse_weighted_mean());
+    Serial.print(",");
+    Serial.println(right_sensor->inverse_weighted_mean());
+}
+
+void robot::sensor_mean()
+{
+    robot::delay_update(20);
+    left_sensor->update();
+    right_sensor->update();
+    front_sensor->update();
+    Serial.print(left_sensor->mean());
+    Serial.print(",");
+    Serial.print(front_sensor->mean());
     Serial.print(",");
     Serial.println(right_sensor->mean());
 }
 
-void robot::sensor_min(){
+void robot::sensor_min()
+{
     robot::delay_update(20);
     left_sensor->update();
     right_sensor->update();
     front_sensor->update();
-    Serial.print(left_sensor->min_distance()); 
+    Serial.print(left_sensor->min_distance());
     Serial.print(",");
-    Serial.print(front_sensor->min_distance()); 
+    Serial.print(front_sensor->min_distance());
     Serial.print(",");
     Serial.println(right_sensor->min_distance());
 }
-

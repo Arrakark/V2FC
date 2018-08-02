@@ -19,6 +19,7 @@ Control class for arm motion. The arm has 3 positions:
 #define GRABBER_OPEN 160
 // #define GRABBER_CLOSE 25
 #define GRABBER_CLOSE 35
+#define GRABBER_TIGHT_CLOSE 25
 #define UP_LIMIT 1300
 #define DOWN_LIMIT 2950
 
@@ -165,4 +166,12 @@ void ARMCONTROL::armHorizontal()
 void ARMCONTROL::armPickup()
 {
     position = arm_pickup;
+}
+
+void ARMCONTROL::grabberTightHug(){
+    grabber_servo.write(GRABBER_TIGHT_CLOSE);
+}
+
+void ARMCONTROL::arm80(){
+    position = 1700;
 }

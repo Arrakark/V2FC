@@ -20,6 +20,7 @@
 #define SECOND_GAP_SPEED 230
 #define EWOK_SPEED 135
 #define TURN_SPEED 200
+#define FAST_TURN_SPEED 250
 #define FULL_CLIFF_DISTANCE 17
 #define GAP_CLIFF_DISTANCE 10
 #define METERS_PER_SECOND 0.46333333 //NORMAL_SPEED is 130 -> 0.46333333m/s
@@ -62,6 +63,7 @@ public:
   void sweep_ewok(int turn_dir);
   void line_follow_until_third_ewok();
   void find_second_edge();
+  void sweep_for_zipline(int turn_dir);
 
   //competition surface stages
   void first_ewok_pick_up();
@@ -75,6 +77,7 @@ public:
 
   //info
   void sensor_mean();
+  void sensor_inverse_mean();
   void sensor_min();
 
   //different parts of the robot
