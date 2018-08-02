@@ -560,7 +560,7 @@ void robot::sweep_for_zipline(int turn_dir)
             left_motor->run(FAST_TURN_SPEED);
             delay_update(20);
             right_motor->run(-FAST_TURN_SPEED);
-        } while (front_sensor->min_distance() > 25);
+        } while (front_sensor->min_distance() > 28);
     }
 
     //if sees ewok in the right before and it swept right, sweep robot to left
@@ -572,7 +572,7 @@ void robot::sweep_for_zipline(int turn_dir)
             left_motor->run(-FAST_TURN_SPEED);
             right_motor->run(FAST_TURN_SPEED);
             delay_update(20);
-        } while (front_sensor->min_distance() > 25);
+        } while (front_sensor->min_distance() > 28);
     }
 
     left_motor->run(0);
@@ -733,6 +733,25 @@ void robot::third_ewok_pick_up()
     ARMCONTROL::grabberOpen();
 
     //grab_ewok();
+}
+
+void robot::zipline_follow(){
+    pid zipline_follower = pid();
+    zipline_follower.p_gain = 300;
+    zipline_follower.p_limit = 300;
+    do
+    {
+        front_sensor->update();
+        bottom_sensor->update();
+        float error = front_sensor->inverse_weighted_mean() - 4.5;
+        float control = zipline_follower.output(error);
+        right_motor->run(80 + (int)control);
+        left_motor->run(80 - (int)control);
+    } while (bottom_sensor->min_distance() < 10);
+    left_motor->stop();
+    right_motor->stop();
+    move_meters(-0.05);
+
 }
 
 // void robot::second_gap_crossing(){

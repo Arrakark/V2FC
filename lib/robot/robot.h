@@ -20,7 +20,7 @@
 #define SECOND_GAP_SPEED 230
 #define EWOK_SPEED 135
 #define TURN_SPEED 200
-#define FAST_TURN_SPEED 250
+#define FAST_TURN_SPEED 255
 #define FULL_CLIFF_DISTANCE 17
 #define GAP_CLIFF_DISTANCE 10
 #define METERS_PER_SECOND 0.46333333 //NORMAL_SPEED is 130 -> 0.46333333m/s
@@ -74,6 +74,7 @@ public:
   void fourth_ewok_pick_up();
   void chewbacca_pick_up();
   void zipline();  
+  void zipline_follow();
 
   //info
   void sensor_mean();

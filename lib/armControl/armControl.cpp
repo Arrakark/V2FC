@@ -173,5 +173,5 @@ void ARMCONTROL::grabberTightHug(){
 }
 
 void ARMCONTROL::arm80(){
-    position = 1700;
+    position = 1600;
 }
