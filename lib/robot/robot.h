@@ -71,6 +71,7 @@ public:
   void forward_until_wall();
   void turn_table_detect();
   void third_ewok_pick_up_old();
+  void second_gap_auto();
 
   //competition surface stages
   void first_ewok_pick_up();

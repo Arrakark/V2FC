@@ -93,11 +93,6 @@ void robot::init()
     ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
     ARMCONTROL::armSearch();
     ARMCONTROL::grabberOpen();
-
-    //Initializing i2c as input pullup
-    //pinMode(PB6,INPUT_PULLUP);
-    //pinMode(PB7,INPUT_PULLUP);
-
     robot::delay_update(500);
 }
 
@@ -241,6 +236,7 @@ void robot::delay_update(long ms)
 /*
  *  Moves the specified number of meters
  *  positive is forward, negative is backwards
+ *  Used to test how far we have to go to get up the second platform
  */
 void robot::ram_meters(float meters)
 {
@@ -768,7 +764,8 @@ void robot::archway_crossing()
     line_follow_until_beacon();
     wait_for_10khz();
 }
-void robot::third_ewok_pick_up(){
+void robot::third_ewok_pick_up()
+{
     ARMCONTROL::armVertical();
     turn_table_detect();
     robot::delay_update(2000);
@@ -791,6 +788,7 @@ void robot::third_ewok_pick_up(){
     move_meters(0.37);
     robot::delay_update(2000);
     turn_degrees(-50);
+    ARMCONTROL::arm45();
     move_meters(0.25);
     robot::delay_update(2000);
     ARMCONTROL::grabberOpen();
@@ -857,19 +855,53 @@ void robot::zipline_follow()
     move_meters(-0.05);
 }
 
+/**
+ * CONTINUE writing this function.
+ * Align to get onto second gap. Needs a function to ensure
+ * it has moved past straight edge AND elevated platform edge.
+ * */
 void robot::second_gap_crossing()
 {
-    // sweep_for_zipline(RIGHT);
-    // zipline_follow();
-    turn_degrees(90);
-    delay_update(500);
+    robot::delay_update(1000);
     move_meters(-0.1);
-    turn_degrees(-5);
-    move_meters(-0.1);
-    // move_meters(-0.3);
+    ARMCONTROL::armSearch();
+    // turn_degrees(88);
+    turn_degrees(44); //turns to the right
+    do
+    {
+        left_sensor->update();
+        turn_degrees(1);
+        //keep turning while left sensor is off the edge
+    } while (left_sensor->mean() > 30);
+    turn_degrees(5);
+    robot::delay_update(1000);
+    ARMCONTROL::armHorizontal();
+    move_meters(0.4);
+    drive_until_cliff();
+    second_gap_auto();
+    ARMCONTROL::armPickup();
+    robot::delay_update(200);
+    move_toward_ewok();
+    move_meters(-0.07);
+    grab_ewok();
+    delay_update(1000);
+    ARMCONTROL::grabberTightHug();
 }
 
-void robot::turn_table_detect(){
+void robot::second_gap_auto()
+{
+    do
+    {
+        bottom_sensor->update();
+        left_motor->run(255);
+        right_motor->run(255);
+        delay_update(20);
+    } while (bottom_sensor->mean() > 15);
+    ram_meters(0.09);
+}
+
+void robot::turn_table_detect()
+{
     // unsigned long start_time = millis();
     line_follower->pid_controller.p_gain = 600.0;
     line_follower->pid_controller.p_limit = 250;
@@ -884,7 +916,8 @@ void robot::turn_table_detect(){
         bottom_sensor->update();
         line_follower->follow_line();
         delay_update(4);
-        if (bottom_sensor->mean() > 10.3 && flag == 0){
+        if (bottom_sensor->mean() > 10.3 && flag == 0)
+        {
             flag = 1;
             time_flag = millis();
         }

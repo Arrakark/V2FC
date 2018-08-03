@@ -6,43 +6,23 @@ void setup()
     //Start Serial
     Serial.begin(230400, SERIAL_8E1);
     atb.init();
-    atb.third_ewok_pick_up();
-    ARMCONTROL::armHorizontal();
-    robot::delay_update(1000);
-    atb.move_meters(-0.1);
-    atb.turn_degrees(88);
-    
-    robot::delay_update(1000);
-    atb.move_meters(0.4);
-    atb.drive_until_cliff();
-    atb.ram_meters(0.42);
-    atb.move_meters(-0.05);
-    ARMCONTROL::armPickup();
-    robot::delay_update(200);
-    atb.move_toward_ewok();
-    atb.grab_ewok();
+
+   
 
     //=====grab third ewok sequence=====/
     
 
     //========================== FIRST EWOK ==========================
-    // atb.first_ewok_pick_up();
+     atb.first_ewok_pick_up();
     //========================== SECOND EWOK ==========================
-    // atb.second_ewok_pick_up();
+     atb.second_ewok_pick_up();
     //========================== IR BEACON ARCHWAY WAIT ==========================
-    // atb.archway_crossing();
+     atb.archway_crossing();
     //========================== LINE FOLLOW TO THIRD EWOK ==========================
-    //ARMCONTROL::armVertical();
-    // robot::delay_update(2000);
-    // atb.turn_table_detect();
-    //atb.third_ewok_pick_up();
-    // atb.third_ewok_pick_up_old();
-
-
-
-    // atb.delay_update(1000);
+     atb.third_ewok_pick_up();
+     atb.delay_update(1000);
     //========================== SECOND GAP CROSSING ==========================
-    // atb.second_gap_crossing();
+    atb.second_gap_crossing();
     //========================== FOURTH EWOK ==========================
     //========================== CHEWBACCA ==========================
     //========================== ZIPLINE ==========================
@@ -63,7 +43,7 @@ void loop()
     // atb.bottom_sensor->update();
     //atb.bottom_sensor->info();
     atb.delay_update(20);
-    atb.bottom_sensor->info();
+    atb.left_sensor->info();
     // atb.front_sensor->info();
     //atb.sensor_inverse_mean();
 //atb.move_meters(-1);
