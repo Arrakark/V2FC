@@ -10,19 +10,23 @@ void setup()
    
 
     //=====grab third ewok sequence=====/
-    
+
+    /*
+        Start robot by placing it at the flat ground with claw tips
+        "touching" the ramp (the 'line'), when it's open
+    */   
 
     //========================== FIRST EWOK ==========================
-     atb.first_ewok_pick_up();
-    //========================== SECOND EWOK ==========================
-     atb.second_ewok_pick_up();
+    //  atb.first_ewok_pick_up();
+    // //========================== SECOND EWOK ==========================
+    //  atb.second_ewok_pick_up();
     //========================== IR BEACON ARCHWAY WAIT ==========================
-     atb.archway_crossing();
-    //========================== LINE FOLLOW TO THIRD EWOK ==========================
+    //  atb.archway_crossing();
+    // //========================== LINE FOLLOW TO THIRD EWOK ==========================
      atb.third_ewok_pick_up();
      atb.delay_update(1000);
-    //========================== SECOND GAP CROSSING ==========================
-    atb.second_gap_crossing();
+    // //========================== SECOND GAP CROSSING ==========================
+    // atb.second_gap_crossing();
     //========================== FOURTH EWOK ==========================
     //========================== CHEWBACCA ==========================
     //========================== ZIPLINE ==========================
@@ -41,9 +45,10 @@ void setup()
 void loop()
 {
     // atb.bottom_sensor->update();
-    //atb.bottom_sensor->info();
+    // // atb.bottom_sensor->info();
+    // Serial.println(atb.bottom_sensor->mean());
     atb.delay_update(20);
-    atb.left_sensor->info();
+    // atb.left_sensor->info();
     // atb.front_sensor->info();
     //atb.sensor_inverse_mean();
 //atb.move_meters(-1);
