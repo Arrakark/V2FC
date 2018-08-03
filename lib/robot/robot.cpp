@@ -448,7 +448,8 @@ void robot::turn_until_black_line(int turn_dir)
             left_motor->run(TURN_SPEED);
             right_motor->run(-TURN_SPEED);
             // } while (bottom_sensor->max_distance() < LINE_DISTANCE);
-        } while (bottom_sensor->max_distance() < 12);
+        // } while (bottom_sensor->max_distance() < 12);
+        } while (bottom_sensor->max_distance() < 15); //the 7th ir_sensor tends to shoot up to high values very quickly
     }
 
     else
@@ -458,7 +459,8 @@ void robot::turn_until_black_line(int turn_dir)
             bottom_sensor->update();
             left_motor->run(-TURN_SPEED);
             right_motor->run(TURN_SPEED);
-        } while (bottom_sensor->max_distance() < 12);
+        // } while (bottom_sensor->max_distance() < 12);
+        } while (bottom_sensor->max_distance() < 15); //the 7th ir_sensor tends to shoot up to high values very quickly
     }
 
     left_motor->run(0);
@@ -524,12 +526,13 @@ void robot::find_second_edge()
 
 void robot::find_gap_one()
 {
-    unsigned long start_time = millis();
+    // unsigned long start_time = millis();
     line_follower->cross_gap = false;
     do
     {
         bottom_sensor->update();
         line_follower->pid_controller.p_gain = 600.0;
+        // line_follower->pid_controller.p_gain = 800.0;
         line_follower->pid_controller.p_limit = 250;
         // line_follower->pid_controller.d_gain = 2.0;
         // line_follower->pid_controller.d_limit = 100.0;
@@ -716,7 +719,7 @@ void robot::follow_left_wall_until_ewok()
 void robot::second_ewok_pick_up()
 {
     turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
-    //robot::delay_update(500);
+    robot::delay_update(500);
     //This will find the gap and back up
     find_gap_one();
     robot::delay_update(500);
@@ -729,16 +732,17 @@ void robot::second_ewok_pick_up()
     //robot::delay_update(500);
     move_meters(-0.15);
     robot::delay_update(500);
-    //robot::delay_update(500);
+    robot::delay_update(500);
     //cross the gap
-    move_meters(0.7);
-    ARMCONTROL::armPickup();
-    move_toward_ewok();
-    robot::delay_update(100);
-    move_meters(-0.05); //added to move back a bit (stop motors quickly)
-    robot::delay_update(500);
-    grab_ewok();
-    robot::delay_update(500);
+    // move_meters(0.7);
+    // ARMCONTROL::armPickup();
+    // move_toward_ewok();
+    // // move_meters(0.25);
+    // robot::delay_update(100);
+    // move_meters(-0.05); //added to move back a bit (stop motors quickly)
+    // robot::delay_update(500);
+    // grab_ewok();
+    // robot::delay_update(500);
 }
 
 /**
