@@ -98,7 +98,7 @@ void robot::init()
     //pinMode(PB6,INPUT_PULLUP);
     //pinMode(PB7,INPUT_PULLUP);
 
-    robot::delay_update(2000);
+    robot::delay_update(500);
 }
 
 void robot::check_sensors()
@@ -344,14 +344,13 @@ void robot::grab_ewok()
 {
     ARMCONTROL::armPickup();
     robot::delay_update(500);
-    ARMCONTROL::grabberHug();
+    ARMCONTROL::grabberTightHug();
     robot::delay_update(1000);
     ARMCONTROL::armDropoff();
     robot::delay_update(2000);
     ARMCONTROL::grabberOpen();
     robot::delay_update(1000);
     ARMCONTROL::armSearch();
-    robot::delay_update(2000);
 }
 
 /*
@@ -400,7 +399,8 @@ void robot::line_follow_until_right_ewok()
         {
             min_value = bottom_sensor->mean();
         }
-        if (bottom_sensor->mean() > 1.338582677165354 * min_value)
+        //needs to be between 1.3 and 1.5
+        if (bottom_sensor->mean() > 1.45 * min_value)
         {
             break;
         }
@@ -435,8 +435,8 @@ void robot::turn_until_black_line(int turn_dir)
             bottom_sensor->update();
             left_motor->run(TURN_SPEED);
             right_motor->run(-TURN_SPEED);
-        // } while (bottom_sensor->max_distance() < LINE_DISTANCE);
-        }while(bottom_sensor->max_distance()< 10);
+            // } while (bottom_sensor->max_distance() < LINE_DISTANCE);
+        } while (bottom_sensor->max_distance() < 10);
     }
 
     else
@@ -471,10 +471,13 @@ void robot::line_follow_until_second_ewok()
 
 void robot::wait_for_10khz()
 {
-    while (IRBEACON::read(PA5) != ONE_KHZ || IRBEACON::read(PA0) != ONE_KHZ)
+    //wait for 10khz to pass
+    while (IRBEACON::read(PA5) == TEN_KHZ || IRBEACON::read(PA0) == TEN_KHZ)
     {
         delay_update(20);
     }
+    delay_update(20);
+    //wait for 1khz to pass
     while (IRBEACON::read(PA5) != TEN_KHZ || IRBEACON::read(PA0) != TEN_KHZ)
     {
         delay_update(20);
@@ -486,15 +489,13 @@ void robot::wait_for_10khz()
 void robot::find_second_edge()
 {
     unsigned long start_time = millis();
+    line_follower->pid_controller.p_gain = 600.0;
+    line_follower->pid_controller.p_limit = 250;
+    line_follower->cross_gap = false;
+    line_follower->default_speed = 120;
     do
     {
         bottom_sensor->update();
-        line_follower->pid_controller.p_gain = 600.0;
-        line_follower->pid_controller.p_limit = 250;
-        // line_follower->pid_controller.d_gain = 2.0;
-        // line_follower->pid_controller.d_limit = 100.0;
-        // line_follower->default_speed = 80.0;
-        line_follower->default_speed = 85.0;
         line_follower->follow_line();
         delay_update(4);
     } while (bottom_sensor->min_distance() < CLIFF_DISTANCE);
@@ -517,12 +518,12 @@ void robot::find_gap_one()
         line_follower->pid_controller.p_limit = 250;
         // line_follower->pid_controller.d_gain = 2.0;
         // line_follower->pid_controller.d_limit = 100.0;
-        // line_follower->default_speed = 80.0;
-        line_follower->default_speed = 70.0;
+        // line_follower->default_speed = 70.0;
+        line_follower->default_speed = 90.0; //goal: not knock over second ewok
         line_follower->follow_line();
         delay_update(4);
-    // } while (bottom_sensor->min_distance() < 4);
-    } while(bottom_sensor->mean() < 12);
+        // } while (bottom_sensor->min_distance() < 4);
+    } while (bottom_sensor->mean() < 12);
     move_meters(-0.05);
 }
 /*
@@ -567,7 +568,7 @@ void robot::sweep_for_zipline(int turn_dir)
             left_motor->run(FAST_TURN_SPEED);
             delay_update(20);
             right_motor->run(-FAST_TURN_SPEED);
-        } while (front_sensor->min_distance() > 28);
+        } while (front_sensor->min_distance() > 35);
     }
 
     //if sees ewok in the right before and it swept right, sweep robot to left
@@ -579,7 +580,7 @@ void robot::sweep_for_zipline(int turn_dir)
             left_motor->run(-FAST_TURN_SPEED);
             right_motor->run(FAST_TURN_SPEED);
             delay_update(20);
-        } while (front_sensor->min_distance() > 28);
+        } while (front_sensor->min_distance() > 35);
     }
 
     left_motor->run(0);
@@ -595,10 +596,10 @@ void robot::sweep_ewok(int turn_dir)
         do
         {
             front_sensor->update();
-            left_motor->run(TURN_SPEED);
+            left_motor->run(SWEEP_SPEED);
             delay_update(20);
-            right_motor->run(-TURN_SPEED);
-        } while (front_sensor->min_distance() > 10);
+            right_motor->run(-SWEEP_SPEED);
+        } while (front_sensor->min_distance() > 42);
     }
 
     //if sees ewok in the right before and it swept right, sweep robot to left
@@ -607,10 +608,10 @@ void robot::sweep_ewok(int turn_dir)
         do
         {
             front_sensor->update();
-            left_motor->run(-TURN_SPEED);
-            right_motor->run(TURN_SPEED);
+            left_motor->run(-SWEEP_SPEED);
+            right_motor->run(SWEEP_SPEED);
             delay_update(20);
-        } while (front_sensor->min_distance() > 10);
+        } while (front_sensor->min_distance() > 42);
     }
 
     left_motor->run(0);
@@ -652,7 +653,7 @@ void robot::first_ewok_pick_up()
     delay_update(500);
     move_toward_ewok();
     //make it stop
-    move_meters(-0.05);
+    move_meters(-0.02); //changing the speed changes how far it moves (faster -> longer)
     grab_ewok();
 }
 
@@ -662,23 +663,23 @@ void robot::first_ewok_pick_up()
 void robot::second_ewok_pick_up()
 {
     turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
-    robot::delay_update(500);
-    //    turn_degrees(-15); //turn left 15 degrees
-    robot::delay_update(500);
+    //robot::delay_update(500);
     //This will find the gap and back up
     find_gap_one();
-    robot::delay_update(1000);
-    move_meters(-0.2);
+    // robot::delay_update(500);
+    move_meters(-0.15);
     robot::delay_update(500);
     //realign with the gap again
     find_gap_one();
-    robot::delay_update(500);
-    move_meters(-0.2);
-    robot::delay_update(500);
+    //robot::delay_update(500);
+    move_meters(-0.15);
+    //robot::delay_update(500);
     //cross the gap
-    move_meters(0.8);
+    move_meters(0.7);
     ARMCONTROL::armPickup();
     move_toward_ewok();
+    robot::delay_update(100);
+    move_meters(-0.05); //added to move back a bit (stop motors quickly)
     robot::delay_update(500);
     grab_ewok();
     robot::delay_update(500);
@@ -692,6 +693,10 @@ void robot::second_ewok_pick_up()
 
 void robot::archway_crossing()
 {
+    //outside competition surface:
+    //red light = 10 kHz
+    //no light = 1kHz
+    //inside competition is reversed
     move_meters(-0.1);
     delay_update(500);
     turn_until_black_line(LEFT);
@@ -709,15 +714,14 @@ void robot::archway_crossing()
  */
 void robot::third_ewok_pick_up()
 {
-    line_follower->cross_gap = false;
-    line_follower->default_speed = 85;
 
     //ARMCONTROL::armVertical();
     //robot::delay_update(500);
     find_second_edge();
     ARMCONTROL::grabberOpen();
     ARMCONTROL::armPickup();
-    move_meters(-0.53);
+    move_meters(-0.48);
+    //move_meters(-0.45);
     delay_update(500);
     sweep_ewok(LEFT);
 
@@ -732,22 +736,22 @@ void robot::third_ewok_pick_up()
     robot::delay_update(1000);
     ARMCONTROL::armHorizontal();
 
-    turn_degrees(20);
+    turn_degrees(15);
 
     // turn_degrees(-40);
-    move_meters(0.4);
-    turn_degrees(-50);
-    move_meters(0.2);
+    move_meters(0.35);
+    turn_degrees(-35);
+    move_meters(0.1);
 
     ARMCONTROL::grabberOpen();
 }
 
 /**
  * Tries to follow the zipline however it is limited by the sensor's 30 cm range.
- * Do not use.
  */
- 
-void robot::zipline_follow(){
+
+void robot::zipline_follow()
+{
     pid zipline_follower = pid();
     zipline_follower.p_gain = 300;
     zipline_follower.p_limit = 300;
@@ -757,18 +761,25 @@ void robot::zipline_follow(){
         bottom_sensor->update();
         float error = front_sensor->inverse_weighted_mean() - 4.5;
         float control = zipline_follower.output(error);
-        right_motor->run(80 + (int)control);
-        left_motor->run(80 - (int)control);
-    } while (bottom_sensor->min_distance() < 10);
+        right_motor->run(90 + (int)control);
+        left_motor->run(90 - (int)control);
+    } while (bottom_sensor->min_distance() < 12);
     left_motor->stop();
     right_motor->stop();
     move_meters(-0.05);
-
 }
 
-// void robot::second_gap_crossing(){
-
-// }
+void robot::second_gap_crossing()
+{
+    // sweep_for_zipline(RIGHT);
+    // zipline_follow();
+    turn_degrees(90);
+    delay_update(500);
+    move_meters(-0.1);
+    turn_degrees(-5);
+    move_meters(-0.1);
+    // move_meters(-0.3);
+}
 
 // void robot::fourth_ewok_pick_up(){
 
@@ -784,7 +795,7 @@ void robot::zipline_follow(){
 /**
  * Max sensor value for IR array is 30. Inverse weighted mean takes current reading and
  * subtract it from 30 and computes the weighted mean from 8 sensor values using sensor indices. 
- */ 
+ */
 void robot::sensor_inverse_mean()
 {
     robot::delay_update(20);

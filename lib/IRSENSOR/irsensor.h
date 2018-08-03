@@ -6,7 +6,7 @@
 
 #define ROW 20
 #define COL 9
-#define MAX_VALUE 30
+#define MAX_VALUE 50
 #define MIN_VALUE 0
 
 class irsensor
