@@ -66,6 +66,10 @@ public:
   void line_follow_until_third_ewok();
   void find_second_edge();
   void sweep_for_zipline(int turn_dir);
+  void follow_left_wall_until_ewok();
+  void forward_until_wall();
+  void turn_table_detect();
+  void third_ewok_pick_up_old();
 
   //competition surface stages
   void first_ewok_pick_up();

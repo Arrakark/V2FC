@@ -5,7 +5,7 @@
 #include <irsensor.h>
 
 // #define CLIFF_DISTANCE 8
-#define CLIFF_DISTANCE 12
+#define CLIFF_DISTANCE 15
 
 class linefollower
 {
