@@ -78,12 +78,13 @@ public:
   void second_ewok_pick_up();
   void archway_crossing();
   void third_ewok_pick_up();
-  void second_gap_crossing();
-  void fourth_ewok_pick_up();
+  void edge_follow_to_chewy();
+  // void fourth_ewok_pick_up();
   void chewbacca_pick_up();
   void zipline();  
   void zipline_follow();
   void compass_turn_degrees(float degrees);
+  void second_gap_crossing();
 
   //info
   void sensor_mean();

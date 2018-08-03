@@ -929,13 +929,42 @@ void robot::turn_table_detect()
 
 // }
 
-// void robot::chewbacca_pick_up(){
+/**
+ * After picking up the fourth ewok, turn 90 degrees and start
+ * edge following up to chewbacca. Send change in slope, start sweeping
+ * for chewbacca. Grab it!!!
+ * */
+void robot::chewbacca_pick_up(){
+    // move_meters(-0.1)
+    turn_degrees(43); //this should turn 90 degrees
+    move_meters(0.2);
+    delay_update(500);
+    ARMCONTROL::armSearch();
+    //
+    pid bridge_crosser = pid();
+    bridge_crosser.p_gain = 85;
+    bridge_crosser.p_limit = 100;
+    do
+    {
+        left_sensor->update();
+        right_sensor->update(); 
+        front_sensor->update();
+        //biases the error with 30
+        float error = right_sensor->mean() - left_sensor->mean() + 10;
+        float control = bridge_crosser.output(error);
+        right_motor->run(130 - (int)control);
+        left_motor->run(130 + (int)control);
+        delay_update(20);
+        //this looks for Chewie!!!
+    } while (front_sensor->min_distance() > 14);
+    left_motor->stop();
+    right_motor->stop();
+    ARMCONTROL::armPickup();
+    delay_update(1000);
+    move_meters(0.02);
+    grab_ewok();
+}
 
-// }
-
-// void robot::zipline(){
-
-//}
 /**
  * Max sensor value for IR array is 30. Inverse weighted mean takes current reading and
  * subtract it from 30 and computes the weighted mean from 8 sensor values using sensor indices. 

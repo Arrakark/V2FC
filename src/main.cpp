@@ -13,18 +13,19 @@ void setup()
     
 
     //========================== FIRST EWOK ==========================
-     atb.first_ewok_pick_up();
+    //  atb.first_ewok_pick_up();
     //========================== SECOND EWOK ==========================
-     atb.second_ewok_pick_up();
+    //  atb.second_ewok_pick_up();
     //========================== IR BEACON ARCHWAY WAIT ==========================
-     atb.archway_crossing();
+    //  atb.archway_crossing();
     //========================== LINE FOLLOW TO THIRD EWOK ==========================
-     atb.third_ewok_pick_up();
-     atb.delay_update(1000);
+    //  atb.third_ewok_pick_up();
+    //  atb.delay_update(1000);
     //========================== SECOND GAP CROSSING ==========================
-    atb.second_gap_crossing();
+    // atb.second_gap_crossing();
     //========================== FOURTH EWOK ==========================
     //========================== CHEWBACCA ==========================
+    atb.chewbacca_pick_up();    
     //========================== ZIPLINE ==========================
   // atb.turn_degrees(45);
    // // ARMCONTROL::arm80();
