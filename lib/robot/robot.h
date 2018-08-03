@@ -50,6 +50,7 @@ public:
   void calibrate_degrees_per_second(int seconds);
   void follow_right_edge_until_ewok();
   void line_follow_until_right_ewok();
+  void ram_meters(float meters);
   void line_follow_meters(float meters);
   static void delay_update(long ms);
   static void check_sensors();

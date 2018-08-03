@@ -242,6 +242,27 @@ void robot::delay_update(long ms)
  *  Moves the specified number of meters
  *  positive is forward, negative is backwards
  */
+void robot::ram_meters(float meters)
+{
+    if (meters > 0)
+    {
+        left_motor->run(255);
+        right_motor->run(255);
+    }
+    else
+    {
+        left_motor->run(-255);
+        right_motor->run(-255);
+    }
+    delay_update(((float)abs(meters) / METERS_PER_SECOND) * 1000);
+    left_motor->stop();
+    right_motor->stop();
+}
+
+/*
+ *  Moves the specified number of meters
+ *  positive is forward, negative is backwards
+ */
 void robot::move_meters(float meters)
 {
     if (meters > 0)

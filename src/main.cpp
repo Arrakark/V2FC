@@ -6,6 +6,21 @@ void setup()
     //Start Serial
     Serial.begin(230400, SERIAL_8E1);
     atb.init();
+    atb.third_ewok_pick_up();
+    ARMCONTROL::armHorizontal();
+    robot::delay_update(1000);
+    atb.move_meters(-0.1);
+    atb.turn_degrees(88);
+    
+    robot::delay_update(1000);
+    atb.move_meters(0.4);
+    atb.drive_until_cliff();
+    atb.ram_meters(0.42);
+    atb.move_meters(-0.05);
+    ARMCONTROL::armPickup();
+    robot::delay_update(200);
+    atb.move_toward_ewok();
+    atb.grab_ewok();
 
     //=====grab third ewok sequence=====/
     
@@ -17,10 +32,10 @@ void setup()
     //========================== IR BEACON ARCHWAY WAIT ==========================
     // atb.archway_crossing();
     //========================== LINE FOLLOW TO THIRD EWOK ==========================
-    ARMCONTROL::armVertical();
+    //ARMCONTROL::armVertical();
     // robot::delay_update(2000);
     // atb.turn_table_detect();
-    atb.third_ewok_pick_up();
+    //atb.third_ewok_pick_up();
     // atb.third_ewok_pick_up_old();
 
 
