@@ -723,7 +723,7 @@ void robot::second_ewok_pick_up()
     robot::delay_update(500);
     //realign with the gap again
     find_gap_one();
-    robot::delay_update(500);
+    // robot::delay_update(500);
     //robot::delay_update(500);
     move_meters(-0.15);
     robot::delay_update(500);
@@ -781,7 +781,7 @@ void robot::third_ewok_pick_up()
     move_meters(0.01);
     ARMCONTROL::armPickup();
     robot::delay_update(500);
-    ARMCONTROL::grabberTightHug();
+    ARMCONTROL::grabberHug();
     robot::delay_update(1000);
     ARMCONTROL::armHorizontal();
     // atb.turn_degrees(15);

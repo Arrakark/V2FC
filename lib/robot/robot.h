@@ -54,8 +54,6 @@
 #define FOURTH_EWOK_DISTANCE 14.0
 #define CHEWIE_DISTANCE 14.0
 
-
-
 class robot
 {
 public:
