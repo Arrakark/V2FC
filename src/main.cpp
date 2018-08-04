@@ -6,13 +6,19 @@ void setup()
     //Start Serial
     Serial.begin(230400, SERIAL_8E1);
     atb.init();
-    atb.first_ewok_pick_up();
-    atb.second_ewok_pick_up();
-    atb.archway_crossing();
-    atb.third_ewok_pick_up();
+    ARMCONTROL::grabberHug();
     atb.delay_update(1000);
-    atb.second_gap_crossing();
-    atb.chewbacca_pick_up();
+
+
+
+    // atb.first_ewok_pick_up();
+    // atb.second_ewok_pick_up();
+    // atb.archway_crossing();
+    // atb.third_ewok_pick_up();
+    // atb.delay_update(1000);
+    // atb.second_gap_crossing();
+    // atb.chewbacca_pick_up();
+    atb.zipline_finish();
     // atb.turn_degrees(45);
     // // ARMCONTROL::arm80();
     // atb.delay_update(1000);
