@@ -50,7 +50,7 @@
 #define FOURTH_EWOK_DISTANCE 14.0
 #define CHEWIE_DISTANCE 14.0
 
-#
+
 
 class robot
 {
@@ -90,7 +90,6 @@ public:
   void turn_table_detect(int num);
   void third_ewok_pick_up_old();
   void second_gap_auto();
-  void zipline_for_three_ewoks();
 
   //competition surface stages
   void first_ewok_pick_up();
