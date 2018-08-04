@@ -448,7 +448,7 @@ void robot::turn_until_black_line(int turn_dir)
             left_motor->run(TURN_SPEED);
             right_motor->run(-TURN_SPEED);
             // } while (bottom_sensor->max_distance() < LINE_DISTANCE);
-        // } while (bottom_sensor->max_distance() < 12);
+            // } while (bottom_sensor->max_distance() < 12);
         } while (bottom_sensor->max_distance() < 15); //the 7th ir_sensor tends to shoot up to high values very quickly
     }
 
@@ -459,7 +459,7 @@ void robot::turn_until_black_line(int turn_dir)
             bottom_sensor->update();
             left_motor->run(-TURN_SPEED);
             right_motor->run(TURN_SPEED);
-        // } while (bottom_sensor->max_distance() < 12);
+            // } while (bottom_sensor->max_distance() < 12);
         } while (bottom_sensor->max_distance() < 15); //the 7th ir_sensor tends to shoot up to high values very quickly
     }
 
@@ -790,7 +790,7 @@ void robot::third_ewok_pick_up()
     ARMCONTROL::armHorizontal();
     // atb.turn_degrees(15);
     turn_degrees(5);
-    //CALIBRATION: 0.37 
+    //CALIBRATION: 0.37
     move_meters(0.40);
     robot::delay_update(2000);
     //CALIBRATION: -50
@@ -941,7 +941,8 @@ void robot::turn_table_detect()
  * edge following up to chewbacca. Send change in slope, start sweeping
  * for chewbacca. Grab it!!!
  * */
-void robot::chewbacca_pick_up(){
+void robot::chewbacca_pick_up()
+{
     // move_meters(-0.1)
     turn_degrees(43); //this should turn 90 degrees
     move_meters(0.2);
@@ -955,7 +956,7 @@ void robot::chewbacca_pick_up(){
     do
     {
         left_sensor->update();
-        right_sensor->update(); 
+        right_sensor->update();
         front_sensor->update();
         //biases the error with 30
         float error = right_sensor->mean() - left_sensor->mean() + 10;
@@ -1014,4 +1015,129 @@ void robot::sensor_min()
     Serial.print(front_sensor->min_distance());
     Serial.print(",");
     Serial.println(right_sensor->min_distance());
+}
+
+/*
+    zipline mechanism for sending chewbacca and ewoks home
+
+    release the basket by hooking basket at zipline and then 
+    have the scissor lift to move downwards 
+
+    will be used once Chewy is picked up
+
+    Assumptions:
+                 - 3 ewoks + Chewy in basket
+                 - grabber is open
+                 - arm is in Search position
+                 - robot is facing in front of Chewy
+*/
+
+void robot::zipline_finish()
+{
+    //close grabber
+    ARMCONTROL::grabberHug();
+    delay_update(500); //***
+    //need to change arm position into Horizontal??? *******
+
+    //adjusting basket hook on zipline
+
+    //move robot forward until all of left sensor sees the 'ground'
+    do
+    {
+        left_motor->run(80);
+        right_motor->run(80);
+    } while(left_sensor->min_distance() < 40); //**
+
+    //rotate to the right until all of left sensor sees the 'platform'
+    do
+    {
+        //'opposite signs' from motors
+        left_motor->run(-80);
+        right_motor->run(80);
+    } while(left_sensor->min_distance() < 25); //***
+
+    //move robot forward until all of left sensor sees the 'ground'
+    do
+    {
+        left_motor->run(80);
+        right_motor->run(80);
+    } while(left_sensor->min_distance() < 40); //**
+
+    //rotate motor to the right until all or most of the left_sensor sees 'platform' ********
+    do
+    {
+        //'opposite signs' from motors
+        left_motor->run(-80);
+        right_motor->run(80);
+    } while(left_sensor->distance_readings[5] < 25);
+    // } while(left_sensor->min_distance() < 25); //***
+
+
+    //hooking basket onto zipline
+
+    //initialize scissor lift object
+    lift = new SLIFT(PA8);
+    lift->init();
+
+    //lift scisoor lift 
+    lift->moveUp();
+
+    /* 
+        to hook the basket onto zipline, move robot forward until both 
+        left and right sensors all see 'ground' and that the bottom sensor 
+        just sees 'ground' ***************
+    */
+   do
+   {
+       left_motor->run(80);
+       right_motor->run(80);
+   } while(left_sensor->min_distance() < 40 && right_sensor->min_distance() && bottom_sensor->min_distance() < CLIFF_DISTANCE);
+
+   //move scissor lift downwards
+   lift->moveDown();
+
+   //need to shut down the scissor lift in the end????? *****
+   lift->disconnect();
+}
+
+
+/*
+    Backup plan for just bringing three ewoks back home with the basket
+
+    Assumptions:
+                 - 3 ewoks in basket
+                 - robot facing in front of the third ewok
+                 - grabber is open
+                 - arm is in Search position
+*/
+void robot::zipline_for_three_ewoks()
+{
+    //rotate robot to the right for about 135 degrees (before it touches a black line)
+    turn_degrees(-135); //negative degrees is right
+
+    //rotate robot to the right until it sees black line/tape
+    turn_until_black_line(RIGHT);
+
+    //line follow until it sees the gap of the rotary platform
+    turn_table_detect();
+
+    //rotate robot to the right for about 45 degrees (will need to adjust)
+    turn_degrees(-45);
+
+    //intialize scissor lift mechanism
+    lift = new SLIFT(PA8);
+    lift->init();
+
+    //lift up the scissor lift
+    lift->moveUp();
+
+    //move robot straight until all of (or most of) right sensor sees 'CLIFF'
+    do
+    {
+        left_motor->run(80);
+        right_motor->run(80);
+    } while(right_sensor->distance_readings[1] < CLIFF_DISTANCE);
+
+    //need to shut down the scissor lift in the end????? *****
+    lift->disconnect();
 }
