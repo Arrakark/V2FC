@@ -515,12 +515,6 @@ void robot::find_second_edge()
         line_follower->follow_line();
         delay_update(4);
     } while (bottom_sensor->min_distance() < CLIFF_DISTANCE);
-    // do
-    // {
-    //     bottom_sensor->update();
-    //     move_meters(0.05);
-    // } while (bottom_sensor->min_distance() > 4);
-
     move_meters(-0.05);
 }
 
@@ -669,12 +663,13 @@ void robot::first_ewok_pick_up()
     line_follow_until_right_ewok();
     ARMCONTROL::grabberOpen();
     delay_update(500);
-    move_toward_ewok(CLOSEST_DISTANCE_TO_EWOK);
+    move_toward_ewok(FIRST_EWOK_DISTANCE);
     //make it stop
     move_meters(-0.02); //changing the speed changes how far it moves (faster -> longer)
     grab_ewok();
 }
 
+//wall following attempt to get to third ewok. We are no longer using this function
 void robot::forward_until_wall()
 {
     ARMCONTROL::armPickup();
@@ -736,7 +731,7 @@ void robot::second_ewok_pick_up()
     //cross the gap
     move_meters(0.7);
     ARMCONTROL::armPickup();
-    move_toward_ewok(CLOSEST_DISTANCE_TO_EWOK);
+    move_toward_ewok(SECOND_EWOK_DISTANCE);
     // move_meters(0.25);
     robot::delay_update(100);
     move_meters(-0.05); //added to move back a bit (stop motors quickly)
@@ -771,7 +766,7 @@ void robot::archway_crossing()
 void robot::third_ewok_pick_up()
 {
     ARMCONTROL::armVertical();
-    turn_table_detect();
+    turn_table_detect(TWICE);
     robot::delay_update(1000);
     ARMCONTROL::armSearch();
     ARMCONTROL::grabberOpen();
@@ -888,7 +883,7 @@ void robot::second_gap_crossing()
     second_gap_auto();
     ARMCONTROL::armPickup();
     robot::delay_update(200);
-    move_toward_ewok(CLOSEST_DISTANCE_TO_EWOK);
+    move_toward_ewok(FOURTH_EWOK_DISTANCE);
     move_meters(-0.07);
     grab_ewok();
     delay_update(1000);
@@ -907,28 +902,40 @@ void robot::second_gap_auto()
     ram_meters(0.09);
 }
 
-void robot::turn_table_detect()
+
+/**
+ * Navigate across turn table.
+ * Param: number of gaps to recgonize. Either once or twice.
+ * One gap recognition is for finding the zipline to drop off the first 3 ewoks.
+ * Both gap recognition is for traversing from archway towards third ewok.
+ **/
+void robot::turn_table_detect(int num)
 {
-    // unsigned long start_time = millis();
     line_follower->pid_controller.p_gain = 600.0;
     line_follower->pid_controller.p_limit = 250;
     line_follower->cross_gap = false;
     line_follower->default_speed = 120;
     int flag = 0;
     unsigned long time_flag = millis();
+   
     do
     {
         bottom_sensor->update();
-        Serial.println(bottom_sensor->mean());
+        // Serial.println(bottom_sensor->mean());
         bottom_sensor->update();
         line_follower->follow_line();
         delay_update(4);
-        if (bottom_sensor->mean() > 10.3 && flag == 0)
+        //
+        if (bottom_sensor->mean() > TURN_TABLE_GAP && flag == 0)
         {
             flag = 1;
             time_flag = millis();
+            //if we want to stop after passing one edge of turn table
+            if(num == ONCE){
+                break;
+            }
         }
-    } while (flag != 1 || millis() < time_flag + 200 || bottom_sensor->mean() < 10.3);
+    } while (flag != 1 || millis() < time_flag + 200 || bottom_sensor->mean() < TURN_TABLE_GAP);
     move_meters(-0.05);
 }
 
@@ -965,7 +972,7 @@ void robot::chewbacca_pick_up()
         left_motor->run(130 + (int)control);
         delay_update(20);
         //this looks for Chewie!!!
-    } while (front_sensor->min_distance() > 14);
+    } while (front_sensor->min_distance() > CHEWIE_DISTANCE);
     left_motor->stop();
     right_motor->stop();
     ARMCONTROL::armPickup();
@@ -1104,16 +1111,15 @@ void robot::zipline_finish()
 
 //    //move scissor lift downwards
 //    lift->moveDown();
-
-//    //need to shut down the scissor lift in the end????? *****
-//    lift->disconnect();
+   //disconnect lift servo
+   lift->disconnect();
 }
 
 
 /*
     Backup plan for just bringing three ewoks back home with the basket
 
-    Assumptions:
+    Precondition:
                  - 3 ewoks in basket
                  - robot facing in front of the third ewok
                  - grabber is open
@@ -1122,16 +1128,16 @@ void robot::zipline_finish()
 void robot::zipline_for_three_ewoks()
 {
     //rotate robot to the right for about 135 degrees (before it touches a black line)
-    turn_degrees(-135); //negative degrees is right
+    turn_degrees(135); //positive degrees is right
 
     //rotate robot to the right until it sees black line/tape
     turn_until_black_line(RIGHT);
 
     //line follow until it sees the gap of the rotary platform
-    turn_table_detect();
+    turn_table_detect(ONCE);
 
     //rotate robot to the right for about 45 degrees (will need to adjust)
-    turn_degrees(-45);
+    turn_degrees(45);
 
     //intialize scissor lift mechanism
     lift = new SLIFT(PA8);
@@ -1147,6 +1153,6 @@ void robot::zipline_for_three_ewoks()
         right_motor->run(80);
     } while(right_sensor->distance_readings[1] < CLIFF_DISTANCE);
 
-    //need to shut down the scissor lift in the end????? *****
+    //disconnect the scissor lift in the end
     lift->disconnect();
 }

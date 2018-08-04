@@ -23,19 +23,34 @@
 #define SWEEP_SPEED 200
 #define TURN_SPEED 255
 #define FAST_TURN_SPEED 255
-#define FULL_CLIFF_DISTANCE 17
-#define GAP_CLIFF_DISTANCE 10
 #define METERS_PER_SECOND 0.46333333 //NORMAL_SPEED is 130 -> 0.46333333m/s
 #define DEGREES_PER_SECOND 86        //TURN_SPEED is 200 -> 86 deg/sec
-// #define CLOSEST_DISTANCE_TO_EWOK 8.0
-#define CLOSEST_DISTANCE_TO_EWOK 14.0                                                                                                                                                                                                                                                                                                                          
-#define BRIGHT_CLOSEST_DISTANCE_TO_EWOK 12.0
-#define THIRD_EWOK_DISTANCE 17.0
 #define CLOSEST_DISTANCE_TO_CHEWY 6.0
 #define LINE_DISTANCE 6.0
 #define EWOK_LONG_DISTANCE_DETECTION 25 //interval in ms to scan for the ewok
 #define RIGHT -1
 #define LEFT 1
+#define ONCE 1
+#define TWICE 2
+
+//CALIBRATE THESE VALUES:
+#define CLOSEST_DISTANCE_TO_EWOK 14.0                                                                                                                                                                                                                                                                                                                          
+#define BRIGHT_CLOSEST_DISTANCE_TO_EWOK 12.0
+//gaps
+#define FULL_CLIFF_DISTANCE 17
+#define GAP_CLIFF_DISTANCE 10
+#define TURN_TABLE_GAP 10.3
+
+//ewok distances should be all the same but sometimes one ewok is in front of a window.
+//these defines are implemented so we can calibrate accordingly. This is hopefully not needed for
+//competition day
+#define FIRST_EWOK_DISTANCE 14.0
+#define SECOND_EWOK_DISTANCE 14.0
+#define THIRD_EWOK_DISTANCE 17.0
+#define FOURTH_EWOK_DISTANCE 14.0
+#define CHEWIE_DISTANCE 14.0
+
+#
 
 class robot
 {
@@ -72,9 +87,10 @@ public:
   void sweep_for_zipline(int turn_dir);
   void follow_left_wall_until_ewok();
   void forward_until_wall();
-  void turn_table_detect();
+  void turn_table_detect(int num);
   void third_ewok_pick_up_old();
   void second_gap_auto();
+  void zipline_for_three_ewoks();
 
   //competition surface stages
   void first_ewok_pick_up();
