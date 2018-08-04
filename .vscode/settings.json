@@ -7,5 +7,6 @@
         "*.tcc": "cpp",
         "string_view": "cpp",
         "*.txt": "cpp"
-    }
+    },
+    "C_Cpp.dimInactiveRegions": false
 }
