@@ -27,7 +27,10 @@
 #define GAP_CLIFF_DISTANCE 10
 #define METERS_PER_SECOND 0.46333333 //NORMAL_SPEED is 130 -> 0.46333333m/s
 #define DEGREES_PER_SECOND 86        //TURN_SPEED is 200 -> 86 deg/sec
-#define CLOSEST_DISTANCE_TO_EWOK 8.0
+// #define CLOSEST_DISTANCE_TO_EWOK 8.0
+#define CLOSEST_DISTANCE_TO_EWOK 14.0                                                                                                                                                                                                                                                                                                                          
+#define BRIGHT_CLOSEST_DISTANCE_TO_EWOK 12.0
+#define THIRD_EWOK_DISTANCE 17.0
 #define CLOSEST_DISTANCE_TO_CHEWY 6.0
 #define LINE_DISTANCE 6.0
 #define EWOK_LONG_DISTANCE_DETECTION 25 //interval in ms to scan for the ewok
@@ -45,7 +48,7 @@ public:
   void turn_degrees(float degrees);
   void move_meters(float meters);
   void sweep_for_ewok(float angle);
-  void move_toward_ewok();
+  void move_toward_ewok(double distance_to_ewok);
   void calibrate_meters_per_second(int seconds);
   void calibrate_degrees_per_second(int seconds);
   void follow_right_edge_until_ewok();

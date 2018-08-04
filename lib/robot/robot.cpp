@@ -313,11 +313,11 @@ void robot::sweep_for_ewok(float angle)
 /*
  *  Move toward ewok until it is within grabbing range
  */
-void robot::move_toward_ewok()
+void robot::move_toward_ewok(double distance_to_ewok)
 {
     front_sensor->update();
     //while (front_sensor->min_distance() > CLOSEST_DISTANCE_TO_EWOK)
-    while (front_sensor->min_distance() > 14)
+    while (front_sensor->min_distance() > distance_to_ewok)
     {
         left_motor->run(EWOK_SPEED);
         right_motor->run(EWOK_SPEED);
@@ -669,7 +669,7 @@ void robot::first_ewok_pick_up()
     line_follow_until_right_ewok();
     ARMCONTROL::grabberOpen();
     delay_update(500);
-    move_toward_ewok();
+    move_toward_ewok(CLOSEST_DISTANCE_TO_EWOK);
     //make it stop
     move_meters(-0.02); //changing the speed changes how far it moves (faster -> longer)
     grab_ewok();
@@ -734,15 +734,15 @@ void robot::second_ewok_pick_up()
     robot::delay_update(500);
     robot::delay_update(500);
     //cross the gap
-    // move_meters(0.7);
-    // ARMCONTROL::armPickup();
-    // move_toward_ewok();
-    // // move_meters(0.25);
-    // robot::delay_update(100);
-    // move_meters(-0.05); //added to move back a bit (stop motors quickly)
-    // robot::delay_update(500);
-    // grab_ewok();
-    // robot::delay_update(500);
+    move_meters(0.7);
+    ARMCONTROL::armPickup();
+    move_toward_ewok(CLOSEST_DISTANCE_TO_EWOK);
+    // move_meters(0.25);
+    robot::delay_update(100);
+    move_meters(-0.05); //added to move back a bit (stop motors quickly)
+    robot::delay_update(500);
+    grab_ewok();
+    robot::delay_update(500);
 }
 
 /**
@@ -772,15 +772,16 @@ void robot::third_ewok_pick_up()
 {
     ARMCONTROL::armVertical();
     turn_table_detect();
-    robot::delay_update(2000);
+    robot::delay_update(1000);
     ARMCONTROL::armSearch();
     ARMCONTROL::grabberOpen();
-    robot::delay_update(1000);
+    robot::delay_update(2000);
     move_meters(0.45);
     robot::delay_update(2000);
-    turn_degrees(15);
+    //CALIBRATION VALUE 15
+    turn_degrees(18);
     robot::delay_update(2000);
-    move_toward_ewok(); //too fast
+    move_toward_ewok(THIRD_EWOK_DISTANCE); //too fast
     move_meters(0.01);
     ARMCONTROL::armPickup();
     robot::delay_update(500);
@@ -789,10 +790,12 @@ void robot::third_ewok_pick_up()
     ARMCONTROL::armHorizontal();
     // atb.turn_degrees(15);
     turn_degrees(5);
-    move_meters(0.37);
+    //CALIBRATION: 0.37 
+    move_meters(0.40);
     robot::delay_update(2000);
-    turn_degrees(-50);
-    ARMCONTROL::arm45();
+    //CALIBRATION: -50
+    turn_degrees(-46);
+    ARMCONTROL::armHorizontal();
     move_meters(0.25);
     robot::delay_update(2000);
     ARMCONTROL::grabberOpen();
@@ -816,7 +819,7 @@ void robot::third_ewok_pick_up_old()
     sweep_ewok(LEFT);
 
     robot::delay_update(500);
-    move_toward_ewok();
+    move_toward_ewok(THIRD_EWOK_DISTANCE);
     //move_meters(0.05);
     robot::delay_update(500);
 
@@ -885,7 +888,7 @@ void robot::second_gap_crossing()
     second_gap_auto();
     ARMCONTROL::armPickup();
     robot::delay_update(200);
-    move_toward_ewok();
+    move_toward_ewok(CLOSEST_DISTANCE_TO_EWOK);
     move_meters(-0.07);
     grab_ewok();
     delay_update(1000);

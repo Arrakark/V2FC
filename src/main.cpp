@@ -26,7 +26,7 @@ void setup()
      atb.third_ewok_pick_up();
      atb.delay_update(1000);
     // //========================== SECOND GAP CROSSING ==========================
-    // atb.second_gap_crossing();
+    atb.second_gap_crossing();
     //========================== FOURTH EWOK ==========================
     //========================== CHEWBACCA ==========================
     atb.chewbacca_pick_up();    
