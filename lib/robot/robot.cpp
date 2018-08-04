@@ -663,12 +663,13 @@ void robot::first_ewok_pick_up()
     line_follow_until_right_ewok();
     ARMCONTROL::grabberOpen();
     delay_update(500);
-    move_toward_ewok(CLOSEST_DISTANCE_TO_EWOK);
+    move_toward_ewok(FIRST_EWOK_DISTANCE);
     //make it stop
     move_meters(-0.02); //changing the speed changes how far it moves (faster -> longer)
     grab_ewok();
 }
 
+//wall following attempt to get to third ewok. We are no longer using this function
 void robot::forward_until_wall()
 {
     ARMCONTROL::armPickup();
@@ -730,7 +731,7 @@ void robot::second_ewok_pick_up()
     //cross the gap
     move_meters(0.7);
     ARMCONTROL::armPickup();
-    move_toward_ewok(CLOSEST_DISTANCE_TO_EWOK);
+    move_toward_ewok(SECOND_EWOK_DISTANCE);
     // move_meters(0.25);
     robot::delay_update(100);
     move_meters(-0.05); //added to move back a bit (stop motors quickly)
@@ -882,7 +883,7 @@ void robot::second_gap_crossing()
     second_gap_auto();
     ARMCONTROL::armPickup();
     robot::delay_update(200);
-    move_toward_ewok(CLOSEST_DISTANCE_TO_EWOK);
+    move_toward_ewok(FOURTH_EWOK_DISTANCE);
     move_meters(-0.07);
     grab_ewok();
     delay_update(1000);
@@ -971,7 +972,7 @@ void robot::chewbacca_pick_up()
         left_motor->run(130 + (int)control);
         delay_update(20);
         //this looks for Chewie!!!
-    } while (front_sensor->min_distance() > 14);
+    } while (front_sensor->min_distance() > CHEWIE_DISTANCE);
     left_motor->stop();
     right_motor->stop();
     ARMCONTROL::armPickup();

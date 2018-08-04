@@ -23,8 +23,6 @@
 #define SWEEP_SPEED 200
 #define TURN_SPEED 255
 #define FAST_TURN_SPEED 255
-#define FULL_CLIFF_DISTANCE 17
-#define GAP_CLIFF_DISTANCE 10
 #define METERS_PER_SECOND 0.46333333 //NORMAL_SPEED is 130 -> 0.46333333m/s
 #define DEGREES_PER_SECOND 86        //TURN_SPEED is 200 -> 86 deg/sec
 #define CLOSEST_DISTANCE_TO_CHEWY 6.0
@@ -38,8 +36,21 @@
 //CALIBRATE THESE VALUES:
 #define CLOSEST_DISTANCE_TO_EWOK 14.0                                                                                                                                                                                                                                                                                                                          
 #define BRIGHT_CLOSEST_DISTANCE_TO_EWOK 12.0
-#define THIRD_EWOK_DISTANCE 17.0
+//gaps
+#define FULL_CLIFF_DISTANCE 17
+#define GAP_CLIFF_DISTANCE 10
 #define TURN_TABLE_GAP 10.3
+
+//ewok distances should be all the same but sometimes one ewok is in front of a window.
+//these defines are implemented so we can calibrate accordingly. This is hopefully not needed for
+//competition day
+#define FIRST_EWOK_DISTANCE 14.0
+#define SECOND_EWOK_DISTANCE 14.0
+#define THIRD_EWOK_DISTANCE 17.0
+#define FOURTH_EWOK_DISTANCE 14.0
+#define CHEWIE_DISTANCE 14.0
+
+#
 
 class robot
 {
