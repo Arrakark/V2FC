@@ -880,7 +880,7 @@ void robot::second_gap_crossing()
         turn_degrees(1);
         //keep turning while left sensor is off the edge
     } while (left_sensor->mean() > 30);
-    turn_degrees(5);
+    turn_degrees(4);
     robot::delay_update(1000);
     ARMCONTROL::armHorizontal();
     move_meters(0.4);
@@ -947,6 +947,7 @@ void robot::chewbacca_pick_up(){
     move_meters(0.2);
     delay_update(500);
     ARMCONTROL::armSearch();
+    ARMCONTROL::grabberOpen();
     //
     pid bridge_crosser = pid();
     bridge_crosser.p_gain = 85;
