@@ -1034,8 +1034,8 @@ void robot::sensor_min()
 
 void robot::zipline_finish()
 {
-    int ground_value = 15;
-    int platform_value = 11;
+    int ground_value = 17; //min dist for ground is 17 in left_sensor
+    int platform_value = 12; //min dist for platform in left_sensor is 11-12
     //close grabber
     ARMCONTROL::grabberHug();
     delay_update(500); //***
@@ -1049,7 +1049,7 @@ void robot::zipline_finish()
         left_sensor->update();
         left_motor->run(80);
         right_motor->run(80);
-    } while(left_sensor->min_distance() < ground_value); //**
+    } while(left_sensor->min_distance() < ground_value - 1); //**
 
     //rotate to the right until all of left sensor sees the 'platform'
     do
@@ -1058,7 +1058,7 @@ void robot::zipline_finish()
         //'opposite signs' from motors
         left_motor->run(-80);
         right_motor->run(80);
-    } while(left_sensor->min_distance() < platform_value); //***
+    } while(left_sensor->min_distance() > platform_value  + 1); //***
 
     //move robot forward until all of left sensor sees the 'ground'
     do
@@ -1066,7 +1066,7 @@ void robot::zipline_finish()
         left_sensor->update();
         left_motor->run(80);
         right_motor->run(80);
-    } while(left_sensor->min_distance() < ground_value); //**
+    } while(left_sensor->min_distance() < ground_value - 1); //**
 
     //rotate motor to the right until all or most of the left_sensor sees 'platform' ********
     do
@@ -1075,7 +1075,7 @@ void robot::zipline_finish()
         //'opposite signs' from motors
         left_motor->run(-80);
         right_motor->run(80);
-    } while(left_sensor->distance_readings[5] < platform_value);
+    } while(left_sensor->distance_readings[5] > platform_value + 1);
     // } while(left_sensor->min_distance() < platform_value); //***
 
     
@@ -1100,7 +1100,7 @@ void robot::zipline_finish()
        bottom_sensor->update();
        left_motor->run(80);
        right_motor->run(80);
-   } while(left_sensor->min_distance() < ground_value && right_sensor->min_distance() < ground_value && bottom_sensor->min_distance() < CLIFF_DISTANCE);
+   } while(left_sensor->min_distance() < ground_value - 1 && right_sensor->min_distance() < ground_value - 1 && bottom_sensor->min_distance() < CLIFF_DISTANCE);
 
 //    //move scissor lift downwards
 //    lift->moveDown();
