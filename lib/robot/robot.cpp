@@ -1040,6 +1040,8 @@ void robot::sensor_min()
 
 void robot::zipline_finish()
 {
+    int ground_value = 15;
+    int platform_value = 11;
     //close grabber
     ARMCONTROL::grabberHug();
     delay_update(500); //***
@@ -1050,43 +1052,47 @@ void robot::zipline_finish()
     //move robot forward until all of left sensor sees the 'ground'
     do
     {
+        left_sensor->update();
         left_motor->run(80);
         right_motor->run(80);
-    } while(left_sensor->min_distance() < 40); //**
+    } while(left_sensor->min_distance() < ground_value); //**
 
     //rotate to the right until all of left sensor sees the 'platform'
     do
     {
+        left_sensor->update();
         //'opposite signs' from motors
         left_motor->run(-80);
         right_motor->run(80);
-    } while(left_sensor->min_distance() < 25); //***
+    } while(left_sensor->min_distance() < platform_value); //***
 
     //move robot forward until all of left sensor sees the 'ground'
     do
     {
+        left_sensor->update();
         left_motor->run(80);
         right_motor->run(80);
-    } while(left_sensor->min_distance() < 40); //**
+    } while(left_sensor->min_distance() < ground_value); //**
 
     //rotate motor to the right until all or most of the left_sensor sees 'platform' ********
     do
     {
+        left_sensor->update();
         //'opposite signs' from motors
         left_motor->run(-80);
         right_motor->run(80);
-    } while(left_sensor->distance_readings[5] < 25);
-    // } while(left_sensor->min_distance() < 25); //***
+    } while(left_sensor->distance_readings[5] < platform_value);
+    // } while(left_sensor->min_distance() < platform_value); //***
 
+    
+//     //hooking basket onto zipline
 
-    //hooking basket onto zipline
+//     //initialize scissor lift object
+//     lift = new SLIFT(PA8);
+//     lift->init();
 
-    //initialize scissor lift object
-    lift = new SLIFT(PA8);
-    lift->init();
-
-    //lift scisoor lift 
-    lift->moveUp();
+//     //lift scisoor lift 
+//     lift->moveUp();
 
     /* 
         to hook the basket onto zipline, move robot forward until both 
@@ -1095,13 +1101,15 @@ void robot::zipline_finish()
     */
    do
    {
+       left_sensor->update();
+       right_sensor->update();
+       bottom_sensor->update();
        left_motor->run(80);
        right_motor->run(80);
-   } while(left_sensor->min_distance() < 40 && right_sensor->min_distance() && bottom_sensor->min_distance() < CLIFF_DISTANCE);
+   } while(left_sensor->min_distance() < ground_value && right_sensor->min_distance() < ground_value && bottom_sensor->min_distance() < CLIFF_DISTANCE);
 
-   //move scissor lift downwards
-   lift->moveDown();
-
+//    //move scissor lift downwards
+//    lift->moveDown();
    //disconnect lift servo
    lift->disconnect();
 }

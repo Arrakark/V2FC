@@ -89,10 +89,11 @@ public:
   void edge_follow_to_chewy();
   // void fourth_ewok_pick_up();
   void chewbacca_pick_up();
-  void zipline_finish();  
   void zipline_follow();
   void compass_turn_degrees(float degrees);
   void second_gap_crossing();
+  void zipline_finish();  
+  void zipline_for_three_ewoks();
 
   //info
   void sensor_mean();
