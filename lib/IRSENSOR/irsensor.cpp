@@ -165,7 +165,11 @@ void irsensor::info()
     for (int i = 0; i < 8; i++)
     {
         Serial.print(distance_readings[i]);
-        Serial.print(" ");
+        //don't print comma after 8th reading output
+        if(i == 8){
+            break;
+        }
+        Serial.print(",");
     }
     Serial.println();
 }

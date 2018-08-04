@@ -40,11 +40,15 @@
 #define FULL_CLIFF_DISTANCE 17
 #define GAP_CLIFF_DISTANCE 10
 #define TURN_TABLE_GAP 10.3
+#define LEFT_CLIFF 30.0
+#define AUTO_CLIFF 15.0
+
 
 //ewok distances should be all the same but sometimes one ewok is in front of a window.
 //these defines are implemented so we can calibrate accordingly. This is hopefully not needed for
 //competition day
 #define FIRST_EWOK_DISTANCE 14.0
+//IR BEACON AFFECTS EWOK DISTANCE
 #define SECOND_EWOK_DISTANCE 14.0
 #define THIRD_EWOK_DISTANCE 17.0
 #define FOURTH_EWOK_DISTANCE 14.0

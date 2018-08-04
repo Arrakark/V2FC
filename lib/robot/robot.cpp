@@ -407,7 +407,7 @@ void robot::line_follow_until_right_ewok()
     float min_value = 30.0;
     while (1)
     {
-        right_sensor->update();
+        // right_sensor->update();
         bottom_sensor->update();
         line_follower->follow_line();
         robot::delay_update(4);
@@ -502,7 +502,7 @@ void robot::wait_for_10khz()
  **/
 void robot::find_second_edge()
 {
-    unsigned long start_time = millis();
+    // unsigned long start_time = millis();
     line_follower->pid_controller.p_gain = 600.0;
     line_follower->pid_controller.p_limit = 250;
     line_follower->cross_gap = false;
@@ -731,6 +731,7 @@ void robot::second_ewok_pick_up()
     //cross the gap
     move_meters(0.7);
     ARMCONTROL::armPickup();
+    ARMCONTROL::grabberOpen();
     move_toward_ewok(SECOND_EWOK_DISTANCE);
     // move_meters(0.25);
     robot::delay_update(100);
@@ -874,7 +875,7 @@ void robot::second_gap_crossing()
         left_sensor->update();
         turn_degrees(1);
         //keep turning while left sensor is off the edge
-    } while (left_sensor->mean() > 30);
+    } while (left_sensor->mean() > LEFT_CLIFF);
     turn_degrees(4);
     robot::delay_update(1000);
     ARMCONTROL::armHorizontal();
@@ -898,7 +899,7 @@ void robot::second_gap_auto()
         left_motor->run(255);
         right_motor->run(255);
         delay_update(20);
-    } while (bottom_sensor->mean() > 15);
+    } while (bottom_sensor->mean() > AUTO_CLIFF);
     ram_meters(0.09);
 }
 
