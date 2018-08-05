@@ -89,6 +89,7 @@ void robot::init()
     right_claw->init();
     left_motor->init();
     right_motor->init();
+    right_claw->init();
     Wire.begin();
     pinMode(PC13, OUTPUT);
     robot::check_sensors();
@@ -658,6 +659,7 @@ void robot::line_follow_until_third_ewok()
  * */
 void robot::first_ewok_pick_up()
 {
+<<<<<<< HEAD
     // while(1) {
     // robot::delay_update(2000);
     // right_claw->pickup();
@@ -690,6 +692,18 @@ void robot::first_ewok_pick_up()
     move_meters(-0.01);
     right_claw->grabEwok();
 
+=======
+    line_follow_until_right_ewok();
+    while(1){
+    line_follower->default_speed = 110;
+    line_follower->follow_line();
+        robot::delay_update(4);
+        if (right_grab_ewok()) {
+            break;
+        }
+    }
+    // move_meters(-0.01);
+>>>>>>> 07a39864d1540f38cdcdd67f24b2c049d2cdd2e3
 }
 
 //wall following attempt to get to third ewok. We are no longer using this function
@@ -736,13 +750,14 @@ void robot::follow_left_wall_until_ewok()
  **/
 void robot::second_ewok_pick_up()
 {
-    turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
-    robot::delay_update(500);
+
     //This will find the gap and back up
     find_gap_one();
     robot::delay_update(500);
     // robot::delay_update(500);
     move_meters(-0.15);
+    robot::delay_update(500);
+    turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
     robot::delay_update(500);
     //realign with the gap again
     find_gap_one();
@@ -753,14 +768,15 @@ void robot::second_ewok_pick_up()
     robot::delay_update(500);
     //cross the gap
     move_meters(0.7);
-    ARMCONTROL::armPickup();
-    move_toward_ewok(SECOND_EWOK_DISTANCE);
-    // move_meters(0.25);
-    robot::delay_update(100);
-    move_meters(-0.05); //added to move back a bit (stop motors quickly)
-    robot::delay_update(500);
-    grab_ewok();
-    robot::delay_update(500);
+    //follow-line until ewok
+    while(1){
+    line_follower->follow_line();
+        robot::delay_update(4);
+        if (right_grab_ewok()) {
+            break;
+        }
+    }
+
 }
 
 /**
@@ -1178,4 +1194,22 @@ void robot::zipline_for_three_ewoks()
 
     //disconnect the scissor lift in the end
     lift->disconnect();
+}
+
+//=================================SIDE CLAWS==================================/
+bool robot::right_grab_ewok() {    
+    if (right_claw->checkQSD()) {
+        move_meters(-0.03);
+        right_claw->hug();
+        robot::delay_update(500);
+        right_claw->dropoff();
+        robot::delay_update(1000);
+        right_claw->open();
+        robot::delay_update(500);
+        right_claw->pickup();
+        robot::delay_update(500);
+    
+        return true;
+    }
+        return false;
 }
