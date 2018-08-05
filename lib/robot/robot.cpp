@@ -73,6 +73,7 @@ robot::robot()
 {
     //elbow servo is servo 1, grabber servo is servo 2
     //limit switch is the first limit switch
+    SCLAW right_claw = SCLAW(SUPPORT_SERVO,PINCER_SERVO,GRABBER_SWITCH);
     left_motor = new HBRIDGE(PB0, PA1);
     right_motor = new HBRIDGE(PA3, PA7);
     bottom_sensor = new irsensor(0x49, lookup_table_2);
@@ -90,9 +91,6 @@ void robot::init()
     Wire.begin();
     pinMode(PC13, OUTPUT);
     robot::check_sensors();
-    ARMCONTROL::init(ARM_SERVO, GRABBER_SERVO, GRABBER_SWITCH, ARM_POT);
-    ARMCONTROL::armSearch();
-    ARMCONTROL::grabberOpen();
     robot::delay_update(500);
 }
 
@@ -227,7 +225,7 @@ void robot::delay_update(long ms)
     unsigned long starttime = millis();
     while (millis() < starttime + ms)
     {
-        ARMCONTROL::update();
+        //ARMCONTROL::update();
         robot::check_sensors();
         delay(5);
     }
@@ -659,14 +657,27 @@ void robot::line_follow_until_third_ewok()
  * */
 void robot::first_ewok_pick_up()
 {
-    ARMCONTROL::grabberHug();
-    line_follow_until_right_ewok();
-    ARMCONTROL::grabberOpen();
-    delay_update(500);
-    move_toward_ewok(FIRST_EWOK_DISTANCE);
-    //make it stop
-    move_meters(-0.02); //changing the speed changes how far it moves (faster -> longer)
-    grab_ewok();
+    float min_value = 30.0;
+    while (1)
+    {
+        right_sensor->update();
+        bottom_sensor->update();
+        line_follower->follow_line();
+        robot::delay_update(4);
+        //right_claw.grabEwok();
+        if (bottom_sensor->mean() < min_value)
+        {
+            min_value = bottom_sensor->mean();
+        }
+        //needs to be between 1.3 and 1.5
+        if (bottom_sensor->mean() > 1.382465057179161 * min_value)
+        {
+            break;
+        }
+    }
+    move_meters(-0.01);
+    //robot::delay_update(((float)abs(meters) / METERS_PER_SECOND) * 1000);
+
 }
 
 //wall following attempt to get to third ewok. We are no longer using this function

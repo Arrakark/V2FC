@@ -9,10 +9,11 @@
 #include <pid.h>
 #include <HBRIDGE.h>
 #include <linefollower.h>
+#include <SCLAW.h>
 
-#define ARM_SERVO PB8
+#define SUPPORT_SERVO PB8
 #define ARM_POT PB1
-#define GRABBER_SERVO PB9
+#define PINCER_SERVO PB9
 #define GRABBER_SWITCH PB12
 
 // #define NORMAL_SPEED 150
@@ -121,4 +122,5 @@ public:
   SLIFT *lift;
   pid *pid_controller;
   linefollower *line_follower;
+  SCLAW right_claw;
 };
