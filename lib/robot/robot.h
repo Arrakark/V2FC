@@ -122,5 +122,5 @@ public:
   SLIFT *lift;
   pid *pid_controller;
   linefollower *line_follower;
-  SCLAW right_claw;
+  SCLAW *right_claw;
 };
