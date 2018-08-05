@@ -91,6 +91,8 @@ public:
   void second_gap_auto();
   //side claw methods
   bool right_grab_ewok();
+  bool grab_second_ewok();
+  bool left_grab_ewok();
 
   //competition surface stages
   void first_ewok_pick_up();
@@ -123,8 +125,5 @@ public:
   pid *pid_controller;
   linefollower *line_follower;
   SCLAW *right_claw;
-<<<<<<< HEAD
-};
-=======
+  SCLAW *left_claw;
 };  
->>>>>>> 07a39864d1540f38cdcdd67f24b2c049d2cdd2e3
