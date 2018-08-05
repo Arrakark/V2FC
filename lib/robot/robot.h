@@ -51,8 +51,6 @@
 #define FOURTH_EWOK_DISTANCE 14.0
 #define CHEWIE_DISTANCE 14.0
 
-
-
 class robot
 {
 public:
@@ -91,6 +89,8 @@ public:
   void turn_table_detect(int num);
   void third_ewok_pick_up_old();
   void second_gap_auto();
+  //side claw methods
+  bool right_grab_ewok();
 
   //competition surface stages
   void first_ewok_pick_up();
@@ -122,5 +122,5 @@ public:
   SLIFT *lift;
   pid *pid_controller;
   linefollower *line_follower;
-  SCLAW right_claw;
-};
+  SCLAW *right_claw;
+};  

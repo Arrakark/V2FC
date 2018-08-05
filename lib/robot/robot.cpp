@@ -73,7 +73,7 @@ robot::robot()
 {
     //elbow servo is servo 1, grabber servo is servo 2
     //limit switch is the first limit switch
-    SCLAW right_claw = SCLAW(SUPPORT_SERVO,PINCER_SERVO,GRABBER_SWITCH);
+    right_claw = new SCLAW(SUPPORT_SERVO,PINCER_SERVO,GRABBER_SWITCH);
     left_motor = new HBRIDGE(PB0, PA1);
     right_motor = new HBRIDGE(PA3, PA7);
     bottom_sensor = new irsensor(0x49, lookup_table_2);
@@ -88,6 +88,7 @@ void robot::init()
 {
     left_motor->init();
     right_motor->init();
+    right_claw->init();
     Wire.begin();
     pinMode(PC13, OUTPUT);
     robot::check_sensors();
@@ -657,27 +658,16 @@ void robot::line_follow_until_third_ewok()
  * */
 void robot::first_ewok_pick_up()
 {
-    float min_value = 30.0;
-    while (1)
-    {
-        right_sensor->update();
-        bottom_sensor->update();
-        line_follower->follow_line();
+    line_follow_until_right_ewok();
+    while(1){
+    line_follower->default_speed = 110;
+    line_follower->follow_line();
         robot::delay_update(4);
-        //right_claw.grabEwok();
-        if (bottom_sensor->mean() < min_value)
-        {
-            min_value = bottom_sensor->mean();
-        }
-        //needs to be between 1.3 and 1.5
-        if (bottom_sensor->mean() > 1.382465057179161 * min_value)
-        {
+        if (right_grab_ewok()) {
             break;
         }
     }
-    move_meters(-0.01);
-    //robot::delay_update(((float)abs(meters) / METERS_PER_SECOND) * 1000);
-
+    // move_meters(-0.01);
 }
 
 //wall following attempt to get to third ewok. We are no longer using this function
@@ -724,13 +714,14 @@ void robot::follow_left_wall_until_ewok()
  **/
 void robot::second_ewok_pick_up()
 {
-    turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
-    robot::delay_update(500);
+
     //This will find the gap and back up
     find_gap_one();
     robot::delay_update(500);
     // robot::delay_update(500);
     move_meters(-0.15);
+    robot::delay_update(500);
+    turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
     robot::delay_update(500);
     //realign with the gap again
     find_gap_one();
@@ -741,14 +732,15 @@ void robot::second_ewok_pick_up()
     robot::delay_update(500);
     //cross the gap
     move_meters(0.7);
-    ARMCONTROL::armPickup();
-    move_toward_ewok(SECOND_EWOK_DISTANCE);
-    // move_meters(0.25);
-    robot::delay_update(100);
-    move_meters(-0.05); //added to move back a bit (stop motors quickly)
-    robot::delay_update(500);
-    grab_ewok();
-    robot::delay_update(500);
+    //follow-line until ewok
+    while(1){
+    line_follower->follow_line();
+        robot::delay_update(4);
+        if (right_grab_ewok()) {
+            break;
+        }
+    }
+
 }
 
 /**
@@ -1166,4 +1158,22 @@ void robot::zipline_for_three_ewoks()
 
     //disconnect the scissor lift in the end
     lift->disconnect();
+}
+
+//=================================SIDE CLAWS==================================/
+bool robot::right_grab_ewok() {    
+    if (right_claw->checkQSD()) {
+        move_meters(-0.03);
+        right_claw->hug();
+        robot::delay_update(500);
+        right_claw->dropoff();
+        robot::delay_update(1000);
+        right_claw->open();
+        robot::delay_update(500);
+        right_claw->pickup();
+        robot::delay_update(500);
+    
+        return true;
+    }
+        return false;
 }
