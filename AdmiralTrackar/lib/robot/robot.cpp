@@ -321,6 +321,18 @@ void robot::find_gap_one()
     move_meters(-0.05);
 }
 
+void robot::establish_communication() {
+    arm_board_comm->setTransmission(true);
+    while (true) {
+        if (arm_board_comm->checkReceive()) break;
+    }
+    while (true) {
+        if (!(arm_board_comm->checkReceive())) break;
+    }
+    void establish_communication();
+    robot::delay_update(40);
+}
+
 void robot::first_ewok_pick_up()
 {
     while (1) {

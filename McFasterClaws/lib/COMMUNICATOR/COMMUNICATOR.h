@@ -9,7 +9,7 @@ public:
     COMMUNICATOR(int _transmit_pin, int _receive_pin);
     void init();
     void setTransmission(bool _signal);
-    bool checkReveice();
+    bool checkReceive();
 private:
     int transmit_pin;
     int receive_pin;

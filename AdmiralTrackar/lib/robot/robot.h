@@ -50,6 +50,7 @@ public:
 
 
   //competition surface stages
+  void establish_communication();
   void first_ewok_pick_up();
   void second_ewok_pick_up();
   void archway_crossing();

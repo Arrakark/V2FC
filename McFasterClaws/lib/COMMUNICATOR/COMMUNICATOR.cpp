@@ -17,7 +17,7 @@ void COMMUNICATOR::setTransmission(bool _signal) {
     else digitalWrite(transmit_pin,HIGH);
 }
 
-bool COMMUNICATOR::checkReveice() {
+bool COMMUNICATOR::checkReceive() {
     if (digitalRead(receive_pin)) return (false);
     else return (true);
 }

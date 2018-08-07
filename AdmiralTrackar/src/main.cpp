@@ -7,10 +7,7 @@ void setup()
     Serial.begin(230400,  8E1);
     atb.init();
 
-   
-
-    //=====grab third ewok sequence=====/
-
+    atb.establish_communication();
     //========================== FIRST EWOK ==========================
     atb.first_ewok_pick_up();
     //========================== SECOND EWOK ==========================

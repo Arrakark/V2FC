@@ -10,6 +10,14 @@ COMMUNICATOR main_board_comm(PB7,PB6);
 SCLAW right_claw(PA1,PA0,PB13);
 SCLAW left_claw(PA3,PA2,PB12);
 
+void establish_communication() {
+    while (true) {
+        if (main_board_comm.checkReceive()) break;
+    }
+    main_board_comm.setTransmission(true);
+    delay(40);
+    main_board_comm.setTransmission(false);
+}
 
 void first_ewok_sequence() {
     while (true) {
@@ -28,7 +36,7 @@ void second_ewok_sequence() {
     //crosses the first gap. Admiral trackbar must send a high signal
     //for a while for this loop to stop
     while (true) {
-        if (main_board_comm.checkReveice()) break;
+        if (main_board_comm.checkReceive()) break;
         delay(DELAY_TIME_SHORT);
     }
     //now we are going to start checking for the next ewok.
@@ -54,7 +62,7 @@ void third_ewok_sequence() {
     //This makes the arms stay in the up position untill
     //admiral trackbar tells the McFaster Claws. 
     while (true) {
-        if (main_board_comm.checkReveice()) break;
+        if (main_board_comm.checkReceive()) break;
         delay(DELAY_TIME_SHORT);
     }
 
@@ -92,6 +100,7 @@ void setup() {
     right_claw.init();
     left_claw.init();
 
+    establish_communication();
     first_ewok_sequence();
     second_ewok_sequence();
     third_ewok_sequence();
