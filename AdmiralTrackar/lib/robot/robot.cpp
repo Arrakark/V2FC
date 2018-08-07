@@ -71,26 +71,18 @@ int lookup_table_4[20][9] = {{1, 137, 126, 124, 120, 126, 124, 136, 136},
 
 robot::robot()
 {
-    //elbow servo is servo 1, grabber servo is servo 2
-    //limit switch is the first limit switch
-    right_claw = new SCLAW(SUPPORT_SERVO,PINCER_SERVO,GRABBER_SWITCH);
     left_motor = new HBRIDGE(PB0, PA1);
     right_motor = new HBRIDGE(PA3, PA7);
     bottom_sensor = new irsensor(0x49, lookup_table_2);
-    front_sensor = new irsensor(0x48, lookup_table_5);
-    left_sensor = new irsensor(0x4A, lookup_table_3);
-    right_sensor = new irsensor(0x4B, lookup_table_4);
-    // lift = new SLIFT(PA8); //init later when needed <- avoid timer conflicts
     line_follower = new linefollower(left_motor, right_motor, bottom_sensor);
+    arm_board_comm = new COMMUNICATOR(PB9,PB8);
 }
 
 void robot::init()
 {
-    right_claw->init();
     left_motor->init();
     right_motor->init();
-    right_claw->init();
-    left_claw->init();
+    arm_board_comm->init();
     Wire.begin();
     pinMode(PC13, OUTPUT);
     robot::check_sensors();
@@ -120,7 +112,7 @@ void robot::check_sensors()
             nDevices++;
         }
     }
-    if (nDevices != 4)
+    if (nDevices != 1)
     {
         digitalWrite(PC13, HIGH);
     }
@@ -129,23 +121,6 @@ void robot::check_sensors()
         digitalWrite(PC13, LOW);
     }
 }
-
-//Does as name implies, drives forward until a cliff is detected
-void robot::drive_until_cliff()
-{
-    bottom_sensor->update();
-    while (bottom_sensor->mean() < 11)
-    {
-        left_motor->run(NORMAL_SPEED);
-        right_motor->run(NORMAL_SPEED);
-        bottom_sensor->update();
-        Serial.println(bottom_sensor->mean());
-        robot::delay_update(10);
-    }
-    left_motor->stop();
-    right_motor->stop();
-}
-
 
 /**
  * Follows the line untill BOTH beacon sensors
@@ -280,9 +255,7 @@ void robot::calibrate_degrees_per_second(int seconds)
 
 void robot::sensor_info()
 {
-    left_sensor->info();
-    front_sensor->info();
-    right_sensor->info();
+    bottom_sensor->info();
     Serial.println();
 }
 
@@ -299,8 +272,6 @@ void robot::turn_until_black_line(int turn_dir)
             bottom_sensor->update();
             left_motor->run(TURN_SPEED);
             right_motor->run(-TURN_SPEED);
-            // } while (bottom_sensor->max_distance() < LINE_DISTANCE);
-            // } while (bottom_sensor->max_distance() < 12);
         } while (bottom_sensor->max_distance() < 15); //the 7th ir_sensor tends to shoot up to high values very quickly
     }
 
@@ -333,26 +304,6 @@ void robot::wait_for_10khz()
         delay_update(20);
     }
 }
-/**
- * This is the edge in front of the IR beacon 
- **/
-void robot::find_second_edge()
-{
-    unsigned long start_time = millis();
-    line_follower->pid_controller.p_gain = 600.0;
-    line_follower->pid_controller.p_limit = 250;
-    line_follower->cross_gap = false;
-    line_follower->default_speed = 120;
-    do
-    {
-        bottom_sensor->update();
-        Serial.println(bottom_sensor->mean());
-        bottom_sensor->update();
-        line_follower->follow_line();
-        delay_update(4);
-    } while (bottom_sensor->min_distance() < CLIFF_DISTANCE);
-    move_meters(-0.05);
-}
 
 void robot::find_gap_one()
 {
@@ -370,55 +321,21 @@ void robot::find_gap_one()
     move_meters(-0.05);
 }
 
-void robot::sweep_for_zipline(int turn_dir)
-{
-
-    ARMCONTROL::arm80();
-    delay_update(1000);
-    //if sees ewok in the left before and it swept left, sweep robot to right
-    if (turn_dir > 0)
-    {
-        //while (!(atb.front_sensor->distance_readings[0] < EWOK_LONG_DISTANCE_DETECTION))
-        do
-        {
-            front_sensor->update();
-            left_motor->run(FAST_TURN_SPEED);
-            delay_update(20);
-            right_motor->run(-FAST_TURN_SPEED);
-        } while (front_sensor->min_distance() > 35);
-    }
-
-    //if sees ewok in the right before and it swept right, sweep robot to left
-    else
-    {
-        do
-        {
-            front_sensor->update();
-            left_motor->run(-FAST_TURN_SPEED);
-            right_motor->run(FAST_TURN_SPEED);
-            delay_update(20);
-        } while (front_sensor->min_distance() > 35);
-    }
-
-    left_motor->run(0);
-    right_motor->run(0);
-}
-
-
-/**
- * Begin when the bottom sensor is touching the line. Line-follow up to the first ewok
- * and grab it.
- * */
 void robot::first_ewok_pick_up()
 {
-    while(1){
+    while (1) {
     line_follower->follow_line();
     robot::delay_update(4);
-        if (right_grab_ewok()) {
+    if (arm_board_comm->checkReceive()) {
             break;
         }
     }
-    // move_meters(-0.01);
+    move_meters(-0.01);
+
+    while (1) {
+        if (!(arm_board_comm->checkReceive())) break;
+        robot::delay_update(4);
+    }
 }
 
 /**
@@ -437,14 +354,18 @@ void robot::second_ewok_pick_up()
     move_meters(0.4);
     turn_until_black_line(LEFT); 
     //follow-line until ewok
-    while(1){
-    line_follower->follow_line();
+    while(1) {
+        line_follower->follow_line();
         robot::delay_update(4);
-        if (grab_second_ewok()) {
+        if (arm_board_comm->checkReceive()) {
             break;
         }
     }
-    //raise the second claw here
+    move_meters(-0.01);
+    while (1) {
+        if (!(arm_board_comm->checkReceive())) break;
+        robot::delay_update(4);
+    }
 
 }
 
@@ -463,8 +384,6 @@ void robot::archway_crossing()
     move_meters(-0.1);
     delay_update(500);
     turn_until_black_line(LEFT);
-    robot::delay_update(500);
-    //move arm out of the way
     robot::delay_update(1000);
     line_follow_until_beacon();
     wait_for_10khz();
@@ -473,114 +392,40 @@ void robot::third_ewok_pick_up()
 {
     //if the turn table detect works well we can use:
     turn_table_detect(TWICE);
-    robot::delay_update(500);
-    left_claw->pickup();
-    robot::delay_update(500);
-    right_claw->pickup();
-    robot::delay_update(500);
-    left_claw->open();
-    delay(500);
-    right_claw->open();
+    arm_board_comm->setTransmission(true);
     robot::delay_update(500);
     while(1) {
         line_follower->follow_line();
         robot::delay_update(4);
-        if (left_grab_ewok()) {
-            break;
-        }
+        if (arm_board_comm->checkReceive()) break;
+    
     }
-    //CALIBRATION VALUE 15
-    turn_degrees(18);
-    robot::delay_update(2000);
-    move_toward_ewok(THIRD_EWOK_DISTANCE); //too fast
-    move_meters(0.01);
-    ARMCONTROL::armPickup();
-    robot::delay_update(500);
-    ARMCONTROL::grabberTightHug();
-    robot::delay_update(1000);
-    ARMCONTROL::armHorizontal();
-    // atb.turn_degrees(15);
-    turn_degrees(5);
-    //CALIBRATION: 0.37
-    move_meters(0.40);
-    robot::delay_update(2000);
-    //CALIBRATION: -50
-    turn_degrees(-46);
-    ARMCONTROL::armHorizontal();
-    move_meters(0.25);
-    robot::delay_update(2000);
-    ARMCONTROL::grabberOpen();
-    // atb.follow_left_wall_until_ewok();
-    // atb.find_second_edge();
+    move_meters(-0.01);
+
+    while (1) {
+        if (!(arm_board_comm->checkReceive())) break;
+        robot::delay_update(4);
+    }
+    //If the turn table function does not work, we will just have to implement some sort
+    //timer to tell us how long it has been and if we can follow the tape.
 }
 
- /* Tries to follow the zipline however it is limited by the sensor's 30 cm range.
- */
+void robot::return_home() {
+    turn_degrees(90);
+    turn_until_black_line(RIGHT);
+    find_gap_one();
+    
+    robot::delay_update(500);
+    move_meters(-0.15);
+    robot::delay_update(500);
+    turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
+    robot::delay_update(500);
+    move_meters(0.4);
+    turn_until_black_line(RIGHT);
 
-void robot::zipline_follow()
-{
-    pid zipline_follower = pid();
-    zipline_follower.p_gain = 300;
-    zipline_follower.p_limit = 300;
-    do
-    {
-        front_sensor->update();
-        bottom_sensor->update();
-        float error = front_sensor->inverse_weighted_mean() - 4.5;
-        float control = zipline_follower.output(error);
-        right_motor->run(90 + (int)control);
-        left_motor->run(90 - (int)control);
-    } while (bottom_sensor->min_distance() < 12);
-    left_motor->stop();
-    right_motor->stop();
+    find_gap_one();
     move_meters(-0.05);
 }
-
-/**
- * CONTINUE writing this function.
- * Align to get onto second gap. Needs a function to ensure
- * it has moved past straight edge AND elevated platform edge.
- * */
-void robot::second_gap_crossing()
-{
-    robot::delay_update(1000);
-    move_meters(-0.1);
-    ARMCONTROL::armSearch();
-    // turn_degrees(88);
-    turn_degrees(44); //turns to the right
-    do
-    {
-        left_sensor->update();
-        turn_degrees(1);
-        //keep turning while left sensor is off the edge
-    } while (left_sensor->mean() > 30);
-    turn_degrees(4);
-    robot::delay_update(1000);
-    ARMCONTROL::armHorizontal();
-    move_meters(0.4);
-    drive_until_cliff();
-    second_gap_auto();
-    ARMCONTROL::armPickup();
-    robot::delay_update(200);
-    move_toward_ewok(FOURTH_EWOK_DISTANCE);
-    move_meters(-0.07);
-    grab_ewok();
-    delay_update(1000);
-    ARMCONTROL::grabberTightHug();
-}
-
-void robot::second_gap_auto()
-{
-    do
-    {
-        bottom_sensor->update();
-        left_motor->run(255);
-        right_motor->run(255);
-        delay_update(20);
-    } while (bottom_sensor->mean() > 15);
-    ram_meters(0.09);
-}
-
 
 /**
  * Navigate across turn table.
@@ -600,7 +445,6 @@ void robot::turn_table_detect(int num)
     do
     {
         bottom_sensor->update();
-        // Serial.println(bottom_sensor->mean());
         bottom_sensor->update();
         line_follower->follow_line();
         delay_update(4);
@@ -618,48 +462,6 @@ void robot::turn_table_detect(int num)
     move_meters(-0.05);
 }
 
-// void robot::fourth_ewok_pick_up(){
-
-// }
-
-/**
- * After picking up the fourth ewok, turn 90 degrees and start
- * edge following up to chewbacca. Send change in slope, start sweeping
- * for chewbacca. Grab it!!!
- * */
-void robot::chewbacca_pick_up()
-{
-    // move_meters(-0.1)
-    turn_degrees(43); //this should turn 90 degrees
-    move_meters(0.2);
-    delay_update(500);
-    ARMCONTROL::armSearch();
-    ARMCONTROL::grabberOpen();
-    //
-    pid bridge_crosser = pid();
-    bridge_crosser.p_gain = 85;
-    bridge_crosser.p_limit = 100;
-    do
-    {
-        left_sensor->update();
-        right_sensor->update();
-        front_sensor->update();
-        //biases the error with 30
-        float error = right_sensor->mean() - left_sensor->mean() + 10;
-        float control = bridge_crosser.output(error);
-        right_motor->run(130 - (int)control);
-        left_motor->run(130 + (int)control);
-        delay_update(20);
-        //this looks for Chewie!!!
-    } while (front_sensor->min_distance() > CHEWIE_DISTANCE);
-    left_motor->stop();
-    right_motor->stop();
-    ARMCONTROL::armPickup();
-    delay_update(1000);
-    move_meters(0.02);
-    grab_ewok();
-}
-
 /**
  * Max sensor value for IR array is 30. Inverse weighted mean takes current reading and
  * subtract it from 30 and computes the weighted mean from 8 sensor values using sensor indices. 
@@ -667,210 +469,21 @@ void robot::chewbacca_pick_up()
 void robot::sensor_inverse_mean()
 {
     robot::delay_update(20);
-    left_sensor->update();
-    right_sensor->update();
-    front_sensor->update();
-    Serial.print(left_sensor->inverse_weighted_mean());
-    Serial.print(",");
-    Serial.print(front_sensor->inverse_weighted_mean());
-    Serial.print(",");
-    Serial.println(right_sensor->inverse_weighted_mean());
+    bottom_sensor->update();
+    Serial.println(bottom_sensor->inverse_weighted_mean());
 }
 
 void robot::sensor_mean()
 {
     robot::delay_update(20);
-    left_sensor->update();
-    right_sensor->update();
-    front_sensor->update();
-    Serial.print(left_sensor->mean());
-    Serial.print(",");
-    Serial.print(front_sensor->mean());
-    Serial.print(",");
-    Serial.println(right_sensor->mean());
+    bottom_sensor->update();
+    Serial.println(bottom_sensor->mean());
 }
 
 void robot::sensor_min()
 {
     robot::delay_update(20);
-    left_sensor->update();
-    right_sensor->update();
-    front_sensor->update();
-    Serial.print(left_sensor->min_distance());
-    Serial.print(",");
-    Serial.print(front_sensor->min_distance());
-    Serial.print(",");
-    Serial.println(right_sensor->min_distance());
+    bottom_sensor->update();
+    Serial.println(bottom_sensor->min_distance());
 }
 
-/*
-    zipline mechanism for sending chewbacca and ewoks home
-
-    release the basket by hooking basket at zipline and then 
-    have the scissor lift to move downwards 
-
-    will be used once Chewy is picked up
-
-    Assumptions:
-                 - 3 ewoks + Chewy in basket
-                 - grabber is open
-                 - arm is in Search position
-                 - robot is facing in front of Chewy
-*/
-
-void robot::zipline_finish()
-{
-    int ground_value = 17; //min dist for ground is 17 in left_sensor
-    int platform_value = 12; //min dist for platform in left_sensor is 11-12
-    //close grabber
-    ARMCONTROL::grabberHug();
-    delay_update(500); //***
-    //need to change arm position into Horizontal??? *******
-
-    //adjusting basket hook on zipline
-
-    //move robot forward until all of left sensor sees the 'ground'
-    do
-    {
-        left_sensor->update();
-        left_motor->run(80);
-        right_motor->run(80);
-    } while(left_sensor->min_distance() < ground_value - 1); //**
-
-    //rotate to the right until all of left sensor sees the 'platform'
-    do
-    {
-        left_sensor->update();
-        //'opposite signs' from motors
-        left_motor->run(-80);
-        right_motor->run(80);
-    } while(left_sensor->min_distance() > platform_value  + 1); //***
-
-    //move robot forward until all of left sensor sees the 'ground'
-    do
-    {
-        left_sensor->update();
-        left_motor->run(80);
-        right_motor->run(80);
-    } while(left_sensor->min_distance() < ground_value - 1); //**
-
-    //rotate motor to the right until all or most of the left_sensor sees 'platform' ********
-    do
-    {
-        left_sensor->update();
-        //'opposite signs' from motors
-        left_motor->run(-80);
-        right_motor->run(80);
-    } while(left_sensor->distance_readings[5] > platform_value + 1);
-    // } while(left_sensor->min_distance() < platform_value); //***
-
-   
-
-    /* 
-        to hook the basket onto zipline, move robot forward until both 
-        left and right sensors all see 'ground' and that the bottom sensor 
-        just sees 'ground' ***************
-    */
-   do
-   {
-       left_sensor->update();
-       right_sensor->update();
-       bottom_sensor->update();
-       left_motor->run(80);
-       right_motor->run(80);
-   } while(left_sensor->min_distance() < ground_value - 1 && right_sensor->min_distance() < ground_value - 1 && bottom_sensor->min_distance() < CLIFF_DISTANCE);
-
-//    //move scissor lift downwards
-//    lift->moveDown();
-   //disconnect lift servo
-   lift->disconnect();
-}
-
-
-/*
-    Backup plan for just bringing three ewoks back home with the basket
-
-    Precondition:
-                 - 3 ewoks in basket
-                 - robot facing in front of the third ewok
-                 - grabber is open
-                 - arm is in Search position
-*/
-void robot::zipline_for_three_ewoks()
-{
-    //rotate robot to the right for about 135 degrees (before it touches a black line)
-    turn_degrees(135); //positive degrees is right
-
-    //rotate robot to the right until it sees black line/tape
-    turn_until_black_line(RIGHT);
-
-    //line follow until it sees the gap of the rotary platform
-    turn_table_detect(ONCE);
-
-    //rotate robot to the right for about 45 degrees (will need to adjust)
-    turn_degrees(45);
-
-    //intialize scissor lift mechanism
-    lift = new SLIFT(PA8);
-    lift->init();
-
-    //lift up the scissor lift
-    lift->moveUp();
-
-    //move robot straight until all of (or most of) right sensor sees 'CLIFF'
-    do
-    {
-        left_motor->run(80);
-        right_motor->run(80);
-    } while(right_sensor->distance_readings[1] < CLIFF_DISTANCE);
-
-    //disconnect the scissor lift in the end
-    lift->disconnect();
-}
-
-//=================================SIDE CLAWS==================================/
-bool robot::right_grab_ewok() {    
-    if (right_claw->checkQSD()) {
-        move_meters(-0.03);
-        right_claw->hug();
-        robot::delay_update(500);
-        right_claw->dropoff();
-        robot::delay_update(1000);
-        right_claw->open();
-        robot::delay_update(500);
-        right_claw->pickup();
-        robot::delay_update(500);
-    
-        return true;
-    }
-        return false;
-}
-bool robot::grab_second_ewok() {
-    if (right_claw->checkQSD()) {
-        move_meters(-0.03);
-        right_claw->hug();
-        robot::delay_update(500);
-        right_claw->dropoff();
-        robot::delay_update(1000);
-        right_claw->open();
-        robot::delay_update(500);
-        right_claw->hug();
-    }
-}
-
-bool robot::left_grab_ewok() {    
-    if (left_claw->checkQSD()) {
-        move_meters(-0.03);
-        left_claw->hug();
-        robot::delay_update(500);
-        left_claw->dropoff();
-        robot::delay_update(1000);
-        left_claw->open();
-        robot::delay_update(500);
-        left_claw->pickup();
-        robot::delay_update(500);
-    
-        return true;
-    }
-        return false;
-}
