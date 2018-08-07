@@ -764,15 +764,7 @@ void robot::zipline_finish()
     } while(left_sensor->distance_readings[5] > platform_value + 1);
     // } while(left_sensor->min_distance() < platform_value); //***
 
-    
-//     //hooking basket onto zipline
-
-//     //initialize scissor lift object
-//     lift = new SLIFT(PA8);
-//     lift->init();
-
-//     //lift scisoor lift 
-//     lift->moveUp();
+   
 
     /* 
         to hook the basket onto zipline, move robot forward until both 

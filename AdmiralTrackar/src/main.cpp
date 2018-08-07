@@ -19,7 +19,7 @@ void setup()
     //========================== IR BEACON ARCHWAY WAIT ==========================
     //  atb.archway_crossing();
     //========================== LINE FOLLOW TO THIRD EWOK ==========================
-    //  atb.third_ewok_pick_up();
+      atb.third_ewok_pick_up();
     //  atb.delay_update(1000);
     //========================== SECOND GAP CROSSING ==========================
     // atb.second_gap_crossing();
