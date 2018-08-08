@@ -75,7 +75,7 @@ robot::robot()
     right_motor = new HBRIDGE(PA3, PA7);
     bottom_sensor = new irsensor(0x49, lookup_table_2);
     line_follower = new linefollower(left_motor, right_motor, bottom_sensor);
-    arm_board_comm = new COMMUNICATOR(PB9,PB8);
+    arm_board_comm = new COMMUNICATOR(PB9, PB8);
 }
 
 void robot::init()
@@ -270,8 +270,10 @@ void robot::turn_until_black_line(int turn_dir)
         do
         {
             bottom_sensor->update();
-            left_motor->run(TURN_SPEED);
-            right_motor->run(-TURN_SPEED);
+
+            //255 before
+            left_motor->run(255);
+            right_motor->run(-255);
         } while (bottom_sensor->max_distance() < 15); //the 7th ir_sensor tends to shoot up to high values very quickly
     }
 
@@ -321,33 +323,70 @@ void robot::find_gap_one()
     move_meters(-0.05);
 }
 
-void robot::establish_communication() {
+void robot::establish_communication()
+{
     arm_board_comm->setTransmission(true);
-    while (true) {
-        if (arm_board_comm->checkReceive()) break;
+    while (true)
+    {
+        if (arm_board_comm->checkReceive())
+            break;
     }
-    while (true) {
-        if (!(arm_board_comm->checkReceive())) break;
+    while (true)
+    {
+        if (!(arm_board_comm->checkReceive()))
+            break;
     }
     void establish_communication();
     robot::delay_update(40);
 }
-
-void robot::first_ewok_pick_up()
+void robot::line_follow_until_right_ewok()
 {
-    while (1) {
-    line_follower->follow_line();
-    robot::delay_update(4);
-    if (arm_board_comm->checkReceive()) {
+    float min_value = 30.0;
+    while (1)
+    {
+        bottom_sensor->update();
+        line_follower->default_speed = 190;
+        line_follower->follow_line();
+        robot::delay_update(4);
+        Serial.println(bottom_sensor->mean());
+        if (bottom_sensor->mean() < min_value)
+        {
+            min_value = bottom_sensor->mean();
+        }
+        //needs to be between 1.3 and 1.5
+        if (bottom_sensor->mean() > 1.382465057179161 * min_value)
+        {
             break;
         }
     }
     move_meters(-0.01);
+    //robot::delay_update(((float)abs(meters) / METERS_PER_SECOND) * 1000);
+}
 
-    while (1) {
-        if (!(arm_board_comm->checkReceive())) break;
+void robot::first_ewok_pick_up()
+{
+    line_follow_until_right_ewok();
+    while (1)
+    {
+        line_follower->default_speed = 150;
+        line_follower->follow_line();
+        robot::delay_update(4);
+        //sensed an ewok?
+        if (arm_board_comm->checkReceive())
+        {
+            break;
+        }
+    }
+    move_meters(-0.01);
+    //dropped it off!
+    while (1)
+    {
+        if (!(arm_board_comm->checkReceive()))
+            break;
         robot::delay_update(4);
     }
+
+    Serial.println("end 1 main");
 }
 
 /**
@@ -359,26 +398,34 @@ void robot::second_ewok_pick_up()
     //This will find the gap and back up
     find_gap_one();
     robot::delay_update(500);
-    move_meters(-0.15);
+    move_meters(0.40);
     robot::delay_update(500);
-    turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
-    robot::delay_update(500);
-    move_meters(0.4);
-    turn_until_black_line(LEFT); 
+    // turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
+    // robot::delay_update(500);
+    // move_meters(0.4);
+     turn_until_black_line(LEFT);
     //follow-line until ewok
-    while(1) {
+    while (1)
+    {
+        line_follower->default_speed = 170;
         line_follower->follow_line();
         robot::delay_update(4);
-        if (arm_board_comm->checkReceive()) {
+        //keep line-following while there is no signal
+        if (arm_board_comm->checkReceive())
+        {
             break;
         }
     }
     move_meters(-0.01);
-    while (1) {
-        if (!(arm_board_comm->checkReceive())) break;
+    while (1)
+    {
+        //received a signal! excute and break.
+        if (!(arm_board_comm->checkReceive()))
+            break;
         robot::delay_update(4);
     }
-
+    Serial.println("end 2 main");
+    //both arms are folded here.
 }
 
 /**
@@ -393,40 +440,54 @@ void robot::archway_crossing()
     //red light = 10 kHz
     //no light = 1kHz
     //inside competition is reversed
-    move_meters(-0.1);
-    delay_update(500);
-    turn_until_black_line(LEFT);
-    robot::delay_update(1000);
-    line_follow_until_beacon();
+    // move_meters(-0.1);
+    // delay_update(500);
+    // turn_until_black_line(LEFT);
+    // robot::delay_update(1000);
+    // line_follow_until_beacon();
+    arm_board_comm->setTransmission(true);
     wait_for_10khz();
+    arm_board_comm->setTransmission(false);
+    Serial.println("end archway main");
 }
+
 void robot::third_ewok_pick_up()
 {
+    Serial.println("start 3 main");
+    // delay(2000);
+    // arm_board_comm->setTransmission(false);
+    // delay(2000);
     //if the turn table detect works well we can use:
+    //make left come down after passing turn table
     turn_table_detect(TWICE);
     arm_board_comm->setTransmission(true);
     robot::delay_update(500);
-    while(1) {
+    while (1)
+    {
         line_follower->follow_line();
         robot::delay_update(4);
-        if (arm_board_comm->checkReceive()) break;
-    
+        if (arm_board_comm->checkReceive())
+            break;
     }
     move_meters(-0.01);
 
-    while (1) {
-        if (!(arm_board_comm->checkReceive())) break;
+    while (1)
+    {
+        if (!(arm_board_comm->checkReceive()))
+            break;
         robot::delay_update(4);
     }
     //If the turn table function does not work, we will just have to implement some sort
     //timer to tell us how long it has been and if we can follow the tape.
+    Serial.println("end 3 main");
 }
 
-void robot::return_home() {
+void robot::return_home()
+{
     turn_degrees(90);
     turn_until_black_line(RIGHT);
     find_gap_one();
-    
+
     robot::delay_update(500);
     move_meters(-0.15);
     robot::delay_update(500);
@@ -453,7 +514,7 @@ void robot::turn_table_detect(int num)
     line_follower->default_speed = 120;
     int flag = 0;
     unsigned long time_flag = millis();
-   
+
     do
     {
         bottom_sensor->update();
@@ -466,7 +527,8 @@ void robot::turn_table_detect(int num)
             flag = 1;
             time_flag = millis();
             //if we want to stop after passing one edge of turn table
-            if(num == ONCE){
+            if (num == ONCE)
+            {
                 break;
             }
         }
@@ -498,4 +560,3 @@ void robot::sensor_min()
     bottom_sensor->update();
     Serial.println(bottom_sensor->min_distance());
 }
-

@@ -47,6 +47,7 @@ public:
   void wait_for_10khz();
   void line_follow_until_beacon();
   void turn_table_detect(int num);
+  void line_follow_until_right_ewok();
 
 
   //competition surface stages

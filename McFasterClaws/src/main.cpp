@@ -49,8 +49,8 @@ void second_ewok_sequence() {
         delay(DELAY_TIME_SHORT);
     }
     //setting the transmission to true will stop admiral trackbar.
-    //Admiral trackbar will remain stopped untill the signal is over.
-    //Here the robot picksup the second ewok, and it puts the claws into
+    //Admiral trackbar will remain stopped until the signal is over.
+    //Here the robot picks up the second ewok, and it puts the claws into
     //position to cross through the archway
     main_board_comm.setTransmission(true);
     right_claw.grabEwok();
@@ -60,11 +60,19 @@ void second_ewok_sequence() {
     delay(DELAY_TIME_LONG);
     left_claw.dropoff();
     main_board_comm.setTransmission(false);
+    Serial.println("End 2");
+    //both arms are folded
 }
-
+void archway_sequence(){
+    //stops ATB
+    main_board_comm.setTransmission(true);
+    left_claw.dropoff();
+    right_claw.dropoff();
+    main_board_comm.setTransmission(false);
+}
 void third_ewok_sequence() {
     //This makes the arms stay in the up position untill
-    //admiral trackbar tells the McFaster Claws. 
+    //admiral trackbar tells the McFaster Claws
     while (true) {
         if (main_board_comm.checkReceive()) break;
         delay(DELAY_TIME_SHORT);
@@ -88,6 +96,7 @@ void third_ewok_sequence() {
     main_board_comm.setTransmission(true);
     left_claw.grabEwok();
     main_board_comm.setTransmission(false);
+    Serial.println("End 3");
 }
 
 void return_sequence() {

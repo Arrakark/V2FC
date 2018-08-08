@@ -1,0 +1,31 @@
+// AUTOMATICALLY GENERATED FILE. PLEASE DO NOT MODIFY IT MANUALLY
+
+// PIO Unified Debugger
+//
+// Documentation: http://docs.platformio.org/page/plus/debugging.html
+// Configuration: http://docs.platformio.org/page/projectconf/section_env_debug.html
+
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "platformio-debug",
+            "request": "launch",
+            "name": "PIO Debug",
+            "executable": "c:/Users/chuan/Documents/GitHub/V2FC/.pioenvs/bluepill_f103c8/firmware.elf",
+            "toolchainBinDir": "C:/Users/chuan/.platformio/packages/toolchain-gccarmnoneeabi/bin",
+            "svdPath": "C:/Users/chuan/.platformio/platforms/ststm32/misc/svd/STM32F103xx.svd",
+            "preLaunchTask": "PlatformIO: Pre-Debug",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "type": "platformio-debug",
+            "request": "launch",
+            "name": "PIO Debug (Skip Pre-Debug)",
+            "executable": "c:/Users/chuan/Documents/GitHub/V2FC/.pioenvs/bluepill_f103c8/firmware.elf",
+            "toolchainBinDir": "C:/Users/chuan/.platformio/packages/toolchain-gccarmnoneeabi/bin",
+            "svdPath": "C:/Users/chuan/.platformio/platforms/ststm32/misc/svd/STM32F103xx.svd",
+            "internalConsoleOptions": "openOnSessionStart"
+        }
+    ]
+}
