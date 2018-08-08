@@ -398,23 +398,39 @@ void robot::second_ewok_pick_up()
 {
 
     //This will find the gap and back up
-    find_gap_one(115.0);
+    //======================= PREVIOUS CODE =======================
+    // find_gap_one(130.0);
+    //robot::delay_update(500);
+    // move_meters(0.40);
+    //arm_board_comm->setTransmission(true);
+    // robot::delay_update(500);
+    // arm_board_comm->setTransmission(false);
+    //++++++++++++++++++++++++ END PREVIOUS CODE ========================
+
+
+    // turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
+    // robot::delay_update(500);
+    // move_meters(0.4);
+
+
+    //======================= PREVIOUS CODE =======================
+    //turn_until_black_line(LEFT);
+    // turn_degrees(1.0);
+    // turn_until_black_line(RIGHT);
+    // turn_degrees(-0.1);
+    //++++++++++++++++++++++++ END PREVIOUS CODE ========================
+    //follow-line until ewok
+    find_gap_one(130.0);
     robot::delay_update(500);
     move_meters(0.40);
     arm_board_comm->setTransmission(true);
     robot::delay_update(500);
     arm_board_comm->setTransmission(false);
-    // turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
-    // robot::delay_update(500);
-    // move_meters(0.4);
-     turn_until_black_line(LEFT);
-     turn_degrees(1.0);
-     turn_until_black_line(RIGHT);
-     turn_degrees(-0.1);
-    //follow-line until ewok
+    robot::delay_update(2000);
+
     while (1)
-    {
-        line_follower->default_speed = 110.0;
+    { 
+        line_follower->default_speed = 90.0;
         line_follower->follow_line();
         robot::delay_update(4);
         //keep line-following while there is no signal
@@ -466,8 +482,8 @@ void robot::third_ewok_pick_up()
     // delay(2000);
     //if the turn table detect works well we can use:
     //make left come down after passing turn table
-    find_gap_one(120.0); 
-    move_meters(-0.5);
+    find_gap_one(100.0); 
+    move_meters(-0.3);
     arm_board_comm->setTransmission(true);
     robot::delay_update(500);
     while (1)
