@@ -272,8 +272,8 @@ void robot::turn_until_black_line(int turn_dir)
             bottom_sensor->update();
 
             //255 before
-            left_motor->run(255);
-            right_motor->run(-255);
+            left_motor->run(TURN_SPEED);
+            right_motor->run(-TURN_SPEED);
         } while (bottom_sensor->max_distance() < 15); //the 7th ir_sensor tends to shoot up to high values very quickly
     }
 
@@ -316,7 +316,8 @@ void robot::find_gap_one()
         bottom_sensor->update();
         line_follower->pid_controller.p_gain = 600.0;
         line_follower->pid_controller.p_limit = 250;
-        line_follower->default_speed = 90.0;
+        //line_follower->default_speed = 90.0;
+        line_follower->default_speed = 70.0;
         line_follower->follow_line();
         delay_update(4);
     } while (bottom_sensor->mean() < 15);
@@ -365,6 +366,7 @@ void robot::line_follow_until_right_ewok()
 
 void robot::first_ewok_pick_up()
 {
+    arm_board_comm->setTransmission(false);
     line_follow_until_right_ewok();
     while (1)
     {
@@ -399,11 +401,14 @@ void robot::second_ewok_pick_up()
     find_gap_one();
     robot::delay_update(500);
     move_meters(0.40);
+    arm_board_comm->setTransmission(true);
     robot::delay_update(500);
+    arm_board_comm->setTransmission(false);
     // turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
     // robot::delay_update(500);
     // move_meters(0.4);
      turn_until_black_line(LEFT);
+     turn_degrees(1);
     //follow-line until ewok
     while (1)
     {
@@ -445,9 +450,9 @@ void robot::archway_crossing()
     // turn_until_black_line(LEFT);
     // robot::delay_update(1000);
     // line_follow_until_beacon();
-    arm_board_comm->setTransmission(true);
-    wait_for_10khz();
     arm_board_comm->setTransmission(false);
+    wait_for_10khz();
+    arm_board_comm->setTransmission(false );
     Serial.println("end archway main");
 }
 
@@ -459,7 +464,8 @@ void robot::third_ewok_pick_up()
     // delay(2000);
     //if the turn table detect works well we can use:
     //make left come down after passing turn table
-    turn_table_detect(TWICE);
+    find_gap_one(); 
+    move_meters(-0.2);
     arm_board_comm->setTransmission(true);
     robot::delay_update(500);
     while (1)

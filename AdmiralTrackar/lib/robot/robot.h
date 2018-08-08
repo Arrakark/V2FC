@@ -13,7 +13,7 @@
 
 // #define NORMAL_SPEED 150
 #define NORMAL_SPEED 150
-#define TURN_SPEED 255
+#define TURN_SPEED 180
 
 #define METERS_PER_SECOND 0.46333333 //NORMAL_SPEED is 130 -> 0.46333333m/s
 #define DEGREES_PER_SECOND 86        //TURN_SPEED is 200 -> 86 deg/sec

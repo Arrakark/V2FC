@@ -22,6 +22,7 @@ void establish_communication() {
 void first_ewok_sequence() {
     Serial.println("In 1");
     left_claw.dropoff();
+    left_claw.hug();
     while (true) {
         if (right_claw.checkQSD()) break;
         delay(DELAY_TIME_SHORT);
@@ -39,6 +40,7 @@ void second_ewok_sequence() {
     //crosses the first gap. Admiral trackbar must send a high signal
     //for a while for this loop to stop
     left_claw.dropoff();
+    left_claw.hug();
     while (true) {
         if (main_board_comm.checkReceive()) break;
         delay(DELAY_TIME_SHORT);
@@ -54,6 +56,7 @@ void second_ewok_sequence() {
     //position to cross through the archway
     main_board_comm.setTransmission(true);
     right_claw.grabEwok();
+    delay(1000);
     right_claw.dropoff();
     right_claw.hug();
     left_claw.hug();
@@ -84,7 +87,7 @@ void third_ewok_sequence() {
     left_claw.pickup();
     left_claw.open();
     delay(500);
-    right_claw.pickup();
+    right_claw.dropoff();
 
     while (true){
         if (left_claw.checkQSD()) break;
@@ -113,12 +116,9 @@ void setup() {
     //open, close, pickup, dropoff
     left_claw.init(120,20,150,1);
     delay(500);
-    right_claw.init(40,140,5,180);
+    right_claw.init(40,140,1,180);
     establish_communication();
 
-}
-
-void loop() {
     Serial.println("Start 1");
     first_ewok_sequence();
     Serial.println("Start 2");
@@ -127,4 +127,8 @@ void loop() {
     third_ewok_sequence();
     Serial.println("Start ret");
     return_sequence();
+
+}
+
+void loop() {
 }

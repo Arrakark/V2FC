@@ -62,11 +62,11 @@ void SCLAW::grabEwok() {
     delay(1000);
     open();
     delay(500);
-    // hug();
+    hug();
     delay(500);
     pickup();
     delay(500);
-    // open();
+    open();
     
 }
 
