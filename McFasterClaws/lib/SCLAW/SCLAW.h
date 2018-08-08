@@ -11,7 +11,7 @@ class SCLAW
     public:
         SCLAW();
         SCLAW(int _pincer_servo_pin, int _support_servo_pin, int _pickup_pin);
-        void init();
+        void init(int _val_open, int _val_close, int _val_pickup, int _val_dropoff);
         void hug();
         void open();
         void pickup();

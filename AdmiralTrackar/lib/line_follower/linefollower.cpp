@@ -7,10 +7,12 @@ linefollower::linefollower(HBRIDGE *_left_track, HBRIDGE *_right_track, irsensor
 	main_sensor = _main_sensor;
 	pid_controller = pid();
 	// pid_controller.p_gain = 600.0;
-	pid_controller.p_gain = 800.0;
+	pid_controller.p_gain = 600.0;
 	pid_controller.p_limit = 250.0;
+	pid_controller.d_gain = 0.0;
 	pid_controller.d_gain = 3.0;
 	pid_controller.d_limit = 100.0;
+	//pid_controller.d_limit = 100.0;
 	default_speed = 135 ;
 	debug = false;
 	cross_gap = true;
@@ -18,7 +20,7 @@ linefollower::linefollower(HBRIDGE *_left_track, HBRIDGE *_right_track, irsensor
 
 void linefollower::follow_line()
 {
-	// Serial.println("8Start line following......");
+	// Serial.println("Start line following......");
 	//get and calculate the control error
 	main_sensor->update();
 	//float error = main_sensor->max_position() - 4.5;

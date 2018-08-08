@@ -20,6 +20,8 @@ void establish_communication() {
 }
 
 void first_ewok_sequence() {
+    Serial.println("In 1");
+    left_claw.dropoff();
     while (true) {
         if (right_claw.checkQSD()) break;
         delay(DELAY_TIME_SHORT);
@@ -29,12 +31,14 @@ void first_ewok_sequence() {
     main_board_comm.setTransmission(true);
     right_claw.grabEwok();
     main_board_comm.setTransmission(false);
+    Serial.println("End 1");
 }
 
 void second_ewok_sequence() {
     //This keeps this blue pill paused untill admiral trackbar
     //crosses the first gap. Admiral trackbar must send a high signal
     //for a while for this loop to stop
+    left_claw.dropoff();
     while (true) {
         if (main_board_comm.checkReceive()) break;
         delay(DELAY_TIME_SHORT);
@@ -71,7 +75,7 @@ void third_ewok_sequence() {
 
     left_claw.pickup();
     left_claw.open();
-    delay(DELAY_TIME_LONG);
+    delay(500);
     right_claw.pickup();
 
     while (true){
@@ -97,16 +101,21 @@ void return_sequence() {
 void setup() {
     Serial.begin(9600);
     main_board_comm.init();
-    right_claw.init();
-    left_claw.init();
-
+    //open, close, pickup, dropoff
+    left_claw.init(120,20,150,1);
+    delay(500);
+    right_claw.init(40,140,5,180);
     establish_communication();
-    first_ewok_sequence();
-    second_ewok_sequence();
-    third_ewok_sequence();
-    return_sequence();
+
 }
 
 void loop() {
-    
+    Serial.println("Start 1");
+    first_ewok_sequence();
+    Serial.println("Start 2");
+    second_ewok_sequence();
+    Serial.println("Start 3");
+    third_ewok_sequence();
+    Serial.println("Start ret");
+    return_sequence();
 }
