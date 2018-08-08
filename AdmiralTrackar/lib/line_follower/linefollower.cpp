@@ -9,7 +9,7 @@ linefollower::linefollower(HBRIDGE *_left_track, HBRIDGE *_right_track, irsensor
 	// pid_controller.p_gain = 600.0;
 	pid_controller.p_gain = 600.0;
 	pid_controller.p_limit = 250.0;
-	pid_controller.d_gain = 0.0;
+	//pid_controller.d_gain = 0.0;
 	pid_controller.d_gain = 3.0;
 	pid_controller.d_limit = 100.0;
 	//pid_controller.d_limit = 100.0;

@@ -307,7 +307,7 @@ void robot::wait_for_10khz()
     }
 }
 
-void robot::find_gap_one()
+void robot::find_gap_one(float _def_speed)
 {
     // unsigned long start_time = millis();
     line_follower->cross_gap = false;
@@ -317,7 +317,7 @@ void robot::find_gap_one()
         line_follower->pid_controller.p_gain = 600.0;
         line_follower->pid_controller.p_limit = 250;
         //line_follower->default_speed = 90.0;
-        line_follower->default_speed = 70.0;
+        line_follower->default_speed = _def_speed;
         line_follower->follow_line();
         delay_update(4);
     } while (bottom_sensor->mean() < 15);
@@ -398,7 +398,7 @@ void robot::second_ewok_pick_up()
 {
 
     //This will find the gap and back up
-    find_gap_one();
+    find_gap_one(115.0);
     robot::delay_update(500);
     move_meters(0.40);
     arm_board_comm->setTransmission(true);
@@ -408,11 +408,13 @@ void robot::second_ewok_pick_up()
     // robot::delay_update(500);
     // move_meters(0.4);
      turn_until_black_line(LEFT);
-     turn_degrees(1);
+     turn_degrees(1.0);
+     turn_until_black_line(RIGHT);
+     turn_degrees(-0.1);
     //follow-line until ewok
     while (1)
     {
-        line_follower->default_speed = 170;
+        line_follower->default_speed = 110.0;
         line_follower->follow_line();
         robot::delay_update(4);
         //keep line-following while there is no signal
@@ -453,19 +455,19 @@ void robot::archway_crossing()
     arm_board_comm->setTransmission(false);
     wait_for_10khz();
     arm_board_comm->setTransmission(false );
-    Serial.println("end archway main");
+    // Serial.println("end archway main");
 }
 
 void robot::third_ewok_pick_up()
 {
-    Serial.println("start 3 main");
+    //Serial.println("start 3 main");
     // delay(2000);
     // arm_board_comm->setTransmission(false);
     // delay(2000);
     //if the turn table detect works well we can use:
     //make left come down after passing turn table
-    find_gap_one(); 
-    move_meters(-0.2);
+    find_gap_one(120.0); 
+    move_meters(-0.5);
     arm_board_comm->setTransmission(true);
     robot::delay_update(500);
     while (1)
@@ -492,7 +494,7 @@ void robot::return_home()
 {
     turn_degrees(90);
     turn_until_black_line(RIGHT);
-    find_gap_one();
+    find_gap_one(125.0);
 
     robot::delay_update(500);
     move_meters(-0.15);
@@ -502,7 +504,7 @@ void robot::return_home()
     move_meters(0.4);
     turn_until_black_line(RIGHT);
 
-    find_gap_one();
+    find_gap_one(125.0);
     move_meters(-0.05);
 }
 

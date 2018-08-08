@@ -13,7 +13,7 @@
 
 // #define NORMAL_SPEED 150
 #define NORMAL_SPEED 150
-#define TURN_SPEED 180
+#define TURN_SPEED 120
 
 #define METERS_PER_SECOND 0.46333333 //NORMAL_SPEED is 130 -> 0.46333333m/s
 #define DEGREES_PER_SECOND 86        //TURN_SPEED is 200 -> 86 deg/sec
@@ -43,7 +43,7 @@ public:
   static void check_sensors();
   void sensor_info();
   void turn_until_black_line(int turn_dir);
-  void find_gap_one();
+  void find_gap_one(float _def_speed);
   void wait_for_10khz();
   void line_follow_until_beacon();
   void turn_table_detect(int num);
