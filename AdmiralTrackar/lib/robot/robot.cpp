@@ -314,7 +314,7 @@ void robot::find_gap_one(float _def_speed)
     do
     {
         bottom_sensor->update();
-        line_follower->pid_controller.p_gain = 600.0;
+        line_follower->pid_controller.p_gain = 900.0;
         line_follower->pid_controller.p_limit = 250;
         //line_follower->default_speed = 90.0;
         line_follower->default_speed = _def_speed;
@@ -486,7 +486,7 @@ void robot::third_ewok_pick_up()
     move_meters(-0.3);
     arm_board_comm->setTransmission(true);
     robot::delay_update(500);
-    while (1)
+    while (1)  
     {
         line_follower->follow_line();
         robot::delay_update(4);
@@ -508,9 +508,10 @@ void robot::third_ewok_pick_up()
 
 void robot::return_home()
 {
+    robot::delay_update(900);
     turn_degrees(90);
     turn_until_black_line(RIGHT);
-    find_gap_one(125.0);
+    find_gap_one(90.0);
 
     robot::delay_update(500);
     move_meters(-0.15);
@@ -518,8 +519,7 @@ void robot::return_home()
     turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
     robot::delay_update(500);
     move_meters(0.4);
-    turn_until_black_line(RIGHT);
-
+    turn_until_black_line(RIGHT); 
     find_gap_one(125.0);
     move_meters(-0.05);
 }

@@ -17,7 +17,7 @@ void setup()
     //========================== LINE FOLLOW TO THIRD EWOK ==========================
     atb.third_ewok_pick_up();
     //========================== RETURN HOME ========================================
-    // atb.return_home();
+    atb.return_home();
 
 
 }

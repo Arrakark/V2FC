@@ -66,13 +66,7 @@ void second_ewok_sequence() {
     Serial.println("End 2");
     //both arms are folded
 }
-void archway_sequence(){
-    //stops ATB
-    main_board_comm.setTransmission(true);
-    left_claw.dropoff();
-    right_claw.dropoff();
-    main_board_comm.setTransmission(false);
-}
+
 void third_ewok_sequence() {
     //This makes the arms stay in the up position untill
     //admiral trackbar tells the McFaster Claws
@@ -97,7 +91,14 @@ void third_ewok_sequence() {
     //pickup the third Ewok
 
     main_board_comm.setTransmission(true);
-    left_claw.grabEwok();
+  
+    //This is a different pickup sequence that does not let the ewok fall.
+    left_claw.open();
+    left_claw.pickup();
+    left_claw.hug();
+    delay(500);
+    left_claw.dropoff();
+    delay(500);
     main_board_comm.setTransmission(false);
     Serial.println("End 3");
 }
