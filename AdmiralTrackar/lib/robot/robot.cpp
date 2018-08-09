@@ -373,7 +373,7 @@ void robot::first_ewok_pick_up()
         line_follower->default_speed = 100;
         line_follower->follow_line();
         robot::delay_update(4);
-        //sensed an ewok?
+        //sensed an ewok
         if (arm_board_comm->checkReceive())
         {
             break;
