@@ -73,7 +73,7 @@ robot::robot()
 {
     left_motor = new HBRIDGE(PB0, PA1);
     right_motor = new HBRIDGE(PA3, PA7);
-    bottom_sensor = new irsensor(0x49, lookup_table_2);
+    bottom_sensor = new irsensor(0x4B, lookup_table_4);
     line_follower = new linefollower(left_motor, right_motor, bottom_sensor);
     arm_board_comm = new COMMUNICATOR(PB9, PB8);
 }
@@ -271,9 +271,9 @@ void robot::turn_until_black_line(int turn_dir)
         {
             bottom_sensor->update();
 
-            //255 before
-            left_motor->run(TURN_SPEED);
-            right_motor->run(-TURN_SPEED);
+            //200 before
+            left_motor->run(180);
+            right_motor->run(-180);
         } while (bottom_sensor->max_distance() < 12); //the 7th ir_sensor tends to shoot up to high values very quickly
     }
 
@@ -281,15 +281,18 @@ void robot::turn_until_black_line(int turn_dir)
     {
         do
         {
+            //200 before
             bottom_sensor->update();
-            left_motor->run(-TURN_SPEED);
-            right_motor->run(TURN_SPEED);
+            left_motor->run(-180);
+            right_motor->run(180);
             // } while (bottom_sensor->max_distance() < 12);
         } while (bottom_sensor->max_distance() < 12); //the 7th ir_sensor tends to shoot up to high values very quickly
     }
 
-    left_motor->run(0);
-    right_motor->run(0);
+    // left_motor->run(0);
+    // right_motor->run(0);
+
+    move_meters(-0.01);
 }
 
 void robot::wait_for_10khz()
@@ -355,7 +358,7 @@ void robot::line_follow_until_right_ewok()
             min_value = bottom_sensor->mean();
         }
         //needs to be between 1.3 and 1.5
-        if (bottom_sensor->mean() > 1.382465057179161 * min_value)
+        if (bottom_sensor->mean() > 1.382465057179161 * min_value) // *** might need to tune that
         {
             break;
         }
@@ -367,10 +370,11 @@ void robot::line_follow_until_right_ewok()
 void robot::first_ewok_pick_up()
 {
     arm_board_comm->setTransmission(false);
-    line_follow_until_right_ewok();
+    line_follow_until_right_ewok(); //might need tuning after changing the MAX distance of IR sensor
+    move_meters(-0.01);
     while (1)
     {
-        line_follower->default_speed = 150;
+        line_follower->default_speed = 120;
         line_follower->follow_line();
         robot::delay_update(4);
         //sensed an ewok
@@ -422,7 +426,8 @@ void robot::second_ewok_pick_up()
     //follow-line until ewok
     find_gap_one(100.0);
     robot::delay_update(100);
-    move_meters(-0.2);
+    // move_meters(-0.2);
+    move_meters(-0.15);
     find_gap_one(100.0);
     move_meters(0.35);
     move_meters(-0.01);
@@ -519,17 +524,22 @@ void robot::return_home()
 {
     robot::delay_update(900);
     move_meters(-0.2);
-    turn_degrees(90);
+    turn_degrees(45);
+    delay_update(1000);
+    // turn_degrees(90);
     turn_until_black_line(RIGHT);
-    line_follower->default_speed = 90;
+    delay_update(1000);
+    line_follower->default_speed = 120;
     line_follower->pid_controller.p_gain= 600;
-    line_follower->pid_controller.d_gain = -4;
-    line_follower->pid_controller.d_limit = -10;
-    line_follower->pid_controller.i_limit = 8;
-    line_follower->pid_controller.i_gain = 5;
+    // line_follower->pid_controller.d_gain = -4;
+    // line_follower->pid_controller.d_limit = -10;
+    // line_follower->pid_controller.i_limit = 8;
+    // line_follower->pid_controller.i_gain = 5;
     //pid_controller.i_limit = 8;
 	//pid_controller.i_gain = 5;
-    line_follower->cross_gap = true;
+    // turn_table_detect(TWICE);
+    // line_follower->cross_gap = true;
+    line_follower->cross_gap = false;
     unsigned long current_time = millis();
     while(true){
         line_follower->follow_line();
@@ -539,6 +549,7 @@ void robot::return_home()
     }
     robot::delay_update(2000);
     line_follower->cross_gap = true;
+    //find the gap
     while (true) {
         line_follower->follow_line();
          if (bottom_sensor->mean() > 15){
@@ -548,8 +559,10 @@ void robot::return_home()
     // find_gap_one(90.0);
 
     // robot::delay_update(500);
-    line_follower->default_speed = 70;
+    // line_follower->default_speed = 70;
+    line_follower->default_speed = 130;
     move_meters(0.25);
+    line_follower->default_speed = 70;
     while(true){
         line_follower->follow_line();
     }
@@ -580,7 +593,7 @@ void robot::turn_table_detect(int num)
     do
     {
         bottom_sensor->update();
-        bottom_sensor->update();
+        // bottom_sensor->update();
         line_follower->follow_line();
         delay_update(4);
         //
