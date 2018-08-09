@@ -274,7 +274,7 @@ void robot::turn_until_black_line(int turn_dir)
             //255 before
             left_motor->run(TURN_SPEED);
             right_motor->run(-TURN_SPEED);
-        } while (bottom_sensor->max_distance() < 15); //the 7th ir_sensor tends to shoot up to high values very quickly
+        } while (bottom_sensor->max_distance() < 12); //the 7th ir_sensor tends to shoot up to high values very quickly
     }
 
     else
@@ -285,7 +285,7 @@ void robot::turn_until_black_line(int turn_dir)
             left_motor->run(-TURN_SPEED);
             right_motor->run(TURN_SPEED);
             // } while (bottom_sensor->max_distance() < 12);
-        } while (bottom_sensor->max_distance() < 15); //the 7th ir_sensor tends to shoot up to high values very quickly
+        } while (bottom_sensor->max_distance() < 12); //the 7th ir_sensor tends to shoot up to high values very quickly
     }
 
     left_motor->run(0);
@@ -424,18 +424,18 @@ void robot::second_ewok_pick_up()
     robot::delay_update(100);
     move_meters(-0.2);
     find_gap_one(100.0);
-    move_meters(0.60);
+    move_meters(0.30);
     move_meters(-0.01);
     arm_board_comm->setTransmission(true);
     robot::delay_update(50);
     arm_board_comm->setTransmission(false);
-    turn_until_black_line(LEFT);
+    //turn_until_black_line(LEFT);
     
     robot::delay_update(2000);
 
     while (1)
     { 
-        line_follower->default_speed = 70.0;
+        line_follower->default_speed = 90.0;
         line_follower->pid_controller.p_gain = 600;
         line_follower->pid_controller.p_limit = 200;
         line_follower->follow_line();
@@ -476,7 +476,9 @@ void robot::archway_crossing()
     // robot::delay_update(1000);
     // line_follow_until_beacon();
     arm_board_comm->setTransmission(false);
+    move_meters(-0.1);
     wait_for_10khz();
+    move_meters(0.1);
     arm_board_comm->setTransmission(false );
     // Serial.println("end archway main");
 }
@@ -516,19 +518,26 @@ void robot::third_ewok_pick_up()
 void robot::return_home()
 {
     robot::delay_update(900);
+    move_meters(-0.2);
     turn_degrees(90);
     turn_until_black_line(RIGHT);
-    find_gap_one(90.0);
+    line_follower->default_speed = 100;
+    line_follower->pid_controller.p_gain= 700;
+    line_follower->cross_gap = true;
+    while(true){
+        line_follower->follow_line();
+    }
+    // find_gap_one(90.0);
 
-    robot::delay_update(500);
-    move_meters(-0.15);
-    robot::delay_update(500);
-    turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
-    robot::delay_update(500);
-    move_meters(0.4);
-    turn_until_black_line(RIGHT); 
-    find_gap_one(125.0);
-    move_meters(-0.05);
+    // robot::delay_update(500);
+    // move_meters(-0.15);
+    // robot::delay_update(500);
+    // turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
+    // robot::delay_update(500);
+    // move_meters(0.4);
+    // turn_until_black_line(RIGHT); 
+    // find_gap_one(125.0);
+    // move_meters(-0.05);
 }
 
 /**

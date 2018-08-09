@@ -31,11 +31,10 @@ void linefollower::follow_line()
 	float right_speed = default_speed - control;
 
 	//checks if we are driving off a cliff
-	if (main_sensor->mean() < CLIFF_DISTANCE)
+	if (main_sensor->mean() < 12)
 	{
 		left_track->run((int)left_speed);
 		right_track->run((int)right_speed);
-		cross_gap = false;
 	}
 	else
 	{
@@ -43,13 +42,11 @@ void linefollower::follow_line()
 		{
 			left_track->run(default_speed);
 			right_track->run(default_speed);
-			cross_gap = true;
 		}
 		else
 		{
 			left_track->run(0);
-			right_track->run(0);
-			cross_gap = false;			
+			right_track->run(0);		
 		}
 	}
 

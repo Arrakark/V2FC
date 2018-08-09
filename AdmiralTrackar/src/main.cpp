@@ -8,9 +8,6 @@ void setup()
     Serial.begin(230400,  8E1);
     // Serial.begin(9600);
     atb.init();
-    while(true){
-        atb.bottom_sensor->info();
-    }
 
     atb.establish_communication();
     //========================== FIRST EWOK ==========================
