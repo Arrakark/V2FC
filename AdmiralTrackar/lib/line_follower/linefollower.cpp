@@ -16,7 +16,7 @@ linefollower::linefollower(HBRIDGE *_left_track, HBRIDGE *_right_track, irsensor
 	//pid_controller.d_limit = 100.0;
 	default_speed = 135;
 	debug = false;
-	cross_gap = true;
+	cross_gap = false;
 }
 
 void linefollower::follow_line()
@@ -35,6 +35,7 @@ void linefollower::follow_line()
 	{
 		left_track->run((int)left_speed);
 		right_track->run((int)right_speed);
+		cross_gap = false;
 	}
 	else
 	{
@@ -42,11 +43,13 @@ void linefollower::follow_line()
 		{
 			left_track->run(default_speed);
 			right_track->run(default_speed);
+			cross_gap = true;
 		}
 		else
 		{
 			left_track->run(0);
 			right_track->run(0);
+			cross_gap = false;			
 		}
 	}
 
