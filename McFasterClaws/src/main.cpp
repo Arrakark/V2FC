@@ -60,6 +60,7 @@ void second_ewok_sequence() {
     right_claw.dropoff();
     delay(1000);
     right_claw.open();
+    delay(500);
     left_claw.hug();
     delay(DELAY_TIME_LONG);
     left_claw.dropoff();
