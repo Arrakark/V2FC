@@ -19,7 +19,7 @@ void establish_communication() {
     main_board_comm.setTransmission(false);
 }
 
-void first_ewok_sequence() {
+void  first_ewok_sequence() {
     Serial.println("In 1");
     left_claw.dropoff();
     left_claw.hug();
@@ -55,10 +55,11 @@ void second_ewok_sequence() {
     //Here the robot picks up the second ewok, and it puts the claws into
     //position to cross through the archway
     main_board_comm.setTransmission(true);
-    right_claw.grabEwok();
-    delay(1000);
-    right_claw.dropoff();
     right_claw.hug();
+    delay(500);
+    right_claw.dropoff();
+    delay(1000);
+    right_claw.open();
     left_claw.hug();
     delay(DELAY_TIME_LONG);
     left_claw.dropoff();

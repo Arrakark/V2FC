@@ -346,7 +346,7 @@ void robot::line_follow_until_right_ewok()
     while (1)
     {
         bottom_sensor->update();
-        line_follower->default_speed = 170;
+        line_follower->default_speed = 190;
         line_follower->follow_line();
         robot::delay_update(4);
         Serial.println(bottom_sensor->mean());
@@ -370,7 +370,7 @@ void robot::first_ewok_pick_up()
     line_follow_until_right_ewok();
     while (1)
     {
-        line_follower->default_speed = 130;
+        line_follower->default_speed = 100;
         line_follower->follow_line();
         robot::delay_update(4);
         //sensed an ewok?
@@ -431,11 +431,11 @@ void robot::second_ewok_pick_up()
     arm_board_comm->setTransmission(false);
     //turn_until_black_line(LEFT);
     
-    robot::delay_update(500);
+   // robot::delay_update(500);
 
     while (1)
     { 
-        line_follower->default_speed = 90.0;
+        line_follower->default_speed = 100.0;
         line_follower->pid_controller.p_gain = 600;
         line_follower->pid_controller.p_limit = 200;
         line_follower->follow_line();
@@ -484,7 +484,7 @@ void robot::archway_crossing()
 }
 
 void robot::third_ewok_pick_up()
-{
+{  
     //Serial.println("start 3 main");
     // delay(2000);
     // arm_board_comm->setTransmission(false);
@@ -521,12 +521,27 @@ void robot::return_home()
     move_meters(-0.2);
     turn_degrees(90);
     turn_until_black_line(RIGHT);
-    line_follower->default_speed = 80;
-    line_follower->pid_controller.p_gain= 700;
+    line_follower->default_speed = 90;
+    line_follower->pid_controller.p_gain= 600;
+    line_follower->pid_controller.d_gain = -4;
+    line_follower->pid_controller.d_limit = -10;
+    line_follower->pid_controller.i_limit = 8;
+    line_follower->pid_controller.i_gain = 5;
+    //pid_controller.i_limit = 8;
+	//pid_controller.i_gain = 5;
     line_follower->cross_gap = true;
+    unsigned long current_time = millis();
     while(true){
         line_follower->follow_line();
-        if (bottom_sensor->mean() > 15){
+        if (current_time - millis() > 4000) {
+            break;
+        }
+    }
+    robot::delay_update(2000);
+    line_follower->cross_gap = true;
+    while (true) {
+        line_follower->follow_line();
+         if (bottom_sensor->mean() > 15){
             break;
         }
     }
