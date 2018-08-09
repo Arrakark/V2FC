@@ -314,8 +314,8 @@ void robot::find_gap_one(float _def_speed)
     do
     {
         bottom_sensor->update();
-        line_follower->pid_controller.p_gain = 900.0;
-        line_follower->pid_controller.p_limit = 250;
+        //line_follower->pid_controller.p_gain = 900.0;
+        //line_follower->pid_controller.p_limit = 250;
         //line_follower->default_speed = 90.0;
         line_follower->default_speed = _def_speed;
         line_follower->follow_line();
@@ -367,10 +367,10 @@ void robot::line_follow_until_right_ewok()
 void robot::first_ewok_pick_up()
 {
     arm_board_comm->setTransmission(false);
-    line_follow_until_right_ewok();
+   // line_follow_until_right_ewok();
     while (1)
     {
-        line_follower->default_speed = 150;
+        line_follower->default_speed = 130;
         line_follower->follow_line();
         robot::delay_update(4);
         //sensed an ewok?
@@ -420,17 +420,24 @@ void robot::second_ewok_pick_up()
     // turn_degrees(-0.1);
     //++++++++++++++++++++++++ END PREVIOUS CODE ========================
     //follow-line until ewok
-    find_gap_one(130.0);
-    robot::delay_update(500);
-    move_meters(0.40);
+    find_gap_one(100.0);
+    robot::delay_update(100);
+    move_meters(-0.2);
+    find_gap_one(100.0);
+    move_meters(0.60);
+    move_meters(-0.01);
     arm_board_comm->setTransmission(true);
-    robot::delay_update(500);
+    robot::delay_update(50);
     arm_board_comm->setTransmission(false);
+    turn_until_black_line(LEFT);
+    
     robot::delay_update(2000);
 
     while (1)
     { 
-        line_follower->default_speed = 90.0;
+        line_follower->default_speed = 70.0;
+        line_follower->pid_controller.p_gain = 600;
+        line_follower->pid_controller.p_limit = 200;
         line_follower->follow_line();
         robot::delay_update(4);
         //keep line-following while there is no signal
