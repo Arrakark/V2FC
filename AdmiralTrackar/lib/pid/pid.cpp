@@ -36,7 +36,9 @@ float pid::output(float error)
         i_sum = apply_limit(i_sum + error * ((float)millis() / 1000 - last_cycle_time), i_limit);
     else
         i_sum = apply_limit(i_sum, i_limit);
-        
+    
+    Serial.println(String(p_error + d_error + i_error));
+    
     return p_error + i_error + d_error;
     //return p_error + d_error;
 }

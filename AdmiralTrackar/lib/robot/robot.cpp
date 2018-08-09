@@ -346,7 +346,7 @@ void robot::line_follow_until_right_ewok()
     while (1)
     {
         bottom_sensor->update();
-        line_follower->default_speed = 190;
+        line_follower->default_speed = 210;
         line_follower->follow_line();
         robot::delay_update(4);
         Serial.println(bottom_sensor->mean());
@@ -370,7 +370,7 @@ void robot::first_ewok_pick_up()
     line_follow_until_right_ewok();
     while (1)
     {
-        line_follower->default_speed = 100;
+        line_follower->default_speed = 150;
         line_follower->follow_line();
         robot::delay_update(4);
         //sensed an ewok
@@ -424,7 +424,7 @@ void robot::second_ewok_pick_up()
     robot::delay_update(100);
     move_meters(-0.2);
     find_gap_one(100.0);
-    move_meters(0.30);
+    move_meters(0.35);
     move_meters(-0.01);
     arm_board_comm->setTransmission(true);
     robot::delay_update(50);
@@ -435,7 +435,7 @@ void robot::second_ewok_pick_up()
 
     while (1)
     { 
-        line_follower->default_speed = 100.0;
+        line_follower->default_speed = 110.0;
         line_follower->pid_controller.p_gain = 600;
         line_follower->pid_controller.p_limit = 200;
         line_follower->follow_line();
