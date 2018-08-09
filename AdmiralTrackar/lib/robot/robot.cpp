@@ -349,7 +349,6 @@ void robot::line_follow_until_right_ewok()
     while (1)
     {
         bottom_sensor->update();
-        line_follower->default_speed = 210;
         line_follower->follow_line();
         robot::delay_update(4);
         Serial.println(bottom_sensor->mean());
@@ -375,7 +374,6 @@ void robot::first_ewok_pick_up()
     delay_update(500);
     while (1)
     {
-        line_follower->default_speed = 160;
         line_follower->follow_line();
         robot::delay_update(4);
         //sensed an ewok
@@ -392,6 +390,7 @@ void robot::first_ewok_pick_up()
             break;
         robot::delay_update(4);
     }
+    turn_until_black_line(LEFT);
 
     Serial.println("end 1 main");
 }
@@ -430,6 +429,8 @@ void robot::second_ewok_pick_up()
     // move_meters(-0.2);
     move_meters(-0.15);
     find_gap_one(100.0);
+    move_meters(-0.15);
+    find_gap_one(100.0);
     move_meters(0.35);
     move_meters(-0.01);
     arm_board_comm->setTransmission(true);
@@ -441,8 +442,8 @@ void robot::second_ewok_pick_up()
 
     while (1)
     { 
-        line_follower->default_speed = 110.0;
-        line_follower->pid_controller.p_gain = 600;
+        line_follower->default_speed = 90.0;
+        line_follower->pid_controller.p_gain = 500;
         line_follower->pid_controller.p_limit = 200;
         line_follower->follow_line();
         robot::delay_update(4);
@@ -525,10 +526,10 @@ void robot::return_home()
 {
     robot::delay_update(900);
     move_meters(-0.2);
-    turn_degrees(45);
+    turn_degrees(-45);
     delay_update(1000);
     // turn_degrees(90);
-    turn_until_black_line(RIGHT);
+    turn_until_black_line(LEFT);
     delay_update(1000);
     // turn_degrees(5);
     //see how much it has turned
@@ -545,30 +546,31 @@ void robot::return_home()
 	//pid_controller.i_gain = 5;
     // turn_table_detect(TWICE);
     // line_follower->cross_gap = true;
-    line_follower->cross_gap = false;
-    unsigned long current_time = millis();
-    while(true){
-        line_follower->follow_line();
-        if (current_time - millis() > 4000) {
-            break;
-        }
-    }
-    robot::delay_update(2000);
     line_follower->cross_gap = true;
-    //find the gap
+    // unsigned long current_time = millis();
+    // while(true){
+    //     line_follower->follow_line();
+    //     //if (current_time - millis() > 4000) {
+    //     //    break;
+    //     //}
+    // }
+   // robot::delay_update(2000);
+    // line_follower->cross_gap = true;
+    // //find the gap
     while (true) {
         line_follower->follow_line();
          if (bottom_sensor->mean() > 15){
             break;
         }
     }
-    // find_gap_one(90.0);
+    // // find_gap_one(90.0);
 
-    // robot::delay_update(500);
-    // line_follower->default_speed = 70;
-    line_follower->default_speed = 130;
+    // // robot::delay_update(500);
+    // // line_follower->default_speed = 70;
+    // line_follower->default_speed = 130;
     move_meters(0.25);
-    line_follower->default_speed = 70;
+    line_follower->default_speed = 80;
+    line_follower->cross_gap = false;
     while(true){
         line_follower->follow_line();
     }
