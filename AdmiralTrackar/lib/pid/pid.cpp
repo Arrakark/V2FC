@@ -17,7 +17,7 @@ float pid::output(float error)
     // Serial.println("calculating pid controls......");
     //calculate initial errors
     float p_error = error * p_gain;
-    //float i_error = i_sum * i_gain;
+    float i_error = i_sum * i_gain;
     
     float d_error = 0;
     if (millis() != 0) {
@@ -32,13 +32,13 @@ float pid::output(float error)
     d_error_prev = error;
     last_cycle_time = millis() / 1000;
 
-    //if (millis() !=0)
-    //    i_sum = apply_limit(i_sum + error * ((float)millis() / 1000 - last_cycle_time), i_limit);
-    //else
-    //    i_sum = apply_limit(i_sum, i_limit);
+    if (millis() !=0)
+        i_sum = apply_limit(i_sum + error * ((float)millis() / 1000 - last_cycle_time), i_limit);
+    else
+        i_sum = apply_limit(i_sum, i_limit);
         
-    //return p_error + i_error + d_error;
-    return p_error + d_error;
+    return p_error + i_error + d_error;
+    //return p_error + d_error;
 }
 
 float pid::apply_limit(float value, float limit)

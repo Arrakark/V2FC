@@ -346,7 +346,7 @@ void robot::line_follow_until_right_ewok()
     while (1)
     {
         bottom_sensor->update();
-        line_follower->default_speed = 190;
+        line_follower->default_speed = 170;
         line_follower->follow_line();
         robot::delay_update(4);
         Serial.println(bottom_sensor->mean());
@@ -367,7 +367,7 @@ void robot::line_follow_until_right_ewok()
 void robot::first_ewok_pick_up()
 {
     arm_board_comm->setTransmission(false);
-   // line_follow_until_right_ewok();
+    line_follow_until_right_ewok();
     while (1)
     {
         line_follower->default_speed = 130;
@@ -431,7 +431,7 @@ void robot::second_ewok_pick_up()
     arm_board_comm->setTransmission(false);
     //turn_until_black_line(LEFT);
     
-    robot::delay_update(2000);
+    robot::delay_update(500);
 
     while (1)
     { 
@@ -521,16 +521,23 @@ void robot::return_home()
     move_meters(-0.2);
     turn_degrees(90);
     turn_until_black_line(RIGHT);
-    line_follower->default_speed = 100;
+    line_follower->default_speed = 80;
     line_follower->pid_controller.p_gain= 700;
     line_follower->cross_gap = true;
     while(true){
         line_follower->follow_line();
+        if (bottom_sensor->mean() > 15){
+            break;
+        }
     }
     // find_gap_one(90.0);
 
     // robot::delay_update(500);
-    // move_meters(-0.15);
+    line_follower->default_speed = 70;
+    move_meters(0.25);
+    while(true){
+        line_follower->follow_line();
+    }
     // robot::delay_update(500);
     // turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
     // robot::delay_update(500);
