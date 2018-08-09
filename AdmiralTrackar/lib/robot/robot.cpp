@@ -371,10 +371,11 @@ void robot::first_ewok_pick_up()
 {
     arm_board_comm->setTransmission(false);
     line_follow_until_right_ewok(); //might need tuning after changing the MAX distance of IR sensor
-    move_meters(-0.01);
+    // move_meters(0.01);
+    delay_update(500);
     while (1)
     {
-        line_follower->default_speed = 120;
+        line_follower->default_speed = 160;
         line_follower->follow_line();
         robot::delay_update(4);
         //sensed an ewok
@@ -529,8 +530,13 @@ void robot::return_home()
     // turn_degrees(90);
     turn_until_black_line(RIGHT);
     delay_update(1000);
-    line_follower->default_speed = 120;
-    line_follower->pid_controller.p_gain= 600;
+    // turn_degrees(5);
+    //see how much it has turned
+    delay_update(5000);
+    // line_follower->default_speed = 120;
+    line_follower->default_speed = 90;
+    // line_follower->pid_controller.p_gain= 600;
+    line_follower->pid_controller.p_gain= 300;
     // line_follower->pid_controller.d_gain = -4;
     // line_follower->pid_controller.d_limit = -10;
     // line_follower->pid_controller.i_limit = 8;
