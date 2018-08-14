@@ -1,5 +1,6 @@
 
 #include <robot.h>
+#include <surprise.h>
 robot atb = robot();
 
 void setup()
@@ -21,7 +22,7 @@ void setup()
     //========================== RETURN HOME ========================================
     atb.return_home();
 
-
+    surprise::run_surprise();
 }
 
 void loop()

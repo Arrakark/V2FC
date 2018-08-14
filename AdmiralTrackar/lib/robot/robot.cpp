@@ -381,6 +381,9 @@ void robot::first_ewok_pick_up()
         {
             break;
         }
+        if (bottom_sensor->max_distance() < 5){
+            turn_until_black_line(LEFT);
+        }
     }
     move_meters(-0.01);
     //dropped it off!
@@ -533,7 +536,7 @@ void robot::return_home()
     delay_update(1000);
     // turn_degrees(5);
     //see how much it has turned
-    delay_update(5000);
+    delay_update(1000);
     // line_follower->default_speed = 120;
     line_follower->default_speed = 90;
     // line_follower->pid_controller.p_gain= 600;
@@ -568,11 +571,16 @@ void robot::return_home()
     // // robot::delay_update(500);
     // // line_follower->default_speed = 70;
     // line_follower->default_speed = 130;
-    move_meters(0.25);
+    move_meters(0.4);
+    turn_until_black_line(RIGHT);
     line_follower->default_speed = 80;
     line_follower->cross_gap = false;
     while(true){
         line_follower->follow_line();
+        
+         if (bottom_sensor->mean() > 13){
+            break;
+        }
     }
     // robot::delay_update(500);
     // turn_until_black_line(LEFT); //sweep back to black line after grabbing ewok
@@ -580,7 +588,7 @@ void robot::return_home()
     // move_meters(0.4);
     // turn_until_black_line(RIGHT); 
     // find_gap_one(125.0);
-    // move_meters(-0.05);
+    move_meters(-0.2);
 }
 
 /**
